@@ -66,7 +66,7 @@ const BASE: LevelConfig = {
   rivers: 'ne_50m_rivers_lake_centerlines',
   maxRiverRank: 6,
   maxLakeRank: Infinity,
-  minWeight: 3e-6,
+  minWeight: 6e-6,
   minRingArea: 1e-6,
   minLakeArea: 2e-6,
   margin: 0.25,

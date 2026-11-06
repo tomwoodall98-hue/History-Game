@@ -409,6 +409,7 @@ button {
 /* --------------------------------------------------------------- slip --- */
 
 .slip {
+  --slip-dock: bottom;
   position: absolute;
   left: 50%;
   bottom: calc(var(--safe-bottom) + var(--frame-inset) + var(--frame-gap) + 12px);
@@ -1026,6 +1027,7 @@ button {
 
 @media (max-height: 560px) and (orientation: landscape) {
   .slip {
+    --slip-dock: right;
     width: min(440px, 50%);
     left: auto;
     right: calc(var(--safe-right) + var(--frame-inset) + var(--frame-gap) + 8px);

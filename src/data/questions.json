@@ -9,7 +9,7 @@
     "lng": 13.3777,
     "k": null,
     "bullseyeKm": 25,
-    "note": "A garbled announcement that East Germans could travel freely sent crowds to the checkpoints, and by midnight the guards had opened them. The mark is the Brandenburg Gate, where the Wall became the night's stage.",
+    "note": "A garbled announcement that East Germans could travel freely sent crowds to the checkpoints, and by midnight the guards had opened them. The mark is the Brandenburg Gate, where the Wall became the night’s stage.",
     "source": "https://en.wikipedia.org/wiki/Fall_of_the_Berlin_Wall"
   },
   {
@@ -35,7 +35,7 @@
     "lng": -0.0859,
     "k": null,
     "bullseyeKm": 20,
-    "note": "The fire began in Thomas Farriner's bakery on Pudding Lane and burned for four days, destroying some 13,200 houses and old St Paul's Cathedral.",
+    "note": "The fire began in Thomas Farriner’s bakery on Pudding Lane and burned for four days, destroying some 13,200 houses and old St Paul’s Cathedral.",
     "source": "https://en.wikipedia.org/wiki/Great_Fire_of_London"
   },
   {
@@ -61,7 +61,7 @@
     "lng": 132.4536,
     "k": null,
     "bullseyeKm": 25,
-    "note": "The uranium bomb 'Little Boy' exploded about 600 m above the city centre, near what is now the Atomic Bomb Dome; some 70,000–80,000 people were killed outright.",
+    "note": "The uranium bomb ‘Little Boy’ exploded about 600 m above the city centre, near what is now the Atomic Bomb Dome; some 70,000–80,000 people were killed outright.",
     "source": "https://en.wikipedia.org/wiki/Atomic_bombings_of_Hiroshima_and_Nagasaki"
   },
   {
@@ -204,7 +204,7 @@
     "lng": 151.2153,
     "k": null,
     "bullseyeKm": 25,
-    "note": "Jørn Utzon's sail-roofed opera house on Bennelong Point in Sydney Harbour was opened by Elizabeth II after 14 years of building and huge cost overruns.",
+    "note": "Jørn Utzon’s sail-roofed opera house on Bennelong Point in Sydney Harbour was opened by Elizabeth II after 14 years of building and huge cost overruns.",
     "source": "https://en.wikipedia.org/wiki/Sydney_Opera_House"
   },
   {
@@ -217,7 +217,7 @@
     "lng": -74.0445,
     "k": null,
     "bullseyeKm": 25,
-    "note": "France's gift to the United States, designed by Bartholdi with a frame by Gustave Eiffel, was dedicated on Bedloe's Island (now Liberty Island) in New York Harbor.",
+    "note": "France’s gift to the United States, designed by Bartholdi with a frame by Gustave Eiffel, was dedicated on Bedloe’s Island (now Liberty Island) in New York Harbor.",
     "source": "https://en.wikipedia.org/wiki/Statue_of_Liberty"
   },
   {
@@ -243,7 +243,7 @@
     "lng": 28.921,
     "k": null,
     "bullseyeKm": 25,
-    "note": "Sultan Mehmed II's army broke through the land walls after a 53-day siege, ending the Byzantine Empire; the last emperor, Constantine XI, died in the fighting.",
+    "note": "Sultan Mehmed II’s army broke through the land walls after a 53-day siege, ending the Byzantine Empire; the last emperor, Constantine XI, died in the fighting.",
     "source": "https://en.wikipedia.org/wiki/Fall_of_Constantinople"
   },
   {
@@ -265,8 +265,8 @@
     "dateDisplay": "11 February 1990",
     "year": 1990,
     "tier": 1,
-    "lat": -33.83,
-    "lng": 18.965,
+    "lat": -33.8409,
+    "lng": 18.9989,
     "k": null,
     "bullseyeKm": 30,
     "note": "After 27 years in prison, Mandela walked out of Victor Verster Prison near Paarl, then spoke to a huge crowd from the balcony of Cape Town City Hall that evening.",
@@ -308,7 +308,7 @@
     "lng": 86.925,
     "k": null,
     "bullseyeKm": 30,
-    "note": "Edmund Hillary and Tenzing Norgay were the first known climbers to stand on the world's highest summit, reached by the South Col route from Nepal.",
+    "note": "Edmund Hillary and Tenzing Norgay were the first known climbers to stand on the world’s highest summit, reached by the South Col route from Nepal.",
     "source": "https://en.wikipedia.org/wiki/1953_British_Mount_Everest_expedition"
   },
   {
@@ -360,7 +360,7 @@
     "lng": -71.0535,
     "k": null,
     "bullseyeKm": 20,
-    "note": "Colonists protesting the Tea Act boarded three ships at Griffin's Wharf and dumped 342 chests of East India Company tea into Boston Harbor.",
+    "note": "Colonists protesting the Tea Act boarded three ships at Griffin’s Wharf and dumped 342 chests of East India Company tea into Boston Harbor.",
     "source": "https://en.wikipedia.org/wiki/Boston_Tea_Party"
   },
   {
@@ -404,7 +404,7 @@
   },
   {
     "id": "t1-napoleon-moscow",
-    "event": "Napoleon's army enters Moscow",
+    "event": "Napoleon’s army enters Moscow",
     "dateDisplay": "14 September 1812",
     "year": 1812,
     "tier": 1,
@@ -412,7 +412,7 @@
     "lng": 37.6175,
     "k": null,
     "bullseyeKm": 25,
-    "note": "Napoleon's Grande Armée marched into an almost deserted Moscow; fires soon destroyed much of the city, and five weeks later he began his disastrous retreat.",
+    "note": "Napoleon’s Grande Armée marched into an almost deserted Moscow; fires soon destroyed much of the city, and five weeks later he began his disastrous retreat.",
     "source": "https://en.wikipedia.org/wiki/French_invasion_of_Russia"
   },
   {
@@ -425,12 +425,12 @@
     "lng": 139.7145,
     "k": null,
     "bullseyeKm": 25,
-    "note": "The Tokyo Games opened at the National Stadium, showcasing Japan's recovery from the war; the first bullet train had begun running nine days earlier.",
+    "note": "The Tokyo Games opened at the National Stadium, showcasing Japan’s recovery from the war; the first bullet train had begun running nine days earlier.",
     "source": "https://en.wikipedia.org/wiki/1964_Summer_Olympics"
   },
   {
     "id": "t1-mecca-conquest",
-    "event": "Muhammad's followers take Mecca",
+    "event": "Muhammad’s followers take Mecca",
     "dateDisplay": "630",
     "year": 630,
     "tier": 1,
@@ -438,7 +438,7 @@
     "lng": 39.8262,
     "k": null,
     "bullseyeKm": 25,
-    "note": "Muhammad's army entered Mecca almost without bloodshed; he cleared the Kaaba of idols and the city became the holiest site of Islam.",
+    "note": "Muhammad’s army entered Mecca almost without bloodshed; he cleared the Kaaba of idols and the city became the holiest site of Islam.",
     "source": "https://en.wikipedia.org/wiki/Conquest_of_Mecca"
   },
   {
@@ -469,7 +469,7 @@
   },
   {
     "id": "t1-anne-frank",
-    "event": "Anne Frank's family goes into hiding",
+    "event": "Anne Frank’s family goes into hiding",
     "dateDisplay": "6 July 1942",
     "year": 1942,
     "tier": 1,
@@ -477,7 +477,7 @@
     "lng": 4.884,
     "k": null,
     "bullseyeKm": 20,
-    "note": "The Franks hid in a secret annexe behind Otto Frank's business on the Prinsengracht for two years, where Anne kept her diary, until they were betrayed in August 1944.",
+    "note": "The Franks hid in a secret annexe behind Otto Frank’s business on the Prinsengracht for two years, where Anne kept her diary, until they were betrayed in August 1944.",
     "source": "https://en.wikipedia.org/wiki/Anne_Frank_House"
   },
   {
@@ -490,7 +490,7 @@
     "lng": -82.383,
     "k": null,
     "bullseyeKm": 25,
-    "note": "After the dictator Batista fled on New Year's Day, Castro crossed the island in a week-long victory caravan and entered Havana to cheering crowds.",
+    "note": "After the dictator Batista fled on New Year’s Day, Castro crossed the island in a week-long victory caravan and entered Havana to cheering crowds.",
     "source": "https://en.wikipedia.org/wiki/Cuban_Revolution"
   },
   {
@@ -508,7 +508,7 @@
   },
   {
     "id": "t1-i-have-a-dream",
-    "event": "Martin Luther King Jr. says \"I have a dream\"",
+    "event": "Martin Luther King Jr. says “I have a dream”",
     "dateDisplay": "28 August 1963",
     "year": 1963,
     "tier": 1,
@@ -581,7 +581,7 @@
     "lng": -77.2357,
     "k": null,
     "bullseyeKm": 10,
-    "note": "Lee's invasion of the North was turned back over three days in southern Pennsylvania, ending with the failed Pickett's Charge. Lincoln gave his Gettysburg Address at the battlefield cemetery that November.",
+    "note": "Lee’s invasion of the North was turned back over three days in southern Pennsylvania, ending with the failed Pickett’s Charge. Lincoln gave his Gettysburg Address at the battlefield cemetery that November.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Gettysburg"
   },
   {
@@ -594,7 +594,7 @@
     "lng": 12.6393,
     "k": null,
     "bullseyeKm": 15,
-    "note": "Luther's attack on the sale of indulgences, traditionally nailed to the door of the Castle Church in Wittenberg, sparked the Protestant Reformation.",
+    "note": "Luther’s attack on the sale of indulgences, traditionally nailed to the door of the Castle Church in Wittenberg, sparked the Protestant Reformation.",
     "source": "https://en.wikipedia.org/wiki/Ninety-five_Theses"
   },
   {
@@ -607,7 +607,7 @@
     "lng": 12.4539,
     "k": null,
     "bullseyeKm": 20,
-    "note": "Pope Leo III crowned the Frankish king Emperor of the Romans at Christmas Mass in Old St Peter's Basilica, reviving the imperial title in the West.",
+    "note": "Pope Leo III crowned the Frankish king Emperor of the Romans at Christmas Mass in Old St Peter’s Basilica, reviving the imperial title in the West.",
     "source": "https://en.wikipedia.org/wiki/Charlemagne"
   },
   {
@@ -664,7 +664,7 @@
   },
   {
     "id": "t2-tutankhamun",
-    "event": "Howard Carter finds Tutankhamun's tomb",
+    "event": "Howard Carter finds Tutankhamun’s tomb",
     "dateDisplay": "4 November 1922",
     "year": 1922,
     "tier": 2,
@@ -672,7 +672,7 @@
     "lng": 32.6014,
     "k": null,
     "bullseyeKm": 15,
-    "note": "Carter uncovered the steps to the boy king's almost intact tomb in the Valley of the Kings, on the west bank of the Nile opposite Luxor.",
+    "note": "Carter uncovered the steps to the boy king’s almost intact tomb in the Valley of the Kings, on the west bank of the Nile opposite Luxor.",
     "source": "https://en.wikipedia.org/wiki/KV62"
   },
   {
@@ -685,7 +685,7 @@
     "lng": 139.76,
     "k": null,
     "bullseyeKm": 25,
-    "note": "Japan's foreign minister and army chief signed the Instrument of Surrender on the deck of the US battleship anchored in Tokyo Bay, formally ending the Second World War.",
+    "note": "Japan’s foreign minister and army chief signed the Instrument of Surrender on the deck of the US battleship anchored in Tokyo Bay, formally ending the Second World War.",
     "source": "https://en.wikipedia.org/wiki/Japanese_Instrument_of_Surrender"
   },
   {
@@ -724,7 +724,7 @@
     "lng": 16.3642,
     "k": null,
     "bullseyeKm": 15,
-    "note": "Europe's statesmen remade the continent after Napoleon's defeat, meeting at the Austrian chancellery on the Ballhausplatz under Metternich amid a famous round of balls.",
+    "note": "Europe’s statesmen remade the continent after Napoleon’s defeat, meeting at the Austrian chancellery on the Ballhausplatz under Metternich amid a famous round of balls.",
     "source": "https://en.wikipedia.org/wiki/Congress_of_Vienna"
   },
   {
@@ -737,7 +737,7 @@
     "lng": 25.8556,
     "k": null,
     "bullseyeKm": 15,
-    "note": "Guided by Makololo boatmen, the Scottish missionary viewed the great falls of the Zambezi, known locally as Mosi-oa-Tunya, 'the smoke that thunders', from an island on their lip and named them after his queen.",
+    "note": "Guided by Makololo boatmen, the Scottish missionary viewed the great falls of the Zambezi, known locally as Mosi-oa-Tunya, ‘the smoke that thunders’, from an island on their lip and named them after his queen.",
     "source": "https://en.wikipedia.org/wiki/Victoria_Falls"
   },
   {
@@ -750,7 +750,7 @@
     "lng": -9.1364,
     "k": null,
     "bullseyeKm": 20,
-    "note": "An earthquake centred in the Atlantic off south-west Portugal, followed by a tsunami and fires, flattened much of Lisbon on All Saints' Day and killed tens of thousands.",
+    "note": "An earthquake centred in the Atlantic off south-west Portugal, followed by a tsunami and fires, flattened much of Lisbon on All Saints’ Day and killed tens of thousands.",
     "source": "https://en.wikipedia.org/wiki/1755_Lisbon_earthquake"
   },
   {
@@ -802,7 +802,7 @@
     "lng": 51.3134,
     "k": null,
     "bullseyeKm": 25,
-    "note": "Khomeini flew home from Paris to a welcome from millions in Tehran; within ten days the Shah's last government had collapsed.",
+    "note": "Khomeini flew home from Paris to a welcome from millions in Tehran; within ten days the Shah’s last government had collapsed.",
     "source": "https://en.wikipedia.org/wiki/Iranian_revolution"
   },
   {
@@ -828,7 +828,7 @@
     "lng": -98.4861,
     "k": null,
     "bullseyeKm": 15,
-    "note": "Santa Anna's Mexican army stormed the old mission held by Texian rebels in San Antonio, killing nearly all its defenders, among them Davy Crockett and Jim Bowie.",
+    "note": "Santa Anna’s Mexican army stormed the old mission held by Texian rebels in San Antonio, killing nearly all its defenders, among them Davy Crockett and Jim Bowie.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_the_Alamo"
   },
   {
@@ -854,7 +854,7 @@
     "lng": 22.5436,
     "k": null,
     "bullseyeKm": 10,
-    "note": "Leonidas of Sparta and a small Greek force held the narrow coastal pass against Xerxes' Persian army for three days before being outflanked. Silt has since pushed the coastline kilometres away.",
+    "note": "Leonidas of Sparta and a small Greek force held the narrow coastal pass against Xerxes’ Persian army for three days before being outflanked. Silt has since pushed the coastline kilometres away.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Thermopylae"
   },
   {
@@ -872,7 +872,7 @@
   },
   {
     "id": "t2-terracotta-army",
-    "event": "China's first emperor is buried with the Terracotta Army",
+    "event": "China’s first emperor is buried with the Terracotta Army",
     "dateDisplay": "210 BC",
     "year": -210,
     "tier": 2,
@@ -880,7 +880,7 @@
     "lng": 109.2785,
     "k": null,
     "bullseyeKm": 20,
-    "note": "Some 8,000 life-size clay soldiers were buried in pits beside the tomb of Qin Shi Huang, east of modern Xi'an; farmers digging a well found them in 1974.",
+    "note": "Some 8,000 life-size clay soldiers were buried in pits beside the tomb of Qin Shi Huang, east of modern Xi’an; farmers digging a well found them in 1974.",
     "source": "https://en.wikipedia.org/wiki/Terracotta_Army"
   },
   {
@@ -958,7 +958,7 @@
     "lng": -109.2886,
     "k": null,
     "bullseyeKm": 20,
-    "note": "Nearly all of Rapa Nui's almost 1,000 moai were carved from the soft volcanic tuff of the Rano Raraku crater, then moved across the island, perhaps 'walked' upright with ropes.",
+    "note": "Nearly all of Rapa Nui’s almost 1,000 moai were carved from the soft volcanic tuff of the Rano Raraku crater, then moved across the island, perhaps ‘walked’ upright with ropes.",
     "source": "https://en.wikipedia.org/wiki/Moai"
   },
   {
@@ -976,7 +976,7 @@
   },
   {
     "id": "t2-rumble-jungle",
-    "event": "Muhammad Ali wins the \"Rumble in the Jungle\"",
+    "event": "Muhammad Ali wins the “Rumble in the Jungle”",
     "dateDisplay": "30 October 1974",
     "year": 1974,
     "tier": 2,
@@ -1010,7 +1010,7 @@
     "lng": 77.4105,
     "k": null,
     "bullseyeKm": 20,
-    "note": "Methyl isocyanate gas leaked from the Union Carbide pesticide plant over the sleeping city of Bhopal; thousands died within days in the world's worst industrial disaster.",
+    "note": "Methyl isocyanate gas leaked from the Union Carbide pesticide plant over the sleeping city of Bhopal; thousands died within days in the world’s worst industrial disaster.",
     "source": "https://en.wikipedia.org/wiki/Bhopal_disaster"
   },
   {
@@ -1049,7 +1049,7 @@
     "lng": 4.4044,
     "k": null,
     "bullseyeKm": 8,
-    "note": "Wellington's allied army and Blücher's Prussians defeated Napoleon on the ridges about 15 km south of Brussels, ending the Hundred Days. The Lion's Mound now marks the field.",
+    "note": "Wellington’s allied army and Blücher’s Prussians defeated Napoleon on the ridges about 15 km south of Brussels, ending the Hundred Days. The Lion’s Mound now marks the field.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Waterloo"
   },
   {
@@ -1062,7 +1062,7 @@
     "lng": -74.53,
     "k": null,
     "bullseyeKm": 20,
-    "note": "Columbus's first landfall was an island the Lucayans called Guanahani. Most historians identify it with San Salvador in the Bahamas, though Samana Cay and others have been proposed.",
+    "note": "Columbus’s first landfall was an island the Lucayans called Guanahani. Most historians identify it with San Salvador in the Bahamas, though Samana Cay and others have been proposed.",
     "source": "https://en.wikipedia.org/wiki/Guanahani"
   },
   {
@@ -1088,7 +1088,7 @@
     "lng": 2.143,
     "k": null,
     "bullseyeKm": 8,
-    "note": "Henry V's outnumbered and largely archer army defeated the French nobility on muddy fields between the woods of Azincourt and Tramecourt in northern France.",
+    "note": "Henry V’s outnumbered and largely archer army defeated the French nobility on muddy fields between the woods of Azincourt and Tramecourt in northern France.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Agincourt"
   },
   {
@@ -1101,7 +1101,7 @@
     "lng": -6.2553,
     "k": null,
     "bullseyeKm": 20,
-    "note": "Nelson's fleet destroyed the combined French and Spanish fleets off Cape Trafalgar in south-west Spain, ending Napoleon's hopes of invading Britain; Nelson was killed by a French marksman.",
+    "note": "Nelson’s fleet destroyed the combined French and Spanish fleets off Cape Trafalgar in south-west Spain, ending Napoleon’s hopes of invading Britain; Nelson was killed by a French marksman.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Trafalgar"
   },
   {
@@ -1114,7 +1114,7 @@
     "lng": -107.428,
     "k": null,
     "bullseyeKm": 8,
-    "note": "Lakota, Northern Cheyenne and Arapaho warriors wiped out Custer's battalion of the 7th Cavalry on the ridges above the Little Bighorn River in Montana.",
+    "note": "Lakota, Northern Cheyenne and Arapaho warriors wiped out Custer’s battalion of the 7th Cavalry on the ridges above the Little Bighorn River in Montana.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_the_Little_Bighorn"
   },
   {
@@ -1166,7 +1166,7 @@
     "lng": 34.1433,
     "k": null,
     "bullseyeKm": 10,
-    "note": "The Allied leaders met at the tsars' former summer palace of Livadia in Crimea to plan the defeat of Germany and the shape of post-war Europe.",
+    "note": "The Allied leaders met at the tsars’ former summer palace of Livadia in Crimea to plan the defeat of Germany and the shape of post-war Europe.",
     "source": "https://en.wikipedia.org/wiki/Yalta_Conference"
   },
   {
@@ -1192,12 +1192,12 @@
     "lng": -71.2034,
     "k": null,
     "bullseyeKm": 10,
-    "note": "Champlain built his 'Habitation' below the cliffs where the St Lawrence narrows, founding Quebec, the first permanent settlement of New France.",
+    "note": "Champlain built his ‘Habitation’ below the cliffs where the St Lawrence narrows, founding Quebec, the first permanent settlement of New France.",
     "source": "https://en.wikipedia.org/wiki/Quebec_City"
   },
   {
     "id": "t3-ipiranga",
-    "event": "Prince Pedro declares Brazil's independence",
+    "event": "Prince Pedro declares Brazil’s independence",
     "dateDisplay": "7 September 1822",
     "year": 1822,
     "tier": 3,
@@ -1205,7 +1205,7 @@
     "lng": -46.6094,
     "k": null,
     "bullseyeKm": 10,
-    "note": "On the banks of the Ipiranga brook, then just outside São Paulo, the Portuguese prince regent cried 'Independence or death!' and became Brazil's first emperor.",
+    "note": "On the banks of the Ipiranga brook, then just outside São Paulo, the Portuguese prince regent cried ‘Independence or death!’ and became Brazil’s first emperor.",
     "source": "https://en.wikipedia.org/wiki/Independence_of_Brazil"
   },
   {
@@ -1218,7 +1218,7 @@
     "lng": -81.03,
     "k": null,
     "bullseyeKm": 15,
-    "note": "About 1,400 CIA-trained Cuban exiles landed on Cuba's south coast; Castro's forces defeated them around Playa Girón within three days.",
+    "note": "About 1,400 CIA-trained Cuban exiles landed on Cuba’s south coast; Castro’s forces defeated them around Playa Girón within three days.",
     "source": "https://en.wikipedia.org/wiki/Bay_of_Pigs_Invasion"
   },
   {
@@ -1244,12 +1244,12 @@
     "lng": -4.0958,
     "k": null,
     "bullseyeKm": 6,
-    "note": "The Duke of Cumberland's army crushed Charles Edward Stuart's Jacobites on Drummossie Moor east of Inverness in under an hour: the last pitched battle on British soil.",
+    "note": "The Duke of Cumberland’s army crushed Charles Edward Stuart’s Jacobites on Drummossie Moor east of Inverness in under an hour: the last pitched battle on British soil.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Culloden"
   },
   {
     "id": "t3-santiago-coup",
-    "event": "Chile's presidential palace is bombed in Pinochet's coup",
+    "event": "Chile’s presidential palace is bombed in Pinochet’s coup",
     "dateDisplay": "11 September 1973",
     "year": 1973,
     "tier": 3,
@@ -1296,7 +1296,7 @@
     "lng": 28.95,
     "k": null,
     "bullseyeKm": 20,
-    "note": "Montgomery's Eighth Army broke through Rommel's lines between the coast and the Qattara Depression, about 100 km west of Alexandria, turning the war in North Africa.",
+    "note": "Montgomery’s Eighth Army broke through Rommel’s lines between the coast and the Qattara Depression, about 100 km west of Alexandria, turning the war in North Africa.",
     "source": "https://en.wikipedia.org/wiki/Second_Battle_of_El_Alamein"
   },
   {
@@ -1322,7 +1322,7 @@
     "lng": 141.29,
     "k": null,
     "bullseyeKm": 10,
-    "note": "Joe Rosenthal's photograph of Marines raising the flag on Mount Suribachi, the volcanic island's highest point, became the most reproduced image of the war; the battle lasted five weeks.",
+    "note": "Joe Rosenthal’s photograph of Marines raising the flag on Mount Suribachi, the volcanic island’s highest point, became the most reproduced image of the war; the battle lasted five weeks.",
     "source": "https://en.wikipedia.org/wiki/Raising_the_Flag_on_Iwo_Jima"
   },
   {
@@ -1340,7 +1340,7 @@
   },
   {
     "id": "t3-botany-bay",
-    "event": "James Cook's Endeavour lands at Botany Bay",
+    "event": "James Cook’s Endeavour lands at Botany Bay",
     "dateDisplay": "29 April 1770",
     "year": 1770,
     "tier": 3,
@@ -1348,7 +1348,7 @@
     "lng": 151.228,
     "k": null,
     "bullseyeKm": 10,
-    "note": "Cook anchored in a bay he named for the plants his naturalists collected there; the landing at Kurnell was the first British contact with Aboriginal people on Australia's east coast.",
+    "note": "Cook anchored in a bay he named for the plants his naturalists collected there; the landing at Kurnell was the first British contact with Aboriginal people on Australia’s east coast.",
     "source": "https://en.wikipedia.org/wiki/Kurnell,_New_South_Wales"
   },
   {
@@ -1361,7 +1361,7 @@
     "lng": 174.0805,
     "k": null,
     "bullseyeKm": 10,
-    "note": "More than 40 Māori chiefs signed the treaty with the British Crown on the lawn at Waitangi in the Bay of Islands; its English and Māori texts differ, and it remains New Zealand's founding document.",
+    "note": "More than 40 Māori chiefs signed the treaty with the British Crown on the lawn at Waitangi in the Bay of Islands; its English and Māori texts differ, and it remains New Zealand’s founding document.",
     "source": "https://en.wikipedia.org/wiki/Treaty_of_Waitangi"
   },
   {
@@ -1374,7 +1374,7 @@
     "lng": -2.6786,
     "k": null,
     "bullseyeKm": 10,
-    "note": "Planes supporting Franco bombed the Basque market town for three hours; Picasso's painting made it a lasting symbol of the horror of war.",
+    "note": "Planes supporting Franco bombed the Basque market town for three hours; Picasso’s painting made it a lasting symbol of the horror of war.",
     "source": "https://en.wikipedia.org/wiki/Bombing_of_Guernica"
   },
   {
@@ -1387,7 +1387,7 @@
     "lng": -76.505,
     "k": null,
     "bullseyeKm": 8,
-    "note": "Trapped on the York River peninsula in Virginia by Washington's army and a French fleet, Cornwallis surrendered, effectively ending the American War of Independence.",
+    "note": "Trapped on the York River peninsula in Virginia by Washington’s army and a French fleet, Cornwallis surrendered, effectively ending the American War of Independence.",
     "source": "https://en.wikipedia.org/wiki/Siege_of_Yorktown"
   },
   {
@@ -1400,7 +1400,7 @@
     "lng": 35.3536,
     "k": null,
     "bullseyeKm": 8,
-    "note": "The Tenth Legion built a huge ramp up the desert mesa above the Dead Sea to take Herod's fortress; according to Josephus, its Jewish defenders chose death over capture.",
+    "note": "The Tenth Legion built a huge ramp up the desert mesa above the Dead Sea to take Herod’s fortress; according to Josephus, its Jewish defenders chose death over capture.",
     "source": "https://en.wikipedia.org/wiki/Siege_of_Masada"
   },
   {
@@ -1426,7 +1426,7 @@
     "lng": 116.298,
     "k": null,
     "bullseyeKm": 10,
-    "note": "At the end of the Second Opium War, troops looted and then burned the emperors' vast gardens of Yuanmingyuan, north-west of Beijing, in reprisal for the torture of envoys.",
+    "note": "At the end of the Second Opium War, troops looted and then burned the emperors’ vast gardens of Yuanmingyuan, north-west of Beijing, in reprisal for the torture of envoys.",
     "source": "https://en.wikipedia.org/wiki/Old_Summer_Palace"
   },
   {
@@ -1439,7 +1439,7 @@
     "lng": 1.0828,
     "k": null,
     "bullseyeKm": 8,
-    "note": "Four knights who took Henry II's angry words as an order killed the archbishop in Canterbury Cathedral; he was made a saint within three years.",
+    "note": "Four knights who took Henry II’s angry words as an order killed the archbishop in Canterbury Cathedral; he was made a saint within three years.",
     "source": "https://en.wikipedia.org/wiki/Canterbury_Cathedral"
   },
   {
@@ -1483,7 +1483,7 @@
   },
   {
     "id": "t3-dandi",
-    "event": "Gandhi's Salt March reaches the sea",
+    "event": "Gandhi’s Salt March reaches the sea",
     "dateDisplay": "6 April 1930",
     "year": 1930,
     "tier": 3,
@@ -1517,7 +1517,7 @@
     "lng": -76.7776,
     "k": null,
     "bullseyeKm": 8,
-    "note": "The Virginia Company's settlers built a fort on a marshy island in the James River: the first permanent English settlement in the Americas, where most died in the first years.",
+    "note": "The Virginia Company’s settlers built a fort on a marshy island in the James River: the first permanent English settlement in the Americas, where most died in the first years.",
     "source": "https://en.wikipedia.org/wiki/Jamestown,_Virginia"
   },
   {
@@ -1530,7 +1530,7 @@
     "lng": 44.4211,
     "k": null,
     "bullseyeKm": 10,
-    "note": "Alexander died aged 32 in Nebuchadnezzar's palace at Babylon, on the Euphrates south of modern Baghdad, after a sudden fever; his empire soon split among his generals.",
+    "note": "Alexander died aged 32 in Nebuchadnezzar’s palace at Babylon, on the Euphrates south of modern Baghdad, after a sudden fever; his empire soon split among his generals.",
     "source": "https://en.wikipedia.org/wiki/Death_of_Alexander_the_Great"
   },
   {
@@ -1543,7 +1543,7 @@
     "lng": 18.4639,
     "k": null,
     "bullseyeKm": 10,
-    "note": "Barnard's team at Groote Schuur Hospital in Cape Town gave Louis Washkansky the heart of a young road-accident victim; he lived for 18 days.",
+    "note": "Barnard’s team at Groote Schuur Hospital in Cape Town gave Louis Washkansky the heart of a young road-accident victim; he lived for 18 days.",
     "source": "https://en.wikipedia.org/wiki/Groote_Schuur_Hospital"
   },
   {
@@ -1556,7 +1556,7 @@
     "lng": 10.3231,
     "k": null,
     "bullseyeKm": 10,
-    "note": "After a three-year siege, Scipio Aemilianus's army stormed and razed the city near modern Tunis, ending the Third Punic War; Rome later refounded it as a colony.",
+    "note": "After a three-year siege, Scipio Aemilianus’s army stormed and razed the city near modern Tunis, ending the Third Punic War; Rome later refounded it as a colony.",
     "source": "https://en.wikipedia.org/wiki/Third_Punic_War"
   },
   {
@@ -1582,7 +1582,7 @@
     "lng": 16.1518,
     "k": null,
     "bullseyeKm": 6,
-    "note": "Hannibal's outnumbered army enveloped and destroyed eight Roman legions on the plain of the Aufidus (Ofanto) in Apulia, one of the bloodiest days in history; the exact field is debated.",
+    "note": "Hannibal’s outnumbered army enveloped and destroyed eight Roman legions on the plain of the Aufidus (Ofanto) in Apulia, one of the bloodiest days in history; the exact field is debated.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Cannae"
   },
   {
@@ -1595,7 +1595,7 @@
     "lng": 20.71,
     "k": null,
     "bullseyeKm": 8,
-    "note": "Octavian's fleet under Agrippa defeated Antony and Cleopatra off the mouth of the Ambracian Gulf in western Greece; their flight to Egypt left Octavian master of the Roman world.",
+    "note": "Octavian’s fleet under Agrippa defeated Antony and Cleopatra off the mouth of the Ambracian Gulf in western Greece; their flight to Egypt left Octavian master of the Roman world.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Actium"
   },
   {
@@ -1608,7 +1608,7 @@
     "lng": 23.56,
     "k": null,
     "bullseyeKm": 8,
-    "note": "Themistocles lured Xerxes' larger fleet into the narrow channel between the island of Salamis and the coast of Attica, where the Greek triremes routed it.",
+    "note": "Themistocles lured Xerxes’ larger fleet into the narrow channel between the island of Salamis and the coast of Attica, where the Greek triremes routed it.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Salamis"
   },
   {
@@ -1647,7 +1647,7 @@
     "lng": -6.416,
     "k": null,
     "bullseyeKm": 6,
-    "note": "William III defeated James II at a ford of the River Boyne near Drogheda, securing the Protestant succession; Ulster's Orangemen still mark it each July.",
+    "note": "William III defeated James II at a ford of the River Boyne near Drogheda, securing the Protestant succession; Ulster’s Orangemen still mark it each July.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_the_Boyne"
   },
   {
@@ -1660,7 +1660,7 @@
     "lng": 0.5,
     "k": null,
     "bullseyeKm": 25,
-    "note": "Charles Martel's Franks stopped an Umayyad army somewhere between Poitiers and Tours, traditionally at Moussais-la-Bataille; the exact site, and even the year, are disputed.",
+    "note": "Charles Martel’s Franks stopped an Umayyad army somewhere between Poitiers and Tours, traditionally at Moussais-la-Bataille; the exact site, and even the year, are disputed.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Tours"
   },
   {
@@ -1673,12 +1673,12 @@
     "lng": 15.554,
     "k": null,
     "bullseyeKm": 10,
-    "note": "Ships from the Black Sea brought plague into the harbour of Messina; within four years the Black Death had killed perhaps a third of Europe's people.",
+    "note": "Ships from the Black Sea brought plague into the harbour of Messina; within four years the Black Death had killed perhaps a third of Europe’s people.",
     "source": "https://en.wikipedia.org/wiki/Black_Death"
   },
   {
     "id": "t4-sutters-mill",
-    "event": "Gold is found at Sutter's Mill",
+    "event": "Gold is found at Sutter’s Mill",
     "dateDisplay": "24 January 1848",
     "year": 1848,
     "tier": 4,
@@ -1704,7 +1704,7 @@
   },
   {
     "id": "t4-inchon",
-    "event": "MacArthur's landing at Incheon",
+    "event": "MacArthur’s landing at Incheon",
     "dateDisplay": "15 September 1950",
     "year": 1950,
     "tier": 4,
@@ -1725,12 +1725,12 @@
     "lng": 136.46,
     "k": null,
     "bullseyeKm": 6,
-    "note": "Tokugawa Ieyasu's victory in a mountain valley in central Japan, helped by defections from the enemy army, opened 250 years of rule by the Tokugawa shoguns.",
+    "note": "Tokugawa Ieyasu’s victory in a mountain valley in central Japan, helped by defections from the enemy army, opened 250 years of rule by the Tokugawa shoguns.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Sekigahara"
   },
   {
     "id": "t4-perry-uraga",
-    "event": "Commodore Perry's black ships arrive in Japan",
+    "event": "Commodore Perry’s black ships arrive in Japan",
     "dateDisplay": "8 July 1853",
     "year": 1853,
     "tier": 4,
@@ -1738,7 +1738,7 @@
     "lng": 139.72,
     "k": null,
     "bullseyeKm": 10,
-    "note": "Perry's four warships anchored off Uraga at the mouth of Edo Bay and demanded that Japan open its ports, ending more than two centuries of seclusion.",
+    "note": "Perry’s four warships anchored off Uraga at the mouth of Edo Bay and demanded that Japan open its ports, ending more than two centuries of seclusion.",
     "source": "https://en.wikipedia.org/wiki/Perry_Expedition"
   },
   {
@@ -1790,7 +1790,7 @@
     "lng": 29.6786,
     "k": null,
     "bullseyeKm": 8,
-    "note": "After an eight-month search, the journalist Henry Morton Stanley found the missionary at Ujiji on Lake Tanganyika and greeted him, he later claimed, with 'Dr Livingstone, I presume?'",
+    "note": "After an eight-month search, the journalist Henry Morton Stanley found the missionary at Ujiji on Lake Tanganyika and greeted him, he later claimed, with ‘Dr Livingstone, I presume?’",
     "source": "https://en.wikipedia.org/wiki/Ujiji"
   },
   {
@@ -1803,7 +1803,7 @@
     "lng": -52.6818,
     "k": null,
     "bullseyeKm": 8,
-    "note": "Guglielmo Marconi heard the Morse letter 'S', sent from Poldhu in Cornwall, on a receiver at Signal Hill above St John's, Newfoundland, its aerial held aloft by a kite.",
+    "note": "Guglielmo Marconi heard the Morse letter ‘S’, sent from Poldhu in Cornwall, on a receiver at Signal Hill above St John’s, Newfoundland, its aerial held aloft by a kite.",
     "source": "https://en.wikipedia.org/wiki/Signal_Hill,_St._John%27s"
   },
   {
@@ -1829,7 +1829,7 @@
     "lng": -71.0608,
     "k": null,
     "bullseyeKm": 6,
-    "note": "The British drove the colonial militia from Breed's Hill on the Charlestown peninsula, across the river from Boston, at a cost of more than 1,000 casualties; the battle took its name from neighbouring Bunker Hill.",
+    "note": "The British drove the colonial militia from Breed’s Hill on the Charlestown peninsula, across the river from Boston, at a cost of more than 1,000 casualties; the battle took its name from neighbouring Bunker Hill.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Bunker_Hill"
   },
   {
@@ -1855,7 +1855,7 @@
     "lng": -155.9333,
     "k": null,
     "bullseyeKm": 8,
-    "note": "Cook was killed in a skirmish on the shore of Kealakekua Bay, on the Kona coast of Hawaii's Big Island, after trying to take a chief hostage over a stolen boat.",
+    "note": "Cook was killed in a skirmish on the shore of Kealakekua Bay, on the Kona coast of Hawaii’s Big Island, after trying to take a chief hostage over a stolen boat.",
     "source": "https://en.wikipedia.org/wiki/Kealakekua_Bay"
   },
   {
@@ -1868,7 +1868,7 @@
     "lng": 35.83,
     "k": null,
     "bullseyeKm": 8,
-    "note": "Napoleon's bloodiest battle was fought about 120 km west of Moscow; the Russians withdrew after losing some 45,000 men, and Napoleon entered Moscow a week later.",
+    "note": "Napoleon’s bloodiest battle was fought about 120 km west of Moscow; the Russians withdrew after losing some 45,000 men, and Napoleon entered Moscow a week later.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Borodino"
   },
   {
@@ -1881,7 +1881,7 @@
     "lng": -57.8589,
     "k": null,
     "bullseyeKm": 10,
-    "note": "Once British troops had taken the mountains ringing the islands' capital, the Argentine commander surrendered his garrison of about 9,800 men at Stanley.",
+    "note": "Once British troops had taken the mountains ringing the islands’ capital, the Argentine commander surrendered his garrison of about 9,800 men at Stanley.",
     "source": "https://en.wikipedia.org/wiki/Falklands_War"
   },
   {
@@ -1894,7 +1894,7 @@
     "lng": -77.7442,
     "k": null,
     "bullseyeKm": 6,
-    "note": "The bloodiest single day in American history: some 23,000 casualties near Sharpsburg, Maryland, as McClellan checked Lee's first invasion of the North, giving Lincoln his opening to announce emancipation.",
+    "note": "The bloodiest single day in American history: some 23,000 casualties near Sharpsburg, Maryland, as McClellan checked Lee’s first invasion of the North, giving Lincoln his opening to announce emancipation.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Antietam"
   },
   {
@@ -1920,7 +1920,7 @@
     "lng": -98.188,
     "k": null,
     "bullseyeKm": 8,
-    "note": "General Ignacio Zaragoza's army repelled a French assault on the hill forts of Loreto and Guadalupe above Puebla, a victory remembered as Cinco de Mayo; the French took the city a year later.",
+    "note": "General Ignacio Zaragoza’s army repelled a French assault on the hill forts of Loreto and Guadalupe above Puebla, a victory remembered as Cinco de Mayo; the French took the city a year later.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Puebla"
   },
   {
@@ -1951,7 +1951,7 @@
   },
   {
     "id": "t4-market-garden",
-    "event": "Operation Market Garden fails at the 'bridge too far'",
+    "event": "Operation Market Garden fails at the ‘bridge too far’",
     "dateDisplay": "September 1944",
     "year": 1944,
     "tier": 4,
@@ -2050,7 +2050,7 @@
     "lng": 160.0549,
     "k": null,
     "bullseyeKm": 15,
-    "note": "US Marines seized the airfield the Japanese were building on Guadalcanal in the Solomon Islands; six months of fighting on land and sea ended with Japan's withdrawal.",
+    "note": "US Marines seized the airfield the Japanese were building on Guadalcanal in the Solomon Islands; six months of fighting on land and sea ended with Japan’s withdrawal.",
     "source": "https://en.wikipedia.org/wiki/Guadalcanal_campaign"
   },
   {
@@ -2076,7 +2076,7 @@
     "lng": 32.495,
     "k": null,
     "bullseyeKm": 10,
-    "note": "Kitchener's Anglo-Egyptian army, armed with Maxim guns, destroyed the Mahdist army on the plain north of Omdurman, opposite Khartoum; the young Winston Churchill rode in the cavalry charge.",
+    "note": "Kitchener’s Anglo-Egyptian army, armed with Maxim guns, destroyed the Mahdist army on the plain north of Omdurman, opposite Khartoum; the young Winston Churchill rode in the cavalry charge.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Omdurman"
   },
   {
@@ -2102,7 +2102,7 @@
     "lng": 88.252,
     "k": null,
     "bullseyeKm": 8,
-    "note": "Robert Clive's East India Company army defeated the Nawab of Bengal at Palashi on the Bhagirathi, north of Calcutta, after bribing the Nawab's commander, Mir Jafar: the start of British rule in India.",
+    "note": "Robert Clive’s East India Company army defeated the Nawab of Bengal at Palashi on the Bhagirathi, north of Calcutta, after bribing the Nawab’s commander, Mir Jafar: the start of British rule in India.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Plassey"
   },
   {
@@ -2115,7 +2115,7 @@
     "lng": 76.97,
     "k": null,
     "bullseyeKm": 10,
-    "note": "Babur's smaller army, using field guns and flanking cavalry, killed Sultan Ibrahim Lodi at Panipat, north of Delhi, and founded the Mughal Empire.",
+    "note": "Babur’s smaller army, using field guns and flanking cavalry, killed Sultan Ibrahim Lodi at Panipat, north of Delhi, and founded the Mughal Empire.",
     "source": "https://en.wikipedia.org/wiki/First_Battle_of_Panipat"
   },
   {
@@ -2141,7 +2141,7 @@
     "lng": 43.4943,
     "k": null,
     "bullseyeKm": 15,
-    "note": "Alexander broke Darius III's huge army on a plain in northern Mesopotamia, probably near Tel Gomel north-east of Mosul, opening Babylon and Persia to the Macedonians.",
+    "note": "Alexander broke Darius III’s huge army on a plain in northern Mesopotamia, probably near Tel Gomel north-east of Mosul, opening Babylon and Persia to the Macedonians.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Gaugamela"
   },
   {
@@ -2154,7 +2154,7 @@
     "lng": 8.1286,
     "k": null,
     "bullseyeKm": 10,
-    "note": "Germanic tribes under Arminius ambushed Varus's army in the Teutoburg Forest; finds since 1987 place the main fighting at Kalkriese, north of Osnabrück.",
+    "note": "Germanic tribes under Arminius ambushed Varus’s army in the Teutoburg Forest; finds since 1987 place the main fighting at Kalkriese, north of Osnabrück.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_the_Teutoburg_Forest"
   },
   {
@@ -2219,12 +2219,12 @@
     "lng": 129.95,
     "k": null,
     "bullseyeKm": 30,
-    "note": "Admiral Togo's fleet destroyed the Russian Baltic Fleet, which had sailed halfway round the world, in the strait between Korea and Japan; Russia soon sued for peace.",
+    "note": "Admiral Togo’s fleet destroyed the Russian Baltic Fleet, which had sailed halfway round the world, in the strait between Korea and Japan; Russia soon sued for peace.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Tsushima"
   },
   {
     "id": "t5-rorkes-drift",
-    "event": "The defence of Rorke's Drift",
+    "event": "The defence of Rorke’s Drift",
     "dateDisplay": "22–23 January 1879",
     "year": 1879,
     "tier": 5,
@@ -2245,7 +2245,7 @@
     "lng": 38.88,
     "k": null,
     "bullseyeKm": 10,
-    "note": "Emperor Menelik II's army routed an Italian invasion force in the mountains of Tigray, preserving Ethiopia's independence through the age of European empire in Africa.",
+    "note": "Emperor Menelik II’s army routed an Italian invasion force in the mountains of Tigray, preserving Ethiopia’s independence through the age of European empire in Africa.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Adwa"
   },
   {
@@ -2258,7 +2258,7 @@
     "lng": -175.1,
     "k": 600,
     "bullseyeKm": 60,
-    "note": "Fletcher Christian's mutineers set Captain Bligh and 18 loyal men adrift near Tofua in Tonga; Bligh sailed the open launch 6,700 km to Timor, while the mutineers hid on Pitcairn Island.",
+    "note": "Fletcher Christian’s mutineers set Captain Bligh and 18 loyal men adrift near Tofua in Tonga; Bligh sailed the open launch 6,700 km to Timor, while the mutineers hid on Pitcairn Island.",
     "source": "https://en.wikipedia.org/wiki/Mutiny_on_the_Bounty"
   },
   {
@@ -2271,7 +2271,7 @@
     "lng": -95.0805,
     "k": null,
     "bullseyeKm": 6,
-    "note": "Sam Houston's Texians surprised Santa Anna's army during its afternoon rest beside the San Jacinto River, east of modern Houston, winning Texas its independence in 18 minutes.",
+    "note": "Sam Houston’s Texians surprised Santa Anna’s army during its afternoon rest beside the San Jacinto River, east of modern Houston, winning Texas its independence in 18 minutes.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_San_Jacinto"
   },
   {
@@ -2284,7 +2284,7 @@
     "lng": -74.13,
     "k": null,
     "bullseyeKm": 8,
-    "note": "Antonio José de Sucre's army defeated the last great royalist army on the plain of Quinua in the Peruvian Andes, sealing South America's independence from Spain.",
+    "note": "Antonio José de Sucre’s army defeated the last great royalist army on the plain of Quinua in the Peruvian Andes, sealing South America’s independence from Spain.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Ayacucho"
   },
   {
@@ -2297,7 +2297,7 @@
     "lng": -73.41,
     "k": null,
     "bullseyeKm": 6,
-    "note": "Simón Bolívar's army, fresh from crossing the Andes, defeated the Spanish at a bridge south of Tunja; three days later he entered Bogotá.",
+    "note": "Simón Bolívar’s army, fresh from crossing the Andes, defeated the Spanish at a bridge south of Tunja; three days later he entered Bogotá.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Boyacá"
   },
   {
@@ -2310,12 +2310,12 @@
     "lng": -78.5175,
     "k": null,
     "bullseyeKm": 8,
-    "note": "Francisco Pizarro's 168 Spaniards ambushed Atahualpa's retinue in the main square of the Andean town of Cajamarca and took the emperor hostage.",
+    "note": "Francisco Pizarro’s 168 Spaniards ambushed Atahualpa’s retinue in the main square of the Andean town of Cajamarca and took the emperor hostage.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Cajamarca"
   },
   {
     "id": "t5-long-march-end",
-    "event": "Mao's Long March comes to an end",
+    "event": "Mao’s Long March comes to an end",
     "dateDisplay": "19 October 1935",
     "year": 1935,
     "tier": 5,
@@ -2323,7 +2323,7 @@
     "lng": 108.1717,
     "k": null,
     "bullseyeKm": 15,
-    "note": "After a fighting retreat of about 10,000 km from Jiangxi, Mao's First Front Army reached the communist base at Wuqi in northern Shaanxi with perhaps a tenth of the men who set out.",
+    "note": "After a fighting retreat of about 10,000 km from Jiangxi, Mao’s First Front Army reached the communist base at Wuqi in northern Shaanxi with perhaps a tenth of the men who set out.",
     "source": "https://en.wikipedia.org/wiki/Long_March"
   },
   {
@@ -2336,12 +2336,12 @@
     "lng": -106.4754,
     "k": null,
     "bullseyeKm": 8,
-    "note": "The world's first nuclear explosion, a plutonium device, lit up the Jornada del Muerto desert in New Mexico before dawn, about 55 km south-east of Socorro.",
+    "note": "The world’s first nuclear explosion, a plutonium device, lit up the Jornada del Muerto desert in New Mexico before dawn, about 55 km south-east of Socorro.",
     "source": "https://en.wikipedia.org/wiki/Trinity_(nuclear_test)"
   },
   {
     "id": "t5-lucy",
-    "event": "The fossil skeleton \"Lucy\" is discovered",
+    "event": "The fossil skeleton “Lucy” is discovered",
     "dateDisplay": "24 November 1974",
     "year": 1974,
     "tier": 5,
@@ -2349,7 +2349,7 @@
     "lng": 40.58,
     "k": null,
     "bullseyeKm": 15,
-    "note": "Donald Johanson and Tom Gray found the 3.2-million-year-old skeleton of an Australopithecus afarensis at Hadar in Ethiopia's Afar region; she was named after a Beatles song.",
+    "note": "Donald Johanson and Tom Gray found the 3.2-million-year-old skeleton of an Australopithecus afarensis at Hadar in Ethiopia’s Afar region; she was named after a Beatles song.",
     "source": "https://en.wikipedia.org/wiki/Lucy_(Australopithecus)"
   },
   {
@@ -2367,7 +2367,7 @@
   },
   {
     "id": "t5-cahokia",
-    "event": "Cahokia's Monks Mound rises",
+    "event": "Cahokia’s Monks Mound rises",
     "dateDisplay": "c. 1100",
     "year": 1100,
     "tier": 5,
@@ -2380,7 +2380,7 @@
   },
   {
     "id": "t5-selma",
-    "event": "'Bloody Sunday' on the march from Selma",
+    "event": "‘Bloody Sunday’ on the march from Selma",
     "dateDisplay": "7 March 1965",
     "year": 1965,
     "tier": 5,
@@ -2414,7 +2414,7 @@
     "lng": -1.447,
     "k": null,
     "bullseyeKm": 6,
-    "note": "Henry Tudor's victory, in which Richard III became the last English king to die in battle, ended the Wars of the Roses; finds since 2009 place the fighting about 3 km south-west of the traditional site.",
+    "note": "Henry Tudor’s victory, in which Richard III became the last English king to die in battle, ended the Wars of the Roses; finds since 2009 place the fighting about 3 km south-west of the traditional site.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Bosworth_Field"
   },
   {
@@ -2427,7 +2427,7 @@
     "lng": 10.615,
     "k": null,
     "bullseyeKm": 8,
-    "note": "Marlborough and Prince Eugene destroyed a Franco-Bavarian army beside the Danube at Blindheim (Blenheim) in Bavaria, saving Vienna; Blenheim Palace was the nation's reward to Marlborough.",
+    "note": "Marlborough and Prince Eugene destroyed a Franco-Bavarian army beside the Danube at Blindheim (Blenheim) in Bavaria, saving Vienna; Blenheim Palace was the nation’s reward to Marlborough.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Blenheim"
   },
   {
@@ -2440,7 +2440,7 @@
     "lng": 34.535,
     "k": null,
     "bullseyeKm": 8,
-    "note": "Peter the Great's army destroyed Charles XII's Swedish army outside the Ukrainian town of Poltava, ending Sweden's time as a great power.",
+    "note": "Peter the Great’s army destroyed Charles XII’s Swedish army outside the Ukrainian town of Poltava, ending Sweden’s time as a great power.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Poltava"
   },
   {
@@ -2453,7 +2453,7 @@
     "lng": 94.1077,
     "k": null,
     "bullseyeKm": 8,
-    "note": "British and Indian troops held a ridge in the Naga Hills, at one point fighting across the district commissioner's tennis court, and helped halt the Japanese invasion of India.",
+    "note": "British and Indian troops held a ridge in the Naga Hills, at one point fighting across the district commissioner’s tennis court, and helped halt the Japanese invasion of India.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Kohima"
   },
   {
@@ -2466,7 +2466,7 @@
     "lng": 63.342,
     "k": null,
     "bullseyeKm": 15,
-    "note": "The world's first artificial satellite was launched from Tyuratam (later Baikonur) on the steppe of Soviet Kazakhstan; its radio beeps could be picked up around the world.",
+    "note": "The world’s first artificial satellite was launched from Tyuratam (later Baikonur) on the steppe of Soviet Kazakhstan; its radio beeps could be picked up around the world.",
     "source": "https://en.wikipedia.org/wiki/Sputnik_1"
   },
   {
@@ -2492,12 +2492,12 @@
     "lng": 118.0,
     "k": null,
     "bullseyeKm": 15,
-    "note": "The largest eruption in recorded history, on the island of Sumbawa in Indonesia, killed tens of thousands and caused the 'Year Without a Summer' across the northern hemisphere in 1816.",
+    "note": "The largest eruption in recorded history, on the island of Sumbawa in Indonesia, killed tens of thousands and caused the ‘Year Without a Summer’ across the northern hemisphere in 1816.",
     "source": "https://en.wikipedia.org/wiki/1815_eruption_of_Mount_Tambora"
   },
   {
     "id": "t5-olduvai",
-    "event": "Mary Leakey finds \"Nutcracker Man\"",
+    "event": "Mary Leakey finds “Nutcracker Man”",
     "dateDisplay": "17 July 1959",
     "year": 1959,
     "tier": 5,
@@ -2536,7 +2536,7 @@
   },
   {
     "id": "t5-westphalia",
-    "event": "The Peace of Westphalia ends the Thirty Years' War",
+    "event": "The Peace of Westphalia ends the Thirty Years’ War",
     "dateDisplay": "24 October 1648",
     "year": 1648,
     "tier": 5,
@@ -2570,7 +2570,7 @@
     "lng": -89.9925,
     "k": null,
     "bullseyeKm": 8,
-    "note": "Jackson's mix of regulars, militia, free Black volunteers and pirates beat off a British attack at Chalmette, just below New Orleans, unaware that peace had been signed two weeks earlier.",
+    "note": "Jackson’s mix of regulars, militia, free Black volunteers and pirates beat off a British attack at Chalmette, just below New Orleans, unaware that peace had been signed two weeks earlier.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_New_Orleans"
   },
   {
@@ -2583,7 +2583,7 @@
     "lng": -102.364,
     "k": null,
     "bullseyeKm": 6,
-    "note": "US 7th Cavalry troops killed some 250 Lakota men, women and children while disarming Spotted Elk's band beside Wounded Knee Creek on the Pine Ridge Reservation, South Dakota.",
+    "note": "US 7th Cavalry troops killed some 250 Lakota men, women and children while disarming Spotted Elk’s band beside Wounded Knee Creek on the Pine Ridge Reservation, South Dakota.",
     "source": "https://en.wikipedia.org/wiki/Wounded_Knee_Massacre"
   },
   {
@@ -2596,7 +2596,7 @@
     "lng": -78.528,
     "k": null,
     "bullseyeKm": 6,
-    "note": "Antonio José de Sucre's army defeated the Spanish on the slopes of the Pichincha volcano above Quito, freeing what is now Ecuador.",
+    "note": "Antonio José de Sucre’s army defeated the Spanish on the slopes of the Pichincha volcano above Quito, freeing what is now Ecuador.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Pichincha"
   },
   {
@@ -2622,12 +2622,12 @@
     "lng": 113.624,
     "k": null,
     "bullseyeKm": 30,
-    "note": "Sun Quan and Liu Bei's allied fleet used fire ships to rout Cao Cao on the Yangtze, ensuring China split into three kingdoms; the most widely accepted site is the cliffs at Chibi in Hubei.",
+    "note": "Sun Quan and Liu Bei’s allied fleet used fire ships to rout Cao Cao on the Yangtze, ensuring China split into three kingdoms; the most widely accepted site is the cliffs at Chibi in Hubei.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Red_Cliffs"
   },
   {
     "id": "t6-hansan",
-    "event": "Admiral Yi's victory at Hansan Island",
+    "event": "Admiral Yi’s victory at Hansan Island",
     "dateDisplay": "14 August 1592",
     "year": 1592,
     "tier": 6,
@@ -2635,7 +2635,7 @@
     "lng": 128.47,
     "k": null,
     "bullseyeKm": 10,
-    "note": "Yi Sun-sin lured a Japanese fleet out of a narrow strait and destroyed it off Hansan Island in a 'crane wing' formation, cutting Japan's sea supply line during its invasion of Korea.",
+    "note": "Yi Sun-sin lured a Japanese fleet out of a narrow strait and destroyed it off Hansan Island in a ‘crane wing’ formation, cutting Japan’s sea supply line during its invasion of Korea.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Hansan_Island"
   },
   {
@@ -2648,12 +2648,12 @@
     "lng": 22.38,
     "k": null,
     "bullseyeKm": 10,
-    "note": "Julius Caesar beat Pompey's larger army on the plain beside the Enipeus river near Pharsalus in Thessaly; Pompey fled to Egypt, where he was murdered.",
+    "note": "Julius Caesar beat Pompey’s larger army on the plain beside the Enipeus river near Pharsalus in Thessaly; Pompey fled to Egypt, where he was murdered.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Pharsalus"
   },
   {
     "id": "t6-carrhae",
-    "event": "Parthian horse archers destroy Crassus's legions",
+    "event": "Parthian horse archers destroy Crassus’s legions",
     "dateDisplay": "53 BC",
     "year": -53,
     "tier": 6,
@@ -2661,7 +2661,7 @@
     "lng": 39.0307,
     "k": null,
     "bullseyeKm": 25,
-    "note": "Parthian cavalry shot Marcus Licinius Crassus's army to pieces on the open plain near Carrhae (Harran) in what is now south-east Turkey; Crassus was killed during truce talks.",
+    "note": "Parthian cavalry shot Marcus Licinius Crassus’s army to pieces on the open plain near Carrhae (Harran) in what is now south-east Turkey; Crassus was killed during truce talks.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Carrhae"
   },
   {
@@ -2674,7 +2674,7 @@
     "lng": 26.556,
     "k": null,
     "bullseyeKm": 25,
-    "note": "Gothic warriors destroyed the eastern Roman field army outside Adrianople (Edirne) in Thrace and killed the emperor Valens: a turning point in Rome's struggle with the barbarians.",
+    "note": "Gothic warriors destroyed the eastern Roman field army outside Adrianople (Edirne) in Thrace and killed the emperor Valens: a turning point in Rome’s struggle with the barbarians.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Adrianople"
   },
   {
@@ -2687,7 +2687,7 @@
     "lng": 4.23,
     "k": null,
     "bullseyeKm": 50,
-    "note": "A Roman and Visigothic army under Flavius Aetius halted Attila's Huns in Champagne. The exact battlefield is unknown, somewhere between Troyes and Châlons-en-Champagne.",
+    "note": "A Roman and Visigothic army under Flavius Aetius halted Attila’s Huns in Champagne. The exact battlefield is unknown, somewhere between Troyes and Châlons-en-Champagne.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_the_Catalaunian_Plains"
   },
   {
@@ -2713,7 +2713,7 @@
     "lng": 10.88,
     "k": null,
     "bullseyeKm": 20,
-    "note": "Otto I's German army crushed the Hungarian raiders on the Lech floodplain near Augsburg, ending decades of Magyar raids into western Europe.",
+    "note": "Otto I’s German army crushed the Hungarian raiders on the Lech floodplain near Augsburg, ending decades of Magyar raids into western Europe.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Lechfeld"
   },
   {
@@ -2752,7 +2752,7 @@
     "lng": 19.1741,
     "k": null,
     "bullseyeKm": 20,
-    "note": "Cuban and Angolan troops held the town against South African and UNITA forces in Africa's largest battle since the Second World War; the stalemate led to Namibian independence.",
+    "note": "Cuban and Angolan troops held the town against South African and UNITA forces in Africa’s largest battle since the Second World War; the stalemate led to Namibian independence.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Cuito_Cuanavale"
   },
   {
@@ -2765,7 +2765,7 @@
     "lng": -59.985,
     "k": null,
     "bullseyeKm": 8,
-    "note": "Amherst and Wolfe took France's great fortress on Cape Breton Island after a seven-week siege, opening the St Lawrence for the attack on Quebec.",
+    "note": "Amherst and Wolfe took France’s great fortress on Cape Breton Island after a seven-week siege, opening the St Lawrence for the attack on Quebec.",
     "source": "https://en.wikipedia.org/wiki/Siege_of_Louisbourg_(1758)"
   },
   {
@@ -2778,7 +2778,7 @@
     "lng": -86.843,
     "k": null,
     "bullseyeKm": 6,
-    "note": "William Henry Harrison's troops repulsed an attack by warriors of Tecumseh's confederacy near Prophetstown in Indiana; 'Tippecanoe and Tyler too' later helped win him the presidency.",
+    "note": "William Henry Harrison’s troops repulsed an attack by warriors of Tecumseh’s confederacy near Prophetstown in Indiana; ‘Tippecanoe and Tyler too’ later helped win him the presidency.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Tippecanoe"
   },
   {
@@ -2804,7 +2804,7 @@
     "lng": -70.762,
     "k": null,
     "bullseyeKm": 8,
-    "note": "José de San Martín's army defeated the royalists on the plain of Maipú, south-west of Santiago, securing Chile's independence.",
+    "note": "José de San Martín’s army defeated the royalists on the plain of Maipú, south-west of Santiago, securing Chile’s independence.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Maipú"
   },
   {
@@ -2830,7 +2830,7 @@
     "lng": -0.608,
     "k": null,
     "bullseyeKm": 6,
-    "note": "King Oswiu of Northumbria chose Roman rather than Irish custom for dating Easter at a council in Abbess Hild's monastery on the Yorkshire coast.",
+    "note": "King Oswiu of Northumbria chose Roman rather than Irish custom for dating Easter at a council in Abbess Hild’s monastery on the Yorkshire coast.",
     "source": "https://en.wikipedia.org/wiki/Synod_of_Whitby"
   },
   {
@@ -2843,7 +2843,7 @@
     "lng": 3.0911,
     "k": null,
     "bullseyeKm": 8,
-    "note": "At the end of a church council at Clermont in the Auvergne, Urban II preached to a crowd in a field outside the city, which answered 'Deus vult!' (God wills it).",
+    "note": "At the end of a church council at Clermont in the Auvergne, Urban II preached to a crowd in a field outside the city, which answered ‘Deus vult!’ (God wills it).",
     "source": "https://en.wikipedia.org/wiki/Council_of_Clermont"
   },
   {
@@ -2856,7 +2856,7 @@
     "lng": 32.1094,
     "k": null,
     "bullseyeKm": 8,
-    "note": "Kitchener confronted Captain Marchand's small French expedition at the ruined fort of Fashoda on the White Nile; France backed down, and Sudan stayed under British control.",
+    "note": "Kitchener confronted Captain Marchand’s small French expedition at the ruined fort of Fashoda on the White Nile; France backed down, and Sudan stayed under British control.",
     "source": "https://en.wikipedia.org/wiki/Fashoda_Incident"
   },
   {
@@ -2882,7 +2882,7 @@
     "lng": 140.78,
     "k": null,
     "bullseyeKm": 25,
-    "note": "Robert O'Hara Burke and William Wills reached the tidal mangroves near the Gulf of Carpentaria, completing the first south-to-north crossing of Australia; both died on the way back.",
+    "note": "Robert O’Hara Burke and William Wills reached the tidal mangroves near the Gulf of Carpentaria, completing the first south-to-north crossing of Australia; both died on the way back.",
     "source": "https://en.wikipedia.org/wiki/Burke_and_Wills_expedition"
   },
   {
@@ -2895,7 +2895,7 @@
     "lng": 32.8283,
     "k": null,
     "bullseyeKm": 8,
-    "note": "One of the world's earliest towns grew on the Konya plain in central Anatolia; its people entered their mud-brick houses through the roof and buried their dead beneath the floors.",
+    "note": "One of the world’s earliest towns grew on the Konya plain in central Anatolia; its people entered their mud-brick houses through the roof and buried their dead beneath the floors.",
     "source": "https://en.wikipedia.org/wiki/Çatalhöyük"
   },
   {
@@ -2921,7 +2921,7 @@
     "lng": 123.43,
     "k": null,
     "bullseyeKm": 25,
-    "note": "The largest land battle before 1914 was fought outside Mukden (Shenyang) in Manchuria; Japan's victory over Russia came at enormous cost to both sides.",
+    "note": "The largest land battle before 1914 was fought outside Mukden (Shenyang) in Manchuria; Japan’s victory over Russia came at enormous cost to both sides.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Mukden"
   },
   {
@@ -2934,7 +2934,7 @@
     "lng": 15.73,
     "k": null,
     "bullseyeKm": 8,
-    "note": "Prussia's victory near the Bohemian village of Sadová (Sadowa), north-west of Königgrätz (Hradec Králové), settled which power would unite Germany.",
+    "note": "Prussia’s victory near the Bohemian village of Sadová (Sadowa), north-west of Königgrätz (Hradec Králové), settled which power would unite Germany.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Königgrätz"
   },
   {
@@ -2947,7 +2947,7 @@
     "lng": 93.9368,
     "k": null,
     "bullseyeKm": 20,
-    "note": "British and Indian forces besieged in the Manipur valley around Imphal held out until the Japanese offensive collapsed, in what was later voted Britain's greatest battle.",
+    "note": "British and Indian forces besieged in the Manipur valley around Imphal held out until the Japanese offensive collapsed, in what was later voted Britain’s greatest battle.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Imphal"
   },
   {
@@ -2960,12 +2960,12 @@
     "lng": 38.656,
     "k": null,
     "bullseyeKm": 10,
-    "note": "Grand Prince Dmitry of Moscow defeated the Tatar commander Mamai on the Kulikovo Field near the upper Don, south of Tula, a symbol of Russia's rise against the Horde.",
+    "note": "Grand Prince Dmitry of Moscow defeated the Tatar commander Mamai on the Kulikovo Field near the upper Don, south of Tula, a symbol of Russia’s rise against the Horde.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Kulikovo"
   },
   {
     "id": "t6-peipus",
-    "event": "Alexander Nevsky's 'Battle on the Ice'",
+    "event": "Alexander Nevsky’s ‘Battle on the Ice’",
     "dateDisplay": "5 April 1242",
     "year": 1242,
     "tier": 6,
@@ -2973,7 +2973,7 @@
     "lng": 27.5,
     "k": null,
     "bullseyeKm": 30,
-    "note": "Alexander Nevsky's Novgorodians defeated the Teutonic Knights on the frozen Lake Peipus, between modern Estonia and Russia; the exact spot on the lake is unknown.",
+    "note": "Alexander Nevsky’s Novgorodians defeated the Teutonic Knights on the frozen Lake Peipus, between modern Estonia and Russia; the exact spot on the lake is unknown.",
     "source": "https://en.wikipedia.org/wiki/Battle_on_the_Ice"
   },
   {
@@ -2986,12 +2986,12 @@
     "lng": 20.125,
     "k": null,
     "bullseyeKm": 6,
-    "note": "A Polish–Lithuanian army under Władysław II Jagiełło crushed the Teutonic Knights between the villages of Grunwald and Stębark in Prussia, one of medieval Europe's largest battles.",
+    "note": "A Polish–Lithuanian army under Władysław II Jagiełło crushed the Teutonic Knights between the villages of Grunwald and Stębark in Prussia, one of medieval Europe’s largest battles.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Grunwald"
   },
   {
     "id": "t6-taung",
-    "event": "The 'Taung Child' skull is discovered",
+    "event": "The ‘Taung Child’ skull is discovered",
     "dateDisplay": "1924",
     "year": 1924,
     "tier": 6,
@@ -3012,7 +3012,7 @@
     "lng": 25.644,
     "k": null,
     "bullseyeKm": 8,
-    "note": "Robert Baden-Powell's garrison held the railway town of Mafeking for 217 days against the Boers; news of its relief set off wild celebrations in Britain.",
+    "note": "Robert Baden-Powell’s garrison held the railway town of Mafeking for 217 days against the Boers; news of its relief set off wild celebrations in Britain.",
     "source": "https://en.wikipedia.org/wiki/Siege_of_Mafeking"
   },
   {
@@ -3038,7 +3038,7 @@
     "lng": 36.5194,
     "k": null,
     "bullseyeKm": 10,
-    "note": "Probably the largest chariot battle ever fought, on the Orontes River in western Syria. Both sides claimed victory, and it led to one of the earliest surviving peace treaties; the city's site is Tell Nebi Mend.",
+    "note": "Probably the largest chariot battle ever fought, on the Orontes River in western Syria. Both sides claimed victory, and it led to one of the earliest surviving peace treaties; the city’s site is Tell Nebi Mend.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Kadesh"
   },
   {
@@ -3064,7 +3064,7 @@
     "lng": 85.8406,
     "k": null,
     "bullseyeKm": 15,
-    "note": "The Mauryan emperor's conquest of Kalinga, on India's east coast, was so bloody that he renounced war and turned to Buddhism; his edicts are carved on a rock at Dhauli, near the traditional battlefield.",
+    "note": "The Mauryan emperor’s conquest of Kalinga, on India’s east coast, was so bloody that he renounced war and turned to Buddhism; his edicts are carved on a rock at Dhauli, near the traditional battlefield.",
     "source": "https://en.wikipedia.org/wiki/Kalinga_War"
   },
   {
@@ -3077,12 +3077,12 @@
     "lng": 76.69,
     "k": null,
     "bullseyeKm": 6,
-    "note": "British troops stormed Tipu Sultan's island fortress of Seringapatam in the Kaveri river near Mysore; Tipu was killed fighting at the breach.",
+    "note": "British troops stormed Tipu Sultan’s island fortress of Seringapatam in the Kaveri river near Mysore; Tipu was killed fighting at the breach.",
     "source": "https://en.wikipedia.org/wiki/Siege_of_Seringapatam_(1799)"
   },
   {
     "id": "t6-takashima",
-    "event": "A typhoon wrecks Kublai Khan's invasion fleet",
+    "event": "A typhoon wrecks Kublai Khan’s invasion fleet",
     "dateDisplay": "August 1281",
     "year": 1281,
     "tier": 6,
@@ -3090,7 +3090,7 @@
     "lng": 129.75,
     "k": null,
     "bullseyeKm": 10,
-    "note": "The 'kamikaze', or divine wind, destroyed the Mongol fleet sheltering off Takashima island in Imari Bay, Kyushu, where archaeologists have since found its wrecks.",
+    "note": "The ‘kamikaze’, or divine wind, destroyed the Mongol fleet sheltering off Takashima island in Imari Bay, Kyushu, where archaeologists have since found its wrecks.",
     "source": "https://en.wikipedia.org/wiki/Mongol_invasions_of_Japan"
   },
   {
@@ -3108,7 +3108,7 @@
   },
   {
     "id": "t6-nile-aboukir",
-    "event": "Nelson destroys Napoleon's fleet at anchor",
+    "event": "Nelson destroys Napoleon’s fleet at anchor",
     "dateDisplay": "1–3 August 1798",
     "year": 1798,
     "tier": 6,
@@ -3116,12 +3116,12 @@
     "lng": 30.08,
     "k": null,
     "bullseyeKm": 10,
-    "note": "At the Battle of the Nile, Nelson caught the French fleet in Aboukir Bay, east of Alexandria, and destroyed it; the flagship L'Orient blew up, stranding Bonaparte's army in Egypt.",
+    "note": "At the Battle of the Nile, Nelson caught the French fleet in Aboukir Bay, east of Alexandria, and destroyed it; the flagship L’Orient blew up, stranding Bonaparte’s army in Egypt.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_the_Nile"
   },
   {
     "id": "t7-leuctra",
-    "event": "Epaminondas's oblique attack breaks the Spartans",
+    "event": "Epaminondas’s oblique attack breaks the Spartans",
     "dateDisplay": "371 BC",
     "year": -371,
     "tier": 7,
@@ -3129,7 +3129,7 @@
     "lng": 23.1743,
     "k": null,
     "bullseyeKm": 6,
-    "note": "The Thebans massed their left wing 50 ranks deep and shattered the Spartan army at Leuctra in Boeotia, ending Sparta's dominance of Greece; the battle trophy's base survives.",
+    "note": "The Thebans massed their left wing 50 ranks deep and shattered the Spartan army at Leuctra in Boeotia, ending Sparta’s dominance of Greece; the battle trophy’s base survives.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Leuctra"
   },
   {
@@ -3142,7 +3142,7 @@
     "lng": 22.56,
     "k": null,
     "bullseyeKm": 12,
-    "note": "The legions of Lucius Aemilius Paullus broke King Perseus's phalanx on uneven ground near Pydna, below Mount Olympus, ending the Macedonian kingdom.",
+    "note": "The legions of Lucius Aemilius Paullus broke King Perseus’s phalanx on uneven ground near Pydna, below Mount Olympus, ending the Macedonian kingdom.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Pydna"
   },
   {
@@ -3173,7 +3173,7 @@
   },
   {
     "id": "t7-roncevaux",
-    "event": "Roland dies with Charlemagne's rearguard",
+    "event": "Roland dies with Charlemagne’s rearguard",
     "dateDisplay": "15 August 778",
     "year": 778,
     "tier": 7,
@@ -3181,7 +3181,7 @@
     "lng": -1.3254,
     "k": null,
     "bullseyeKm": 8,
-    "note": "Basques ambushed the rearguard of Charlemagne's army in a pass in the western Pyrenees, killing Roland, whose death became the subject of the Song of Roland.",
+    "note": "Basques ambushed the rearguard of Charlemagne’s army in a pass in the western Pyrenees, killing Roland, whose death became the subject of the Song of Roland.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Roncevaux_Pass"
   },
   {
@@ -3207,7 +3207,7 @@
     "lng": -8.863,
     "k": null,
     "bullseyeKm": 6,
-    "note": "John I of Portugal and his English archers defeated a much larger Castilian army near Aljubarrota, securing Portugal's independence; the monastery of Batalha was built in thanks.",
+    "note": "John I of Portugal and his English archers defeated a much larger Castilian army near Aljubarrota, securing Portugal’s independence; the monastery of Batalha was built in thanks.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Aljubarrota"
   },
   {
@@ -3324,7 +3324,7 @@
     "lng": 73.7,
     "k": null,
     "bullseyeKm": 10,
-    "note": "The ruler of Mewar fought Akbar's army under Man Singh in a narrow pass in the Aravalli hills, north of Udaipur; though he lost the field, he became a hero of Rajput resistance.",
+    "note": "The ruler of Mewar fought Akbar’s army under Man Singh in a narrow pass in the Aravalli hills, north of Udaipur; though he lost the field, he became a hero of Rajput resistance.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Haldighati"
   },
   {
@@ -3355,7 +3355,7 @@
   },
   {
     "id": "t7-nagashino",
-    "event": "Nobunaga's musketeers break the Takeda cavalry",
+    "event": "Nobunaga’s musketeers break the Takeda cavalry",
     "dateDisplay": "28 June 1575",
     "year": 1575,
     "tier": 7,
@@ -3363,7 +3363,7 @@
     "lng": 137.54,
     "k": null,
     "bullseyeKm": 6,
-    "note": "Oda Nobunaga's arquebusiers, firing from behind wooden palisades, cut down the famous Takeda horsemen on the plain of Shitaragahara near Nagashino Castle.",
+    "note": "Oda Nobunaga’s arquebusiers, firing from behind wooden palisades, cut down the famous Takeda horsemen on the plain of Shitaragahara near Nagashino Castle.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Nagashino"
   },
   {
@@ -3407,7 +3407,7 @@
   },
   {
     "id": "t7-peking-man",
-    "event": "The first skull of 'Peking Man' is found",
+    "event": "The first skull of ‘Peking Man’ is found",
     "dateDisplay": "1929",
     "year": 1929,
     "tier": 7,
@@ -3441,7 +3441,7 @@
     "lng": 31.78,
     "k": null,
     "bullseyeKm": 8,
-    "note": "After a night march across the desert, Wolseley's army stormed Urabi Pasha's trenches at Tel el-Kebir, between Cairo and the Suez Canal, beginning Britain's long occupation of Egypt.",
+    "note": "After a night march across the desert, Wolseley’s army stormed Urabi Pasha’s trenches at Tel el-Kebir, between Cairo and the Suez Canal, beginning Britain’s long occupation of Egypt.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Tel_El_Kebir"
   },
   {
@@ -3480,7 +3480,7 @@
     "lng": 29.3897,
     "k": null,
     "bullseyeKm": 6,
-    "note": "Mapungubwe, by the meeting of the Limpopo and Shashe rivers, was the capital of southern Africa's first great kingdom; a gold-foil rhinoceros from a royal grave on its hill was found in 1933.",
+    "note": "Mapungubwe, by the meeting of the Limpopo and Shashe rivers, was the capital of southern Africa’s first great kingdom; a gold-foil rhinoceros from a royal grave on its hill was found in 1933.",
     "source": "https://en.wikipedia.org/wiki/Kingdom_of_Mapungubwe"
   },
   {
@@ -3493,7 +3493,7 @@
     "lng": -5.95,
     "k": null,
     "bullseyeKm": 12,
-    "note": "King Sebastian of Portugal's crusade into Morocco ended in disaster by the Loukkos river near Ksar el-Kebir; he and both rival Moroccan sultans died, and Portugal soon fell to Spain.",
+    "note": "King Sebastian of Portugal’s crusade into Morocco ended in disaster by the Loukkos river near Ksar el-Kebir; he and both rival Moroccan sultans died, and Portugal soon fell to Spain.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Alcácer_Quibir"
   },
   {
@@ -3519,7 +3519,7 @@
     "lng": -85.738,
     "k": null,
     "bullseyeKm": 6,
-    "note": "Jackson's army, with Cherokee and Lower Creek allies, stormed the Red Sticks' fortified bend of the Tallapoosa River in Alabama, ending the Creek War.",
+    "note": "Jackson’s army, with Cherokee and Lower Creek allies, stormed the Red Sticks’ fortified bend of the Tallapoosa River in Alabama, ending the Creek War.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Horseshoe_Bend_(1814)"
   },
   {
@@ -3532,7 +3532,7 @@
     "lng": -58.57,
     "k": null,
     "bullseyeKm": 10,
-    "note": "Paraguayan troops behind a trench line by the Paraguay River cut down an assault by Brazil and Argentina, the Allies' worst defeat of the War of the Triple Alliance.",
+    "note": "Paraguayan troops behind a trench line by the Paraguay River cut down an assault by Brazil and Argentina, the Allies’ worst defeat of the War of the Triple Alliance.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Curupayty"
   },
   {
@@ -3545,7 +3545,7 @@
     "lng": -72.21,
     "k": null,
     "bullseyeKm": 6,
-    "note": "Jean-Jacques Dessalines's army took the French forts ringing Cap-Français, forcing Rochambeau to evacuate; Haiti declared independence six weeks later.",
+    "note": "Jean-Jacques Dessalines’s army took the French forts ringing Cap-Français, forcing Rochambeau to evacuate; Haiti declared independence six weeks later.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Vertières"
   },
   {
@@ -3558,7 +3558,7 @@
     "lng": -109.207,
     "k": null,
     "bullseyeKm": 6,
-    "note": "After a 1,900 km fighting retreat, Chief Joseph of the Nez Perce surrendered in the Bear Paw Mountains of Montana, about 65 km from the Canadian border: 'I will fight no more forever.'",
+    "note": "After a 1,900 km fighting retreat, Chief Joseph of the Nez Perce surrendered in the Bear Paw Mountains of Montana, about 65 km from the Canadian border: ‘I will fight no more forever.’",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Bear_Paw"
   },
   {
@@ -3615,7 +3615,7 @@
   },
   {
     "id": "t7-endurance",
-    "event": "Shackleton's Endurance sinks in the ice",
+    "event": "Shackleton’s Endurance sinks in the ice",
     "dateDisplay": "21 November 1915",
     "year": 1915,
     "tier": 7,
@@ -3623,7 +3623,7 @@
     "lng": -52.3283,
     "k": 500,
     "bullseyeKm": 50,
-    "note": "Crushed by pack ice in the Weddell Sea, Shackleton's ship sank off Antarctica; all 28 men survived after an epic journey. The wreck was found in 2022, 3,000 m down.",
+    "note": "Crushed by pack ice in the Weddell Sea, Shackleton’s ship sank off Antarctica; all 28 men survived after an epic journey. The wreck was found in 2022, 3,000 m down.",
     "source": "https://en.wikipedia.org/wiki/Endurance_(1912_ship)"
   },
   {

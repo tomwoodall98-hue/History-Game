@@ -590,7 +590,7 @@ export class MapView {
       e.preventDefault();
       this.sel
         .transition()
-        .duration(160)
+        .duration(this.dur(160))
         .call(this.zoomBehavior.translateBy, dx / this.transform.k, dy / this.transform.k);
     };
     switch (e.key) {
@@ -620,16 +620,21 @@ export class MapView {
     }
   }
 
+  /** Animation length, or 0 when the user prefers reduced motion. */
+  private dur(ms: number): number {
+    return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 0 : ms;
+  }
+
   zoomBy(factor: number): void {
     const { x0, y0, x1, y1 } = this.usable();
     this.sel
       .transition()
-      .duration(280)
+      .duration(this.dur(280))
       .call(this.zoomBehavior.scaleBy, factor, [(x0 + x1) / 2, (y0 + y1) / 2]);
   }
 
   resetView(duration = 600): void {
-    this.sel.transition().duration(duration).call(this.zoomBehavior.transform, this.fitTransform());
+    this.sel.transition().duration(this.dur(duration)).call(this.zoomBehavior.transform, this.fitTransform());
   }
 
   /** Smoothly frames the given points within the usable area. */
@@ -653,7 +658,7 @@ export class MapView {
       Math.min(this.kFit * maxZoomFactor, MAX_PX_PER_UNIT, (x1 - x0 - 2 * pad) / (bx1 - bx0), (y1 - y0 - 2 * pad) / (by1 - by0)),
     );
     const t = zoomIdentity.translate((x0 + x1) / 2 - (k * (bx0 + bx1)) / 2, (y0 + y1) / 2 - (k * (by0 + by1)) / 2).scale(k);
-    if (duration <= 0) this.sel.call(this.zoomBehavior.transform, t);
+    if (this.dur(duration) <= 0) this.sel.call(this.zoomBehavior.transform, t);
     else this.sel.transition().duration(duration).call(this.zoomBehavior.transform, t);
   }
 
@@ -687,7 +692,7 @@ export class MapView {
       this.linePolylines = this.routeLines(guess, answer, u);
       this.drawLine(this.transform);
     };
-    if (!animate) {
+    if (!animate || this.dur(1) === 0) {
       build(1);
       return Promise.resolve();
     }
@@ -738,12 +743,12 @@ export class MapView {
     this.drawReview(this.transform);
   }
 
+  /** Dims all but one review item and frames it; null frames them all. */
   highlightReview(index: number | null): void {
     this.review.forEach((r, i) => r.g.classList.toggle('dim', index != null && i !== index));
-    if (index != null && this.review[index]) {
-      const r = this.review[index];
-      this.fitPoints(r.guess ? [r.guess, r.answer] : [r.answer]);
-    }
+    const items = index == null ? this.review : this.review[index] ? [this.review[index]] : [];
+    const pts = items.flatMap((r) => (r.guess ? [r.guess, r.answer] : [r.answer]));
+    if (pts.length) this.fitPoints(pts, 800, index == null ? 4 : 12);
   }
 
   clearReview(): void {

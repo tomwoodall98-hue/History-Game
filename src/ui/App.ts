@@ -85,9 +85,14 @@ export class App {
     if (!mapRect.height) return;
     const gap = 10;
     let bottom = 0;
+    let right = 0;
     if (!this.slip.hidden) {
       const r = this.slip.getBoundingClientRect();
-      bottom = Math.max(0, mapRect.bottom - r.top + gap);
+      // The stylesheet docks the slip at the bottom, or on the right on
+      // short landscape screens; it says which via --slip-dock.
+      const dock = getComputedStyle(this.slip).getPropertyValue('--slip-dock').trim();
+      if (dock === 'right') right = Math.max(0, mapRect.right - r.left + gap);
+      else bottom = Math.max(0, mapRect.bottom - r.top + gap);
     }
     // Lets the zoom buttons sit just above the slip on phones.
     this.root.style.setProperty('--slip-clearance', `${Math.round(bottom)}px`);
@@ -96,11 +101,11 @@ export class App {
     let top = 0;
     const hr = this.header.getBoundingClientRect();
     if (hr.height && getComputedStyle(this.header).visibility !== 'hidden') {
-      const sheet = this.map.fitRectFor({ top: 0, bottom });
+      const sheet = this.map.fitRectFor({ top: 0, bottom, right });
       const overlaps = sheet.left < hr.right && sheet.right > hr.left && sheet.top < hr.bottom;
       if (overlaps) top = Math.max(0, hr.bottom - mapRect.top + gap);
     }
-    this.map.setInsets({ top, bottom });
+    this.map.setInsets({ top, bottom, right });
   }
 
   private setPhase(phase: Phase): void {
@@ -486,12 +491,7 @@ export class App {
     );
     this.slip.hidden = false;
     this.updateInsets();
-    if (index == null) {
-      this.map.highlightReview(null);
-      this.map.resetView(600);
-    } else {
-      this.map.highlightReview(index);
-    }
+    this.map.highlightReview(index);
     requestAnimationFrame(() => back.focus({ preventScroll: true }));
   }
 

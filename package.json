@@ -11,7 +11,9 @@
     "typecheck": "tsc --noEmit",
     "test": "tsx --test tests/*.test.ts",
     "validate": "tsx scripts/validate-questions.ts",
-    "build:geodata": "tsx scripts/build-geodata.ts"
+    "build:geodata": "tsx scripts/build-geodata.ts",
+    "check:places": "tsx scripts/check-places.ts",
+    "check": "npm run typecheck && npm test && npm run validate"
   },
   "dependencies": {
     "@fontsource/im-fell-english": "5.3.0",
@@ -38,5 +40,8 @@
     "tsx": "4.23.15",
     "typescript": "5.9.3",
     "vite": "8.3.5"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

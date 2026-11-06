@@ -1,0 +1,18 @@
+[build]
+  command = "npm run validate && npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Hashed bundles never change.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Detail tiles are requested with a ?v=<hash> that changes when they do.
+[[headers]]
+  for = "/geo/tiles/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
