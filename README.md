@@ -212,7 +212,7 @@ src/map/texture.ts            parchment grain, fibres, foxing and stains (SVG fi
 - **Geodata.** The build script downloads the pinned Natural Earth v5.1.2
   GeoJSON once, simplifies it with `topojson-simplify` in Mercator space, projects
   it with the game's own projection and cuts it into a 16 × 12 grid. That gives
-  two levels: a **base map** (~134 KB gzip) shipped with the page, and **detail
+  two levels: a **base map** (~140 KB gzip) shipped with the page, and **detail
   tiles** (finer 10m coastlines, more rivers and lakes) fetched per cell once you
   zoom past ~4 px per map unit. Cutting into cells keeps the browser from redrawing
   the whole world's coastline on every frame. Reservoirs are left out: they would be
