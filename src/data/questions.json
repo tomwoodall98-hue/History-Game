@@ -1,0 +1,93 @@
+[
+  {
+    "id": "t1-berlin-wall",
+    "event": "The fall of the Berlin Wall",
+    "dateDisplay": "9 November 1989",
+    "year": 1989,
+    "tier": 1,
+    "lat": 52.5163,
+    "lng": 13.3777,
+    "k": null,
+    "bullseyeKm": 25,
+    "note": "A garbled announcement that East Germans could travel freely sent crowds to the checkpoints, and by midnight the guards had opened them. The mark is the Brandenburg Gate, where the wall became the night's stage.",
+    "source": "https://en.wikipedia.org/wiki/Fall_of_the_Berlin_Wall"
+  },
+  {
+    "id": "t2-pompeii",
+    "event": "Vesuvius erupts and buries Pompeii",
+    "dateDisplay": "AD 79",
+    "year": 79,
+    "tier": 2,
+    "lat": 40.749,
+    "lng": 14.4846,
+    "k": null,
+    "bullseyeKm": null,
+    "note": "Ash and pumice entombed Pompeii and Herculaneum on the Bay of Naples. Pliny the Younger watched from Misenum across the bay and wrote the only eyewitness account.",
+    "source": "https://en.wikipedia.org/wiki/Pompeii"
+  },
+  {
+    "id": "t3-waterloo",
+    "event": "The Battle of Waterloo",
+    "dateDisplay": "18 June 1815",
+    "year": 1815,
+    "tier": 3,
+    "lat": 50.6788,
+    "lng": 4.4044,
+    "k": null,
+    "bullseyeKm": 8,
+    "note": "Wellington's allied army and Blücher's Prussians defeated Napoleon on the ridges south of Brussels, ending the Hundred Days. The Lion's Mound now marks the field.",
+    "source": "https://en.wikipedia.org/wiki/Battle_of_Waterloo"
+  },
+  {
+    "id": "t4-magna-carta",
+    "event": "King John seals Magna Carta",
+    "dateDisplay": "15 June 1215",
+    "year": 1215,
+    "tier": 4,
+    "lat": 51.4446,
+    "lng": -0.5654,
+    "k": null,
+    "bullseyeKm": 8,
+    "note": "The charter was agreed in Runnymede, a Thames-side meadow between Windsor and Staines, where the rebel barons met the king on neutral ground. The exact spot is unknown.",
+    "source": "https://en.wikipedia.org/wiki/Runnymede"
+  },
+  {
+    "id": "t5-talas",
+    "event": "The Battle of Talas",
+    "dateDisplay": "751",
+    "year": 751,
+    "tier": 5,
+    "lat": 42.52,
+    "lng": 72.23,
+    "k": null,
+    "bullseyeKm": 40,
+    "note": "Abbasid and Tang armies met by the Talas River in Central Asia, halting Chinese expansion westward. The exact field is unknown, but it lay near modern Taraz and Talas.",
+    "source": "https://en.wikipedia.org/wiki/Battle_of_Talas"
+  },
+  {
+    "id": "t6-tordesillas",
+    "event": "Spain and Portugal sign the Treaty of Tordesillas",
+    "dateDisplay": "7 June 1494",
+    "year": 1494,
+    "tier": 6,
+    "lat": 41.5019,
+    "lng": -5.0003,
+    "k": null,
+    "bullseyeKm": 8,
+    "note": "The two crowns split newly charted lands along a meridian 370 leagues west of the Cape Verde Islands. The treaty was signed in this Castilian town on the Douro, near Valladolid.",
+    "source": "https://en.wikipedia.org/wiki/Treaty_of_Tordesillas"
+  },
+  {
+    "id": "t7-kadesh",
+    "event": "Ramesses II fights the Hittites at Kadesh",
+    "dateDisplay": "c. 1274 BC",
+    "year": -1274,
+    "tier": 7,
+    "lat": 34.5594,
+    "lng": 36.5194,
+    "k": null,
+    "bullseyeKm": 10,
+    "note": "Probably the largest chariot battle ever fought, on the Orontes River in western Syria. Both sides claimed victory, and it led to one of the earliest surviving peace treaties. The city's site is Tell Nebi Mend.",
+    "source": "https://en.wikipedia.org/wiki/Battle_of_Kadesh"
+  }
+]

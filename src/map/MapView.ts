@@ -135,6 +135,8 @@ export class MapView {
   private guess: LngLat | null = null;
   private answer: LngLat | null = null;
   private linePolylines: [number, number][][] = [];
+  private reviewG!: SVGGElement;
+  private review: { guess: LngLat | null; answer: LngLat; lines: [number, number][][]; g: SVGGElement }[] = [];
   private insets: Insets = { top: 0, right: 0, bottom: 0, left: 0 };
   private width = 0;
   private height = 0;
@@ -312,6 +314,7 @@ export class MapView {
     }
     this.neat = { inner, outer, ...bands };
 
+    this.reviewG = el('g', { class: 'review' }, ov);
     this.lineShadowEl = el('path', { class: 'route-shadow', fill: 'none' }, ov);
     this.lineEl = el('path', { class: 'route', fill: 'none' }, ov);
 
@@ -333,19 +336,48 @@ export class MapView {
   }
 
   setInsets(insets: Partial<Insets>): void {
-    this.insets = { ...this.insets, ...insets };
+    const next = { ...this.insets, ...insets };
+    const same = (Object.keys(next) as (keyof Insets)[]).every((k) => Math.abs(next[k] - this.insets[k]) < 0.5);
+    if (same) return;
+    this.insets = next;
     this.resize();
   }
 
   /** The part of the map not covered by UI panels, in SVG pixels. */
-  private usable() {
-    const { top, right, bottom, left } = this.insets;
+  private usable(insets: Insets = this.insets) {
+    const { top, right, bottom, left } = insets;
     return {
       x0: left,
       y0: top,
       x1: Math.max(left + 50, this.width - right),
       y1: Math.max(top + 50, this.height - bottom),
     };
+  }
+
+  /** Scale and translation that show the whole sheet within the given insets. */
+  private fitFor(insets: Insets = this.insets): { k: number; x: number; y: number } {
+    const { x0, y0, x1, y1 } = this.usable(insets);
+    const pad = Math.min(30, (x1 - x0) * 0.04);
+    const k = Math.max(0.05, Math.min((x1 - x0 - 2 * pad) / MAP_WIDTH, (y1 - y0 - 2 * pad) / MAP_HEIGHT));
+    return { k, x: (x0 + x1) / 2 - (k * MAP_WIDTH) / 2, y: (y0 + y1) / 2 - (k * MAP_HEIGHT) / 2 };
+  }
+
+  /** Where the whole-world view would put the sheet for some insets (page coordinates). */
+  fitRectFor(insets: Partial<Insets>): { left: number; top: number; right: number; bottom: number } {
+    const f = this.fitFor({ ...this.insets, ...insets });
+    const r = this.svg.getBoundingClientRect();
+    return {
+      left: r.left + f.x,
+      top: r.top + f.y,
+      right: r.left + f.x + f.k * MAP_WIDTH,
+      bottom: r.top + f.y + f.k * MAP_HEIGHT,
+    };
+  }
+
+  /** True while a d3 transition (fly-to, button zoom) is running on the map. */
+  private get animating(): boolean {
+    const pending = (this.svg as unknown as { __transition?: Record<string, unknown> }).__transition;
+    return !!pending && Object.keys(pending).length > 0;
   }
 
   /** Keeps the sheet in view: centred when smaller than the view, else edge-limited. */
@@ -370,9 +402,7 @@ export class MapView {
     this.height = rect.height;
     this.svg.setAttribute('width', String(this.width));
     this.svg.setAttribute('height', String(this.height));
-    const { x0, y0, x1, y1 } = this.usable();
-    const pad = Math.min(30, (x1 - x0) * 0.04);
-    this.kFit = Math.max(0.05, Math.min((x1 - x0 - 2 * pad) / MAP_WIDTH, (y1 - y0 - 2 * pad) / MAP_HEIGHT));
+    this.kFit = this.fitFor().k;
     const kMin = this.kFit * 0.92;
     const kMax = Math.max(MAX_PX_PER_UNIT, this.kFit * 8);
     this.zoomBehavior
@@ -388,6 +418,8 @@ export class MapView {
       f.setAttribute('height', String(this.height));
     }
     if (!this.zoomLayers.length) return;
+    // Don't fight a running fly-to; it was aimed using the current insets.
+    if (this.animating && !initial) return;
     const t = this.transform;
     if (initial || t.k < kMin) {
       this.sel.call(this.zoomBehavior.transform, this.fitTransform());
@@ -398,9 +430,8 @@ export class MapView {
 
   /** Transform that shows the whole sheet in the usable area. */
   fitTransform(): ZoomTransform {
-    const { x0, y0, x1, y1 } = this.usable();
-    const k = this.kFit;
-    return zoomIdentity.translate((x0 + x1) / 2 - (k * MAP_WIDTH) / 2, (y0 + y1) / 2 - (k * MAP_HEIGHT) / 2).scale(k);
+    const { k, x, y } = this.fitFor();
+    return zoomIdentity.translate(x, y).scale(k);
   }
 
   private onZoom(t: ZoomTransform): void {
@@ -489,8 +520,18 @@ export class MapView {
     this.placeMarker(this.guessEl, this.guess, t);
     this.placeMarker(this.sealEl, this.answer, t);
     this.drawLine(t);
+    this.drawReview(t);
     const u = this.usable();
     this.crosshairEl.setAttribute('transform', `translate(${(u.x0 + u.x1) / 2},${(u.y0 + u.y1) / 2})`);
+  }
+
+  /** Page coordinates of a point on the map (used by tests and tooling). */
+  screenPoint(p: LngLat): [number, number] | null {
+    const xy = this.project(p);
+    if (!xy) return null;
+    const r = this.svg.getBoundingClientRect();
+    const t = this.transform;
+    return [r.left + t.applyX(xy[0]), r.top + t.applyY(xy[1])];
   }
 
   private project(p: LngLat): [number, number] | null {
@@ -642,13 +683,8 @@ export class MapView {
       this.drawLine(t);
       return Promise.resolve();
     }
-    const interp = geoInterpolate(guess, answer);
     const build = (u: number) => {
-      const n = 96;
-      const coords = Array.from({ length: n + 1 }, (_, i) => interp((i / n) * u));
-      const ctx = new PolylineContext();
-      geoPath(this.projection, ctx as unknown as CanvasRenderingContext2D)({ type: 'LineString', coordinates: coords });
-      this.linePolylines = ctx.lines;
+      this.linePolylines = this.routeLines(guess, answer, u);
       this.drawLine(this.transform);
     };
     if (!animate) {
@@ -673,6 +709,59 @@ export class MapView {
     this.answer = null;
     this.linePolylines = [];
     this.updateOverlay(this.transform);
+  }
+
+  /** Great-circle route from a to b (fraction u of the way), in map units. */
+  private routeLines(a: LngLat, b: LngLat, u = 1): [number, number][][] {
+    const interp = geoInterpolate(a, b);
+    const n = 96;
+    const coords = Array.from({ length: n + 1 }, (_, i) => interp((i / n) * u));
+    const ctx = new PolylineContext();
+    geoPath(this.projection, ctx as unknown as CanvasRenderingContext2D)({ type: 'LineString', coordinates: coords });
+    return ctx.lines;
+  }
+
+  /** Shows every round's guess and answer at once (results review). */
+  showReview(items: { guess: LngLat | null; answer: LngLat }[]): void {
+    this.clearMarkers();
+    this.reviewG.replaceChildren();
+    this.review = items.map((it, i) => {
+      const g = el('g', { class: 'review-item', 'data-index': i }, this.reviewG);
+      el('path', { class: 'route-shadow', fill: 'none' }, g);
+      el('path', { class: 'route', fill: 'none' }, g);
+      const gm = el('g', { class: 'marker guess' }, g);
+      gm.innerHTML = guessMarkerMarkup();
+      const sm = el('g', { class: 'marker seal' }, g);
+      sm.innerHTML = sealMarkerMarkup(`cm-rseal-${i}`);
+      return { guess: it.guess, answer: it.answer, lines: it.guess ? this.routeLines(it.guess, it.answer) : [], g };
+    });
+    this.drawReview(this.transform);
+  }
+
+  highlightReview(index: number | null): void {
+    this.review.forEach((r, i) => r.g.classList.toggle('dim', index != null && i !== index));
+    if (index != null && this.review[index]) {
+      const r = this.review[index];
+      this.fitPoints(r.guess ? [r.guess, r.answer] : [r.answer]);
+    }
+  }
+
+  clearReview(): void {
+    this.review = [];
+    this.reviewG?.replaceChildren();
+  }
+
+  private drawReview(t: ZoomTransform): void {
+    for (const r of this.review) {
+      const [shadow, route, gm, sm] = Array.from(r.g.children) as SVGGraphicsElement[];
+      const d = r.lines
+        .map((line) => `M${line.map(([x, y]) => `${t.applyX(x).toFixed(1)},${t.applyY(y).toFixed(1)}`).join('L')}`)
+        .join('');
+      shadow.setAttribute('d', d);
+      route.setAttribute('d', d);
+      this.placeMarker(gm as SVGGElement, r.guess, t);
+      this.placeMarker(sm as SVGGElement, r.answer, t);
+    }
   }
 
   private pop(node: SVGGElement): void {
