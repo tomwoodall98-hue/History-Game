@@ -1,0 +1,391 @@
+:root {
+  --paper: #eadcb9;
+  --paper-light: #f7f0dd;
+  --paper-slip: #f8f2e1;
+  --paper-dark: #d6c393;
+  --ink: #33220f;
+  --ink-soft: #5c4329;
+  --ink-faint: #8a7253;
+  --red: #8a2a1b;
+  --red-bright: #a8321f;
+  --sea: #c5d0c7;
+  --land: #efe1ba;
+  --frame-inset: 10px;
+  --frame-gap: 9px;
+  --font-body: 'IM Fell English', 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+  --font-caps: 'IM Fell English SC', var(--font-body);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+}
+
+@media (max-width: 640px) {
+  :root {
+    --frame-inset: 5px;
+    --frame-gap: 7px;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.4;
+  overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+/* ------------------------------------------------------------- sheet --- */
+
+.sheet {
+  position: fixed;
+  inset: 0;
+  background-color: var(--paper);
+  padding: var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);
+}
+
+.map-viewport {
+  position: absolute;
+  will-change: transform; /* own compositor layer: map repaints stay local */
+  top: calc(var(--safe-top) + var(--frame-inset) + var(--frame-gap));
+  right: calc(var(--safe-right) + var(--frame-inset) + var(--frame-gap));
+  bottom: calc(var(--safe-bottom) + var(--frame-inset) + var(--frame-gap));
+  left: calc(var(--safe-left) + var(--frame-inset) + var(--frame-gap));
+  overflow: hidden;
+}
+
+.map-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: grab;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.map-svg.ready {
+  opacity: 1;
+}
+
+.map-svg.can-pick {
+  cursor: crosshair;
+}
+
+.map-svg:active {
+  cursor: grabbing;
+}
+
+.map-svg.low-fi.interacting .waterlines {
+  display: none;
+}
+
+.map-svg .crosshair {
+  display: none;
+}
+
+.map-svg:focus-visible .crosshair {
+  display: inline;
+}
+
+.map-svg:focus-visible {
+  outline: none;
+}
+
+.map-viewport:has(.map-svg:focus-visible)::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border: 2px dashed var(--red);
+  pointer-events: none;
+}
+
+/* Paper grain, fibres, foxing and stains lie over everything, map
+   included, so land and sea read as printed on the same sheet. It is a
+   static, separately composited layer with plain alpha blending, so
+   panning and zooming the map never repaints or re-blends it. */
+.paper-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: var(--paper-stains), var(--paper-mottle), var(--paper-fibres), var(--paper-grain);
+  background-size:
+    100% 100%,
+    900px 900px,
+    420px 420px,
+    220px 220px;
+  will-change: transform;
+  z-index: 2;
+}
+
+/* Decorative double-ruled border. */
+.frame {
+  position: absolute;
+  top: calc(var(--safe-top) + var(--frame-inset));
+  right: calc(var(--safe-right) + var(--frame-inset));
+  bottom: calc(var(--safe-bottom) + var(--frame-inset));
+  left: calc(var(--safe-left) + var(--frame-inset));
+  border: 2.5px solid var(--ink);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.frame::before {
+  content: '';
+  position: absolute;
+  inset: calc(var(--frame-gap) - 4px);
+  border: 1px solid var(--ink);
+}
+
+.frame .corner {
+  position: absolute;
+  width: calc(var(--frame-gap) + 6px);
+  height: calc(var(--frame-gap) + 6px);
+  background: var(--paper);
+  border: 1.5px solid var(--ink);
+}
+
+.frame .corner::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  background: var(--ink);
+  transform: rotate(45deg) scale(0.62);
+}
+
+.frame .tl {
+  top: -4px;
+  left: -4px;
+}
+.frame .tr {
+  top: -4px;
+  right: -4px;
+}
+.frame .bl {
+  bottom: -4px;
+  left: -4px;
+}
+.frame .br {
+  bottom: -4px;
+  right: -4px;
+}
+
+/* --------------------------------------------------------------- map --- */
+
+.route {
+  stroke: var(--ink);
+  stroke-width: 2.1;
+  stroke-dasharray: 7 5;
+  stroke-linecap: round;
+}
+
+.route-shadow {
+  stroke: var(--paper-light);
+  stroke-width: 5;
+  stroke-linecap: round;
+  opacity: 0.75;
+}
+
+.marker {
+  pointer-events: none;
+}
+
+.marker-inner.pop {
+  animation: pop 0.38s cubic-bezier(0.2, 1.5, 0.4, 1) both;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.seal .marker-inner.pop {
+  animation: seal-drop 0.55s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes seal-drop {
+  0% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(0.92);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ---------------------------------------------------------- ornaments --- */
+
+.compass {
+  position: absolute;
+  left: calc(var(--safe-left) + var(--frame-inset) + var(--frame-gap) + 14px);
+  bottom: calc(var(--safe-bottom) + var(--frame-inset) + var(--frame-gap) + 14px);
+  width: 118px;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.93;
+}
+
+.compass svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.cartouche {
+  position: absolute;
+  top: calc(var(--safe-top) + var(--frame-inset) + var(--frame-gap) + 6px);
+  left: calc(var(--safe-left) + var(--frame-inset) + var(--frame-gap) + 6px);
+  width: 290px;
+  z-index: 1;
+  pointer-events: none;
+  filter: drop-shadow(1px 2px 2px rgba(60, 35, 10, 0.25));
+}
+
+.cartouche svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.cartouche-title {
+  font-family: var(--font-caps);
+  font-size: 50px;
+  letter-spacing: 0.5px;
+}
+
+.cartouche-subtitle {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 17px;
+  letter-spacing: 0.3px;
+}
+
+/* ----------------------------------------------------------- controls --- */
+
+.zoom-controls {
+  position: absolute;
+  right: calc(var(--safe-right) + var(--frame-inset) + var(--frame-gap) + 12px);
+  top: calc(var(--safe-top) + var(--frame-inset) + var(--frame-gap) + 12px);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 4;
+}
+
+.ink-button {
+  appearance: none;
+  border: 1.5px solid var(--ink);
+  background: var(--paper-slip);
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow:
+    inset 0 0 0 2px var(--paper-slip),
+    inset 0 0 0 2.8px var(--ink-faint),
+    1px 2px 3px rgba(60, 35, 10, 0.25);
+  transition:
+    background 0.15s,
+    transform 0.1s;
+}
+
+.ink-button:hover {
+  background: #fffaf0;
+}
+
+.ink-button:active {
+  transform: translateY(1px);
+}
+
+.ink-button:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
+
+.zoom-controls .ink-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+
+.zoom-controls svg {
+  width: 18px;
+  height: 18px;
+}
+
+.loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-style: italic;
+  font-size: 22px;
+  color: var(--ink-soft);
+  pointer-events: none;
+  z-index: 5;
+  transition: opacity 0.5s;
+}
+
+.loading.done {
+  opacity: 0;
+}
+
+@media (max-width: 640px) {
+  .compass {
+    width: 74px;
+  }
+  .cartouche {
+    width: 200px;
+  }
+  .zoom-controls .ink-button {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

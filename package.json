@@ -1,0 +1,42 @@
+{
+  "name": "chronomap",
+  "private": true,
+  "version": "0.1.0",
+  "description": "A daily history geography game on a Victorian antique map.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test tests/*.test.ts",
+    "validate": "tsx scripts/validate-questions.ts",
+    "build:geodata": "tsx scripts/build-geodata.ts"
+  },
+  "dependencies": {
+    "@fontsource/im-fell-english": "5.3.0",
+    "@fontsource/im-fell-english-sc": "5.3.0",
+    "d3-geo": "3.1.2",
+    "d3-selection": "3.0.1",
+    "d3-transition": "3.0.2",
+    "d3-zoom": "3.0.1",
+    "topojson-client": "3.1.0"
+  },
+  "devDependencies": {
+    "@types/d3-geo": "3.1.1",
+    "@types/d3-selection": "3.0.12",
+    "@types/d3-transition": "3.0.9",
+    "@types/d3-zoom": "3.0.9",
+    "@types/geojson": "7946.0.16",
+    "@types/node": "22.20.5",
+    "@types/topojson-client": "3.1.5",
+    "@types/topojson-server": "3.0.4",
+    "@types/topojson-simplify": "3.0.3",
+    "@types/topojson-specification": "1.0.5",
+    "topojson-server": "3.0.1",
+    "topojson-simplify": "3.0.3",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "vite": "8.3.5"
+  }
+}

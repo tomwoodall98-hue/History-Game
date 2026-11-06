@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#e9dcbc" />
+    <meta name="description" content="Chronomap: a daily history geography game. Seven events, seven dates. Mark where each one happened on an antique map." />
+    <title>Chronomap</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%23f1e4c4' stroke='%2333220f' stroke-width='3'/%3E%3Cpath d='M32 6 38 32 32 58 26 32Z' fill='%2333220f'/%3E%3Cpath d='M6 32 32 26 58 32 32 38Z' fill='%238a2a1b'/%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <div id="app" class="sheet">
+      <div class="map-viewport" id="map"></div>
+      <div class="paper-overlay" aria-hidden="true"></div>
+      <div class="frame" aria-hidden="true">
+        <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+      </div>
+      <div class="loading" id="loading" role="status">Unrolling the map&hellip;</div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
