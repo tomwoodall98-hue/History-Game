@@ -7,9 +7,10 @@ import questionsData from './data/questions.json';
 import { MapView } from './map/MapView';
 import type { BaseMap } from './map/tiles';
 import { applyPaperTexture } from './map/texture';
-import { App, type Persistence, type Puzzle, type Clock, type SavedGame } from './ui/App';
-import { TIERS, type Question } from './game/types';
-import type { Units } from './game/scoring';
+import { App } from './ui/App';
+import type { Question, Puzzle, Clock } from './game/types';
+import { dailyPuzzle, londonDateKey, nextLondonMidnight } from './game/daily';
+import { LocalStore } from './game/storage';
 
 // Start the map download before anything else.
 const basePromise: Promise<BaseMap> = fetch(baseMapUrl).then((r) => {
@@ -45,29 +46,23 @@ zoomControls.addEventListener('click', (e) => {
   else map.resetView();
 });
 
-// --- Temporary stand-ins until the daily logic and storage land (stage 3).
-const questions = questionsData as Question[];
-const today = new Date();
-const puzzle: Puzzle = {
-  number: 1,
-  dateKey: today.toISOString().slice(0, 10),
-  dateLabel: today.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }),
-  questions: TIERS.map((t) => questions.find((q) => q.tier === t)!),
-};
-let saved: SavedGame | null = null;
-let units: Units = 'km';
-const store: Persistence = {
-  loadGame: () => saved,
-  saveGame: (g) => (saved = structuredClone(g)),
-  stats: () => ({ played: saved?.finished ? 1 : 0, currentStreak: saved?.finished ? 1 : 0, maxStreak: saved?.finished ? 1 : 0, averageScore: 0, bestScore: 0 }),
-  getUnits: () => units,
-  setUnits: (u) => (units = u),
-  hasSeenIntro: () => false,
-  setSeenIntro: () => undefined,
-};
+// --- Today's puzzle, chosen from the date in Europe/London.
+const allQuestions = questionsData as Question[];
+const todayKey = londonDateKey();
+const store = new LocalStore(() => londonDateKey());
+const daily = dailyPuzzle(allQuestions, todayKey);
+const puzzle: Puzzle = { ...daily };
+// If today's game was started before the question bank changed (a new
+// deploy mid-day), keep the questions the player was actually given.
+const saved = store.loadGame(todayKey);
+if (saved && saved.questionIds.join() !== daily.questions.map((q) => q.id).join()) {
+  const byId = new Map(allQuestions.map((q) => [q.id, q]));
+  const kept = saved.questionIds.map((id) => byId.get(id));
+  if (kept.length === daily.questions.length && kept.every(Boolean)) puzzle.questions = kept as Question[];
+}
 const clock: Clock = {
-  msUntilNext: () => new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1).getTime() - Date.now(),
-  todayKey: () => puzzle.dateKey,
+  msUntilNext: () => nextLondonMidnight().getTime() - Date.now(),
+  todayKey: () => londonDateKey(),
 };
 
 basePromise

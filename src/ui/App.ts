@@ -1,6 +1,6 @@
 import type { MapView } from '../map/MapView';
 import { cartoucheSVG, compassRoseSVG } from '../map/ornaments';
-import type { LngLat, Question, RoundResult } from '../game/types';
+import type { LngLat, Question, Puzzle, SavedGame, Persistence, Clock } from '../game/types';
 import {
   ROUNDS,
   MAX_SCORE,
@@ -13,52 +13,6 @@ import {
   type Units,
 } from '../game/scoring';
 import { h, roman, countUp, copyText } from './dom';
-
-export interface Puzzle {
-  number: number;
-  /** YYYY-MM-DD in Europe/London. */
-  dateKey: string;
-  /** e.g. "Friday 6 November 2026". */
-  dateLabel: string;
-  questions: Question[];
-}
-
-/** What gets saved between visits for one day's puzzle. */
-export interface SavedGame {
-  dateKey: string;
-  puzzle: number;
-  questionIds: string[];
-  rounds: RoundResult[];
-  /** A mark placed but not yet confirmed. */
-  pendingGuess: LngLat | null;
-  finished: boolean;
-}
-
-export interface Stats {
-  played: number;
-  currentStreak: number;
-  maxStreak: number;
-  averageScore: number;
-  bestScore: number;
-}
-
-export interface Persistence {
-  loadGame(dateKey: string): SavedGame | null;
-  saveGame(game: SavedGame): void;
-  /** Stats including today's finished game, if any. */
-  stats(): Stats;
-  getUnits(): Units;
-  setUnits(units: Units): void;
-  hasSeenIntro(): boolean;
-  setSeenIntro(): void;
-}
-
-export interface Clock {
-  /** Milliseconds until the next puzzle (midnight, Europe/London). */
-  msUntilNext(): number;
-  /** dateKey for "now" in Europe/London. */
-  todayKey(): string;
-}
 
 type Phase = 'start' | 'guess' | 'reveal' | 'results' | 'review';
 
@@ -196,19 +150,26 @@ export class App {
         { class: 'start-blurb' },
         'Seven events from history, each with its date. Mark on the map where each one took place: the nearer your mark, the more points you score, up to 1,000 a round. The questions grow harder as you go.',
       ),
-      h(
-        'ul',
-        { class: 'start-help' },
-        h('li', null, 'Drag to pan; scroll, pinch or use the buttons to zoom.'),
-        h('li', null, 'Click or tap to place your mark, then confirm.'),
-        h('li', null, 'Keyboard: arrows pan, + and − zoom, Space marks the centre, Enter confirms.'),
-      ),
+      this.helpList(),
       begin,
     );
     this.panelVeil.hidden = false;
     this.updateInsets();
     this.map.resetView(0);
     requestAnimationFrame(() => begin.focus());
+  }
+
+  /** How-to-play notes; folded away once the player has seen them. */
+  private helpList(): HTMLElement {
+    const list = h(
+      'ul',
+      { class: 'start-help' },
+      h('li', null, 'Drag to pan; scroll, pinch or use the buttons to zoom.'),
+      h('li', null, 'Click or tap to place your mark, then confirm.'),
+      h('li', null, 'Keyboard: arrows pan, + and − zoom, Space marks the centre, Enter confirms.'),
+    );
+    if (!this.store.hasSeenIntro()) return list;
+    return h('details', { class: 'start-details' }, h('summary', null, 'How to play'), list);
   }
 
   private begin(): void {

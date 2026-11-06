@@ -1,3 +1,5 @@
+import type { Units } from './scoring';
+
 export type LngLat = [number, number];
 
 export type Tier = 1 | 2 | 3 | 4 | 5 | 6 | 7;
@@ -33,3 +35,50 @@ export interface RoundResult {
   distanceKm: number;
   score: number;
 }
+
+export interface Puzzle {
+  number: number;
+  /** YYYY-MM-DD in Europe/London. */
+  dateKey: string;
+  /** e.g. "Friday 6 November 2026". */
+  dateLabel: string;
+  questions: Question[];
+}
+
+/** What gets saved between visits for one day's puzzle. */
+export interface SavedGame {
+  dateKey: string;
+  puzzle: number;
+  questionIds: string[];
+  rounds: RoundResult[];
+  /** A mark placed but not yet confirmed. */
+  pendingGuess: LngLat | null;
+  finished: boolean;
+}
+
+export interface Stats {
+  played: number;
+  currentStreak: number;
+  maxStreak: number;
+  averageScore: number;
+  bestScore: number;
+}
+
+export interface Persistence {
+  loadGame(dateKey: string): SavedGame | null;
+  saveGame(game: SavedGame): void;
+  /** Stats including today's finished game, if any. */
+  stats(): Stats;
+  getUnits(): Units;
+  setUnits(units: Units): void;
+  hasSeenIntro(): boolean;
+  setSeenIntro(): void;
+}
+
+export interface Clock {
+  /** Milliseconds until the next puzzle (midnight, Europe/London). */
+  msUntilNext(): number;
+  /** dateKey for "now" in Europe/London. */
+  todayKey(): string;
+}
+

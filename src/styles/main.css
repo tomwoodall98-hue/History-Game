@@ -758,6 +758,24 @@ button {
   font-style: italic;
 }
 
+.start-details {
+  margin: 0 auto 16px;
+  font-size: 15px;
+  color: var(--ink-soft);
+}
+
+.start-details summary {
+  cursor: pointer;
+  font-family: var(--font-caps);
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+
+.start-details summary:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
+
 .start-help li + li {
   margin-top: 2px;
 }
