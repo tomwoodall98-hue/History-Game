@@ -15,6 +15,7 @@ import { isArchiveDay, londonDateKey, nextLondonMidnight } from './game/daily';
 import { dailyPuzzle, type Schedule } from './game/schedule';
 import { LocalStore } from './game/storage';
 import { CountryIndex, type CountryLookup } from './game/countries';
+import { createStatsService, statsConfig } from './game/statsApi';
 
 // Start the map download before anything else.
 const basePromise: Promise<BaseMap> = fetch(baseMapUrl).then((r) => {
@@ -84,6 +85,11 @@ const loadCountries = (): Promise<CountryLookup | null> =>
       return null;
     }));
 
+// Anonymous daily stats (Supabase), if the build was given its URL and
+// publishable key. Without them the game simply has no stats panel.
+const statsCfg = statsConfig(import.meta.env);
+const statsService = statsCfg ? createStatsService(statsCfg) : null;
+
 const clock: Clock = {
   msUntilNext: () => nextLondonMidnight().getTime() - Date.now(),
   todayKey: () => londonDateKey(),
@@ -94,7 +100,7 @@ basePromise
     map.render(base);
     requestAnimationFrame(() => map.svg.classList.add('ready'));
     document.getElementById('loading')?.classList.add('done');
-    const app = new App(root, map, puzzle, store, clock, loadCountries);
+    const app = new App(root, map, puzzle, store, clock, loadCountries, statsService);
     app.start();
     void loadCountries();
     // Handy for debugging in the console.

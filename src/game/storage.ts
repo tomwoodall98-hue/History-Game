@@ -3,7 +3,7 @@
  * wrapped in try/catch: storage can be disabled, full, or throw in private
  * modes, and the game must still be playable (just not remembered).
  */
-import type { SavedGame, Stats, Persistence, PastDay } from './types';
+import type { SavedGame, Stats, Persistence, PastDay, SubmissionState } from './types';
 import type { Units } from './scoring';
 import { addDays, daysBetween } from './daily';
 
@@ -27,9 +27,35 @@ export interface StoredData {
   archive: Record<string, SavedGame>;
   units: Units;
   seenIntro: boolean;
+  /** Random id for the anonymous daily stats; no personal data. */
+  playerId: string | null;
+  /** Daily stats submissions by date key (recent days only). */
+  submissions: Record<string, SubmissionState>;
 }
 
-const empty = (): StoredData => ({ version: 1, current: null, history: {}, archive: {}, units: 'km', seenIntro: false });
+const empty = (): StoredData => ({
+  version: 1,
+  current: null,
+  history: {},
+  archive: {},
+  units: 'km',
+  seenIntro: false,
+  playerId: null,
+  submissions: {},
+});
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+/** Submission records older than this many days are dropped. */
+const KEEP_SUBMISSIONS_DAYS = 7;
+
+/** A random (version 4) UUID. */
+export function randomId(): string {
+  if (typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+  const b = crypto.getRandomValues(new Uint8Array(16));
+  b[6] = (b[6] & 0x0f) | 0x40;
+  b[8] = (b[8] & 0x3f) | 0x80;
+  const hex = [...b].map((x) => x.toString(16).padStart(2, '0')).join('');
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
 const DATE_KEY = /^\d{4}-\d{2}-\d{2}$/;
 
 function isSavedGame(v: unknown): v is SavedGame {
@@ -60,6 +86,12 @@ export function parseStored(raw: string | null): StoredData {
     }
     if (v.archive && typeof v.archive === 'object') {
       for (const [k, g] of Object.entries(v.archive)) if (DATE_KEY.test(k) && isSavedGame(g) && g.dateKey === k) data.archive[k] = g;
+    }
+    if (typeof v.playerId === 'string' && UUID.test(v.playerId)) data.playerId = v.playerId;
+    if (v.submissions && typeof v.submissions === 'object') {
+      for (const [k, e] of Object.entries(v.submissions)) {
+        if (DATE_KEY.test(k) && e && typeof e.done === 'boolean' && Number.isInteger(e.tries)) data.submissions[k] = { done: e.done, tries: e.tries };
+      }
     }
     if (v.units === 'mi' || v.units === 'km') data.units = v.units;
     data.seenIntro = v.seenIntro === true;
@@ -179,6 +211,31 @@ export class LocalStore implements Persistence {
     }
     for (const [k, e] of Object.entries(history)) if (k < todayKey) out[k] = { via: 'daily', finished: true, scores: e.s };
     return out;
+  }
+
+  playerId(): string | null {
+    if (!this.storage) return null; // an id that can't be kept would count the player again on every visit
+    this.data = this.read();
+    if (!this.data.playerId) {
+      this.data.playerId = randomId();
+      this.write();
+      if (this.read().playerId !== this.data.playerId) return null; // storage refused it
+    }
+    return this.data.playerId;
+  }
+
+  submission(dateKey: string): SubmissionState {
+    this.data = this.read();
+    return { ...(this.data.submissions[dateKey] ?? { done: false, tries: 0 }) };
+  }
+
+  recordSubmission(dateKey: string, done: boolean): void {
+    this.data = this.read();
+    const prev = this.data.submissions[dateKey] ?? { done: false, tries: 0 };
+    this.data.submissions[dateKey] = { done: prev.done || done, tries: prev.tries + 1 };
+    const oldest = addDays(this.todayKey(), -KEEP_SUBMISSIONS_DAYS);
+    for (const k of Object.keys(this.data.submissions)) if (k < oldest) delete this.data.submissions[k];
+    this.write();
   }
 
   stats(): Stats {

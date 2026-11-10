@@ -14,6 +14,9 @@ import {
   type Units,
 } from '../game/scoring';
 import type { CountryLookup } from '../game/countries';
+import type { StatsService } from '../game/statsApi';
+import { betterThan, hardestQuestion, isEarlyDays, topPercent, type DayStats } from '../game/stats';
+import { statsPlateSVG } from './statsPlate';
 import { h, roman, countUp, copyText } from './dom';
 
 type Phase = 'start' | 'guess' | 'reveal' | 'results' | 'review' | 'ledger';
@@ -52,6 +55,16 @@ export class App {
   /** Last input type, so keyboard users get focus moved for them. */
   private keyboardMode = false;
   private confirming = false;
+  /** The day's anonymous stats, as last fetched; null if unavailable. */
+  private dayStats: DayStats | null = null;
+  private statsState: 'loading' | 'ready' | 'unavailable' = 'loading';
+  private statsFetchedAt = 0;
+  private statsToken = 0;
+  /** One submission attempt per visit: the finish, or a retry when the page is next opened. */
+  private submitTried = false;
+  /** Where the results screen shows stats, while it is open. */
+  private statsSlot: HTMLElement | null = null;
+  private averageCells: { cell: HTMLElement; row: HTMLElement; label: string }[] = [];
 
   constructor(
     private readonly root: HTMLElement,
@@ -61,6 +74,8 @@ export class App {
     private readonly clock: Clock,
     /** Country outlines for the same-country floor (scoring only); null if unavailable. */
     private readonly countries: () => Promise<CountryLookup | null>,
+    /** Anonymous daily stats; null when not configured. */
+    private readonly statsService: StatsService | null = null,
   ) {
     this.units = store.getUnits();
     const saved = puzzle.archive ? store.loadArchiveGame(puzzle.dateKey) : store.loadGame(puzzle.dateKey);
@@ -431,7 +446,8 @@ export class App {
     const shareStatus = h('span', { class: 'share-status', role: 'status' });
     shareBtn.addEventListener('click', async () => {
       const url = location.href.split('#')[0].split('?')[0];
-      const text = shareText(this.puzzle.number, scores, url, this.puzzle.archive);
+      const top = this.dayStats ? topPercent(this.dayStats) : null;
+      const text = shareText(this.puzzle.number, scores, url, this.puzzle.archive, top);
       const ok = await copyText(text);
       shareStatus.textContent = ok ? 'Copied to clipboard' : 'Could not copy. Please copy it by hand.';
       if (!ok) shareStatus.append(h('pre', { class: 'share-fallback' }, text));
@@ -439,31 +455,28 @@ export class App {
     });
     this.primary = shareBtn;
 
+    this.averageCells = [];
     const table = h(
       'ol',
       { class: 'breakdown' },
       ...rounds.map((r, i) => {
         const q = this.question(i);
-        return h(
-          'li',
-          null,
-          h(
-            'button',
-            {
-              type: 'button',
-              class: 'breakdown-row',
-              'aria-label': `Round ${i + 1}: ${q.event}, ${formatNumber(r.score)} points, ${formatDistance(r.distanceKm, this.units)} away. Show on map.`,
-              onclick: () => this.showReview(i),
-            },
-            h('span', { class: 'b-num' }, roman(i + 1)),
-            h('span', { class: 'b-event' }, h('span', { class: 'b-title' }, q.event), h('span', { class: 'b-date' }, q.dateDisplay)),
-            h('span', { class: 'b-dist' }, formatDistance(r.distanceKm, this.units)),
-            h('span', { class: 'b-score' }, formatNumber(r.score)),
-            h('span', { class: 'b-emoji', 'aria-hidden': 'true' }, emojiFor(r.score)),
-          ),
+        const label = `Round ${i + 1}: ${q.event}, ${formatNumber(r.score)} points, ${formatDistance(r.distanceKm, this.units)} away`;
+        const average = h('span', { class: 'b-avg' });
+        const row = h(
+          'button',
+          { type: 'button', class: 'breakdown-row', 'aria-label': `${label}. Show on map.`, onclick: () => this.showReview(i) },
+          h('span', { class: 'b-num' }, roman(i + 1)),
+          h('span', { class: 'b-event' }, h('span', { class: 'b-title' }, q.event), h('span', { class: 'b-date' }, q.dateDisplay)),
+          h('span', { class: 'b-dist' }, formatDistance(r.distanceKm, this.units)),
+          h('span', { class: 'b-score' }, h('span', null, formatNumber(r.score)), average),
+          h('span', { class: 'b-emoji', 'aria-hidden': 'true' }, emojiFor(r.score)),
         );
+        this.averageCells.push({ cell: average, row, label });
+        return h('li', null, row);
       }),
     );
+    this.statsSlot = this.statsService ? h('section', { class: 'day-stats', 'aria-label': 'How everyone else did', 'aria-live': 'polite' }) : null;
 
     const stats = this.store.stats();
     const countdown = h('span', { class: 'countdown-value' }, '');
@@ -483,6 +496,7 @@ export class App {
         ),
         h('p', { class: 'emoji-row', 'aria-hidden': 'true' }, scores.map(emojiFor).join('')),
         table,
+        this.statsSlot,
         h('div', { class: 'share-row' }, shareBtn, shareStatus),
         archive
           ? h('p', { class: 'archive-note' }, 'Archive games are kept apart from your daily results and don’t count towards your streak.')
@@ -506,8 +520,108 @@ export class App {
     this.map.resetView(animate ? 700 : 0);
     if (animate) countUp(totalEl, this.total, formatNumber, 1100);
     if (!archive) this.startCountdown(countdown);
+    // Fresh stats each time the results are opened (they fill up through the day).
+    if (Date.now() - this.statsFetchedAt > 30_000) void this.refreshStats();
+    else this.renderStats();
     this.announce(`Finished. ${formatNumber(this.total)} out of ${formatNumber(MAX_SCORE)}.`);
     requestAnimationFrame(() => shareBtn.focus({ preventScroll: true }));
+  }
+
+  // -------------------------------------------------------------- stats ---
+
+  /** Submits today's result if it is due, then fetches the day's stats. Never throws. */
+  private async refreshStats(): Promise<void> {
+    if (!this.statsService || !this.game.finished) return;
+    const token = ++this.statsToken;
+    if (!this.dayStats) this.statsState = 'loading';
+    this.renderStats();
+    await this.submitIfDue();
+    const stats = await this.statsService.stats(this.puzzle.dateKey, this.total);
+    if (token !== this.statsToken) return;
+    // Keep what we had if a refresh fails; say "unavailable" only with nothing to show.
+    if (stats || !this.dayStats) {
+      this.dayStats = stats;
+      this.statsState = stats ? 'ready' : 'unavailable';
+    }
+    this.statsFetchedAt = Date.now();
+    this.renderStats();
+  }
+
+  /**
+   * Today's daily result goes to the stats once: when it is finished, or, if
+   * that failed, on the next visit. Archive games never submit.
+   */
+  private async submitIfDue(): Promise<void> {
+    const service = this.statsService;
+    if (!service || this.submitTried || this.puzzle.archive || !this.game.finished || this.game.rounds.length !== ROUNDS) return;
+    const date = this.game.dateKey;
+    if (date !== this.clock.todayKey()) return; // the database takes only today's results
+    const state = this.store.submission(date);
+    if (state.done || state.tries >= 2) return;
+    const playerId = this.store.playerId();
+    if (!playerId) return;
+    this.submitTried = true;
+    const rounds = this.game.rounds.map((r) => r.score);
+    const ok = await service.submit({ playerId, date, total: rounds.reduce((a, b) => a + b, 0), rounds });
+    this.store.recordSubmission(date, ok);
+  }
+
+  private renderStats(): void {
+    const slot = this.statsSlot;
+    if (!slot?.isConnected) return;
+    const stats = this.statsState === 'ready' ? this.dayStats : null;
+    const archive = this.puzzle.archive;
+    const title = h('h3', { class: 'day-stats-title' }, archive ? 'That Day’s Returns' : 'The Day’s Returns');
+
+    for (const [i, { cell, row, label }] of this.averageCells.entries()) {
+      const avg = stats?.players ? stats.questionAverages[i] : null;
+      cell.textContent = avg != null ? `avg ${formatNumber(avg)}` : '';
+      row.setAttribute('aria-label', `${label}${avg != null ? `; everyone's average ${formatNumber(avg)}` : ''}. Show on map.`);
+    }
+
+    if (!stats) {
+      const text = this.statsState === 'loading' ? 'Consulting the ledgers…' : 'Stats unavailable.';
+      slot.replaceChildren(title, h('p', { class: 'day-stats-note' }, text));
+      return;
+    }
+    if (stats.players === 0) {
+      const text = archive ? 'No results were recorded for this day.' : 'No results in yet, so check back later.';
+      slot.replaceChildren(title, h('p', { class: 'day-stats-note' }, text));
+      return;
+    }
+
+    const n = stats.players;
+    const explorers = `${formatNumber(n)} ${n === 1 ? 'explorer' : 'explorers'}`;
+    const pct = betterThan(stats);
+    const hardest = hardestQuestion(stats);
+    const plate = h('div', { class: 'stats-plate', html: statsPlateSVG(stats, this.total, `plate${this.puzzle.number}`) });
+    slot.replaceChildren(
+      ...nodes(
+        title,
+        h(
+          'p',
+          { class: 'day-stats-line' },
+          `${explorers} ${archive ? 'that day' : 'today'}`,
+          h('span', { class: 'sep', 'aria-hidden': 'true' }, ' · '),
+          `average ${formatNumber(stats.average ?? 0)}`,
+        ),
+        pct != null
+          ? h('p', { class: 'day-stats-rank' }, archive ? 'You’d have scored better than ' : 'You scored better than ', h('strong', null, `${pct}%`), ' of players.')
+          : null,
+        plate,
+        hardest != null && n > 1
+          ? h('p', { class: 'day-stats-note' }, `Hardest question: ${roman(hardest + 1)}, averaging ${formatNumber(stats.questionAverages[hardest] ?? 0)}.`)
+          : null,
+        isEarlyDays(stats)
+          ? h(
+              'p',
+              { class: 'day-stats-note' },
+              archive ? `Only ${explorers} played that day.` : `Early days: only ${explorers} so far, so check back later.`,
+            )
+          : null,
+        archive ? h('p', { class: 'day-stats-note' }, 'Archive games are compared, never counted.') : null,
+      ),
+    );
   }
 
   private startCountdown(node: HTMLElement): void {

@@ -137,8 +137,9 @@ export function formatDistance(km: number, units: Units): string {
 }
 
 /** Spoiler-free share line, e.g. "Chronomap #42 — 5,830/7,000 🟩🟩🟨🟩🟧🟨🟥" ("Chronomap #42 · Archive — …" for a past day). */
-export function shareText(puzzle: number, scores: number[], url?: string, archive = false): string {
+export function shareText(puzzle: number, scores: number[], url?: string, archive = false, topPercent: number | null = null): string {
   const total = scores.reduce((a, b) => a + b, 0);
-  const line = `Chronomap #${puzzle}${archive ? ' · Archive' : ''} — ${formatNumber(total)}/${formatNumber(MAX_SCORE)} ${scores.map(emojiFor).join('')}`;
+  const top = topPercent != null ? ` · Top ${topPercent}%` : '';
+  const line = `Chronomap #${puzzle}${archive ? ' · Archive' : ''} — ${formatNumber(total)}/${formatNumber(MAX_SCORE)} ${scores.map(emojiFor).join('')}${top}`;
   return url ? `${line}\n${url}` : line;
 }

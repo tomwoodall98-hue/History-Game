@@ -31,6 +31,11 @@ jobs:
         run: npm test
       - name: Build
         run: npm run build
+        env:
+          # Anonymous daily stats. Both are public values that end up in the
+          # page; without them the site builds and plays, just without stats.
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
       - name: Upload site
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v3

@@ -75,6 +75,11 @@ export interface Stats {
   bestScore: number;
 }
 
+export interface SubmissionState {
+  done: boolean;
+  tries: number;
+}
+
 /** What the player did on a past day, for the archive ledger. */
 export interface PastDay {
   /** Played on the day itself, or later from the archive. */
@@ -95,6 +100,12 @@ export interface Persistence {
   saveArchiveGame(game: SavedGame): void;
   /** Every past day the player has played, by date key. */
   pastDays(todayKey: string): Record<string, PastDay>;
+  /** The anonymous player id for daily stats, made on first use; null when storage can't keep it. */
+  playerId(): string | null;
+  /** How submitting a day's result to the daily stats stands. */
+  submission(dateKey: string): SubmissionState;
+  /** Records one attempt to submit a day's result, and whether it got through. */
+  recordSubmission(dateKey: string, done: boolean): void;
   /** Stats including today's finished game, if any. */
   stats(): Stats;
   getUnits(): Units;

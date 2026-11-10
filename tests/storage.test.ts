@@ -142,3 +142,27 @@ test('malformed archive entries are dropped', () => {
   const data = parseStored(JSON.stringify({ archive: { '2026-11-07': { dateKey: '2026-11-08' }, nope: {}, '2026-11-06': game('2026-11-06', true, [1]) } }));
   assert.deepEqual(Object.keys(data.archive), ['2026-11-06']);
 });
+
+test('anonymous player id: made once, kept, and none without storage', () => {
+  const mem = new MemoryStorage() as unknown as Storage;
+  const a = new LocalStore(() => '2026-11-10', mem);
+  const id = a.playerId();
+  assert.match(id ?? '', /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+  assert.equal(new LocalStore(() => '2026-11-10', mem).playerId(), id, 'the same id on the next visit');
+  assert.equal(new LocalStore(() => '2026-11-10', null).playerId(), null);
+  assert.equal(parseStored('{"playerId":"not-a-uuid"}').playerId, null);
+});
+
+test('submission attempts are recorded per day, and old ones forgotten', () => {
+  const mem = new MemoryStorage() as unknown as Storage;
+  let today = '2026-11-10';
+  const s = new LocalStore(() => today, mem);
+  assert.deepEqual(s.submission('2026-11-10'), { done: false, tries: 0 });
+  s.recordSubmission('2026-11-10', false);
+  assert.deepEqual(new LocalStore(() => today, mem).submission('2026-11-10'), { done: false, tries: 1 });
+  s.recordSubmission('2026-11-10', true);
+  assert.deepEqual(s.submission('2026-11-10'), { done: true, tries: 2 });
+  today = '2026-11-30';
+  s.recordSubmission('2026-11-30', true);
+  assert.deepEqual(s.submission('2026-11-10'), { done: false, tries: 0 }, 'pruned after a week');
+});
