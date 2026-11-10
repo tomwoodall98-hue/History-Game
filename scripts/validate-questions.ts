@@ -7,7 +7,7 @@
  * Checks:
  *   - schema and types of every field, ids are kebab-case and unique
  *   - no duplicate events (ignoring case/punctuation) or near-identical spots
- *   - lat/lng in range and on the playable sheet (75°S–80°N)
+ *   - lat/lng in range
  *   - each point is on land, or within 50 km of a coast, using the same
  *     Natural Earth data the game draws (detail tiles where available),
  *     unless the question is marked `atSea`; an `atSea` point shouldn't be
@@ -30,8 +30,7 @@ import { fileURLToPath } from 'node:url';
 import { feature } from 'topojson-client';
 import type { Topology } from 'topojson-specification';
 import type { FeatureCollection, MultiLineString, MultiPolygon } from 'geojson';
-import { createProjection, MAP_WIDTH, MAP_HEIGHT, LAT_NORTH, LAT_SOUTH } from '../src/map/projection.ts';
-import { TILE_COLS, TILE_ROWS, type BaseMap } from '../src/map/tiles.ts';
+import { CELL_COLS, CELL_ROWS, cellId, cellOf, type GlobeBase } from '../src/map/globeData.ts';
 import { EARTH_RADIUS_KM, haversineKm, scoringParams } from '../src/game/scoring.ts';
 import { CountryIndex } from '../src/game/countries.ts';
 import { addDays, daysBetween, londonDateKey, LAUNCH_DATE } from '../src/game/daily.ts';
@@ -40,13 +39,13 @@ import { TIERS, type Question } from '../src/game/types.ts';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const QUESTIONS = process.argv[2] ? resolve(process.argv[2]) : resolve(ROOT, 'src/data/questions.json');
-const BASEMAP = resolve(ROOT, 'src/data/basemap.topo.json');
+const GLOBE = resolve(ROOT, 'src/data/globe.topo.json');
 const COUNTRIES = resolve(ROOT, 'src/data/countries.topo.json');
 const SCHEDULE = resolve(ROOT, 'src/data/schedule.json');
 /** Warn when the schedule runs out within this many days; fail within SCHEDULE_FAIL_DAYS. */
 const SCHEDULE_WARN_DAYS = 90;
 const SCHEDULE_FAIL_DAYS = 14;
-const TILE_DIR = resolve(ROOT, 'public/geo/tiles');
+const TILE_DIR = resolve(ROOT, 'public/geo/globe');
 
 const MIN_PER_TIER = 40;
 const COAST_KM = 50;
@@ -75,38 +74,36 @@ if (!Array.isArray(questions)) {
 
 // ------------------------------------------------------------- geodata ---
 
+/** Land rings and coastlines near a point, in plain lng/lat. */
 interface CellGeo {
-  land: number[][][]; // rings, in map units
-  coast: number[][][]; // polylines, in map units
+  land: number[][][];
+  coast: number[][][];
 }
 
-const base = JSON.parse(readFileSync(BASEMAP, 'utf8')) as BaseMap;
-const cellCache = new Map<string, CellGeo | null>();
+const base = JSON.parse(readFileSync(GLOBE, 'utf8')) as GlobeBase;
+const baseGeo = decode(base, 'land', 'coast');
+const cellCache = new Map<string, CellGeo>();
 
-function decodeCell(topo: Topology, objectName: string): CellGeo {
-  const fc = feature(topo as never, topo.objects[objectName] as never) as unknown as FeatureCollection;
+function decode(topo: Topology, land: string, coast: string): CellGeo {
+  const geo = (name: string) => feature(topo as never, topo.objects[name] as never) as unknown as FeatureCollection;
   const out: CellGeo = { land: [], coast: [] };
-  for (const f of fc.features) {
-    if (f.id === 'land') for (const poly of (f.geometry as MultiPolygon).coordinates) out.land.push(...poly);
-    if (f.id === 'coast') out.coast.push(...(f.geometry as MultiLineString).coordinates);
-  }
+  for (const f of geo(land).features) for (const poly of (f.geometry as MultiPolygon).coordinates) out.land.push(...poly);
+  for (const f of geo(coast).features) out.coast.push(...(f.geometry as MultiLineString).coordinates);
   return out;
 }
 
-/** Detail tile if there is one (finer, includes small islands), else the base cell. */
-function cell(c: number, r: number): CellGeo | null {
-  const id = `${c}-${r}`;
-  if (cellCache.has(id)) return cellCache.get(id)!;
-  let geo: CellGeo | null = null;
-  const tilePath = resolve(TILE_DIR, `${id}.json`);
-  if (existsSync(tilePath)) geo = decodeCell(JSON.parse(readFileSync(tilePath, 'utf8')), 'cell');
-  else if (base.objects[id]) geo = decodeCell(base, id);
-  cellCache.set(id, geo);
-  return geo;
+/** The detail tile for a cell (finer, with small islands), else the base level. */
+function cell(col: number, row: number): CellGeo {
+  const id = cellId(col, row);
+  if (!cellCache.has(id)) {
+    const path = resolve(TILE_DIR, `${id}.json`);
+    cellCache.set(id, existsSync(path) ? decode(JSON.parse(readFileSync(path, 'utf8')), 'land', 'coast') : baseGeo);
+  }
+  return cellCache.get(id)!;
 }
 
 function insideRings(x: number, y: number, rings: number[][][]): boolean {
-  let inside = false; // even-odd, matching how the map fills land
+  let inside = false; // even-odd, as the globe fills land
   for (const ring of rings) {
     for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
       const [xi, yi] = ring[i];
@@ -125,35 +122,36 @@ function segDist(px: number, py: number, ax: number, ay: number, bx: number, by:
   return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
 }
 
-const projection = createProjection(0);
-const cw = MAP_WIDTH / TILE_COLS;
-const ch = MAP_HEIGHT / TILE_ROWS;
+const KM_PER_DEG = (Math.PI / 180) * EARTH_RADIUS_KM;
 
 /** On land? And the distance in km to the nearest mapped coast (only nearby cells are searched). */
 function landCheck(lng: number, lat: number): { onLand: boolean; coastKm: number } {
-  const xy = projection([lng, lat]);
-  if (!xy) return { onLand: false, coastKm: Infinity };
-  const [x, y] = xy;
-  const c = Math.min(TILE_COLS - 1, Math.max(0, Math.floor(x / cw)));
-  const r = Math.min(TILE_ROWS - 1, Math.max(0, Math.floor(y / ch)));
-  const home = cell(c, r);
-  const onLand = !!home && insideRings(x, y, home.land);
-  // Mercator is conformal: locally, 1 map unit = (2πR / MAP_WIDTH) · cos(lat) km.
-  const kmPerUnit = ((2 * Math.PI * EARTH_RADIUS_KM) / MAP_WIDTH) * Math.cos((lat * Math.PI) / 180);
+  const { col, row } = cellOf(lng, lat);
+  const home = cell(col, row);
+  const onLand = insideRings(lng, lat, home.land);
+  // Distances in a local plane in km around the point: fine at coastal range.
+  const kx = KM_PER_DEG * Math.max(0.05, Math.cos((lat * Math.PI) / 180));
+  const wrap = (x: number) => ((((x - lng) % 360) + 540) % 360) - 180; // nearest copy across the antimeridian
   let best = Infinity;
+  const seen = new Set<CellGeo>();
   for (let dr = -1; dr <= 1; dr++) {
     for (let dc = -1; dc <= 1; dc++) {
-      const g = cell(c + dc, r + dr);
-      if (!g) continue;
+      const r = row + dr;
+      if (r < 0 || r >= CELL_ROWS) continue;
+      const g = cell((col + dc + CELL_COLS) % CELL_COLS, r);
+      if (seen.has(g)) continue;
+      seen.add(g);
       for (const line of g.coast) {
         for (let i = 1; i < line.length; i++) {
-          const d = segDist(x, y, line[i - 1][0], line[i - 1][1], line[i][0], line[i][1]);
+          const [ax, ay] = line[i - 1];
+          const [bx, by] = line[i];
+          const d = segDist(0, 0, wrap(ax) * kx, (ay - lat) * KM_PER_DEG, wrap(bx) * kx, (by - lat) * KM_PER_DEG);
           if (d < best) best = d;
         }
       }
     }
   }
-  return { onLand, coastKm: best * kmPerUnit };
+  return { onLand, coastKm: best };
 }
 
 // -------------------------------------------------------------- checks ---
@@ -205,7 +203,6 @@ questions.forEach((q, index) => {
   if (!TIERS.includes(q.tier)) err(id, `tier must be an integer 1–7 (got ${JSON.stringify(q.tier)})`);
 
   if (!isNum(q.lat) || q.lat < -90 || q.lat > 90) err(id, `lat out of range: ${q.lat}`);
-  else if (q.lat < LAT_SOUTH || q.lat > LAT_NORTH) err(id, `lat ${q.lat} is off the map (sheet covers ${LAT_SOUTH}° to ${LAT_NORTH}°)`);
   if (!isNum(q.lng) || q.lng < -180 || q.lng > 180) err(id, `lng out of range: ${q.lng}`);
 
   if (!Number.isInteger(q.year)) err(id, 'year must be an integer (negative for BC)');
@@ -260,7 +257,7 @@ let atSea = 0;
 let farOut = 0;
 const overridden: string[] = [];
 for (const q of questions) {
-  if (!isNum(q.lat) || !isNum(q.lng) || q.lat < LAT_SOUTH || q.lat > LAT_NORTH) continue;
+  if (!isNum(q.lat) || !isNum(q.lng) || Math.abs(q.lat) > 90 || Math.abs(q.lng) > 180) continue;
   const { onLand, coastKm } = landCheck(q.lng, q.lat);
   if (q.atSea === true) {
     atSea++;

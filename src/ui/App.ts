@@ -1,4 +1,4 @@
-import type { MapView } from '../map/MapView';
+import type { GlobeView } from '../map/GlobeView';
 import { cartoucheSVG, compassRoseSVG } from '../map/ornaments';
 import type { LngLat, Question, Puzzle, SavedGame, Persistence, Clock, PastDay } from '../game/types';
 import { archiveDays, formatDateLabel, puzzleNumber, LAUNCH_DATE } from '../game/daily';
@@ -68,7 +68,7 @@ export class App {
 
   constructor(
     private readonly root: HTMLElement,
-    private readonly map: MapView,
+    private readonly map: GlobeView,
     private readonly puzzle: Puzzle,
     private readonly store: Persistence,
     private readonly clock: Clock,
@@ -125,7 +125,7 @@ export class App {
    * the whole-world view and fly-tos land in the visible area.
    */
   private updateInsets(): void {
-    const mapRect = this.map.svg.getBoundingClientRect();
+    const mapRect = this.map.element.getBoundingClientRect();
     if (!mapRect.height) return;
     const gap = 10;
     let bottom = 0;
@@ -200,7 +200,7 @@ export class App {
         h(
           'p',
           { class: 'start-blurb' },
-          'Seven events from history, each with its date. Mark on the map where each one took place: the nearer your mark, the more points you score, up to 1,000 a round. The questions grow harder as you go.',
+          'Seven events from history, each with its date. Mark on the globe where each one took place: the nearer your mark, the more points you score, up to 1,000 a round. The questions grow harder as you go.',
         ),
         this.puzzle.archive
           ? h('p', { class: 'archive-note' }, `From the archive: this game is kept apart from your daily results and doesn't count towards your streak.`)
@@ -231,9 +231,9 @@ export class App {
     const list = h(
       'ul',
       { class: 'start-help' },
-      h('li', null, 'Drag to pan; scroll, pinch or use the buttons to zoom.'),
+      h('li', null, 'Drag to turn the globe; scroll, pinch or use the buttons to zoom.'),
       h('li', null, 'Click or tap to place your mark, then confirm.'),
-      h('li', null, 'Keyboard: arrows pan, + and − zoom, Space marks the centre, Enter confirms.'),
+      h('li', null, 'Keyboard: arrows turn, + and − zoom, Space marks the centre, Enter confirms.'),
     );
     if (!this.store.hasSeenIntro()) return list;
     return h('details', { class: 'start-details' }, h('summary', null, 'How to play'), list);
@@ -262,7 +262,7 @@ export class App {
       'Confirm',
     );
     this.primary = confirm;
-    const hint = h('p', { class: 'slip-hint' }, 'Click or tap the map to place your mark.');
+    const hint = h('p', { class: 'slip-hint' }, 'Click or tap the globe to place your mark.');
     this.slip.className = 'slip slip-question';
     this.slip.replaceChildren(
       this.slipHeader(i),
@@ -282,7 +282,7 @@ export class App {
     this.map.resetView(i === 0 ? 0 : 700);
     this.announce(`Round ${i + 1} of ${ROUNDS}. ${q.event}, ${q.dateDisplay}. Place your mark on the map.`);
     // Keyboard players land on the map, ready to pan and press Space.
-    if (this.keyboardMode) requestAnimationFrame(() => this.map.svg.focus({ preventScroll: true }));
+    if (this.keyboardMode) requestAnimationFrame(() => this.map.element.focus({ preventScroll: true }));
   }
 
   private slipHeader(i: number): HTMLElement {
@@ -511,7 +511,7 @@ export class App {
               ),
               h('p', { class: 'countdown' }, 'Next puzzle in ', countdown),
             ],
-        h('button', { class: 'ink-button subtle', type: 'button', onclick: () => this.showReview(null) }, 'Explore the map'),
+        h('button', { class: 'ink-button subtle', type: 'button', onclick: () => this.showReview(null) }, 'Explore the globe'),
         this.archiveLinks(() => this.showResults(false)),
       ),
     );
@@ -668,7 +668,7 @@ export class App {
               r.countryFloor ? h('p', { class: 'floor-note' }, floorNote(r.countryFloor)) : null,
               h('p', { class: 'note' }, q.note),
             ]
-          : h('p', { class: 'slip-hint' }, 'Every mark you made, and where history happened. Pan and zoom to explore.'),
+          : h('p', { class: 'slip-hint' }, 'Every mark you made, and where history happened. Turn and zoom the globe to explore.'),
       ),
       h('div', { class: 'slip-actions' }, q ? h('a', { class: 'source-link', href: q.source, target: '_blank', rel: 'noopener' }, 'Read more') : h('span'), back),
     );

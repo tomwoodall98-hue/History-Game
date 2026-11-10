@@ -163,10 +163,10 @@ export class LandSampler {
     return [x0 + (x1 - x0) / 2, y0 + (y1 - y0) / 2];
   }
 
-  /** A uniformly random point on land, 75°S–80°N (the playable sheet). */
+  /** A uniformly random point on land, anywhere on the globe. */
   randomLand(rand: () => number): LngLat {
     for (;;) {
-      const lat = Math.asin(rand() * (Math.sin(80 * RAD) + Math.sin(75 * RAD)) - Math.sin(75 * RAD)) / RAD;
+      const lat = Math.asin(rand() * 2 - 1) / RAD;
       const g: LngLat = [rand() * 360 - 180, lat];
       if (this.partAt(g)) return g;
     }

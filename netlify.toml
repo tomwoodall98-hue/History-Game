@@ -13,6 +13,6 @@
 
 # Detail tiles are requested with a ?v=<hash> that changes when they do.
 [[headers]]
-  for = "/geo/tiles/*"
+  for = "/geo/globe/*"
   [headers.values]
     Cache-Control = "public, max-age=604800"
