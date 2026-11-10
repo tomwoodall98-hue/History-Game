@@ -884,8 +884,24 @@ button {
 }
 
 .b-score {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
   font-variant-numeric: tabular-nums;
   text-align: right;
+  line-height: 1.15;
+}
+
+/* Everyone's average for the question, under the player's own score. */
+.b-avg {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+
+.b-avg:empty {
+  display: none;
 }
 
 .share-row {
@@ -1217,4 +1233,82 @@ a.ledger-row:focus-visible {
   .ledger-squares {
     display: none;
   }
+}
+
+/* -------------------------------------------------------- daily stats --- */
+
+.day-stats {
+  margin: 4px 0 16px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(51, 34, 15, 0.35);
+}
+
+.day-stats-title {
+  margin: 0 0 4px;
+  font-family: var(--font-caps);
+  font-weight: normal;
+  font-size: 20px;
+  letter-spacing: 0.06em;
+}
+
+.day-stats-line {
+  margin: 0;
+  font-size: 16px;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.day-stats-rank {
+  margin: 4px 0 8px;
+  font-size: 18px;
+}
+
+.day-stats-rank strong {
+  font-weight: normal;
+  color: var(--red);
+  font-size: 22px;
+}
+
+.day-stats-note {
+  margin: 6px auto 0;
+  max-width: 46ch;
+  font-size: 15px;
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
+/* The engraved plate. */
+.stats-plate {
+  margin: 4px auto 0;
+  max-width: 420px;
+}
+
+.stats-plate svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: rgba(247, 240, 221, 0.6);
+}
+
+.stats-plate text {
+  font-family: var(--font-body);
+  fill: var(--ink);
+}
+
+.stats-plate .plate-figure {
+  font-size: 12.5px;
+  font-variant-numeric: lining-nums;
+}
+
+.stats-plate .plate-caption {
+  font-size: 12px;
+  font-style: italic;
+  fill: var(--ink-soft);
+}
+
+.stats-plate .plate-you {
+  font-family: var(--font-caps);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  fill: var(--red);
 }

@@ -53,7 +53,8 @@ npm run dev          # http://localhost:5173
 3. The answer appears as a red wax seal, with a dashed great-circle line from
    your mark, the distance (km or miles), your points and a short note. If
    being in the right country lifted your score, it says so.
-4. After seven rounds you get your total, a breakdown, your streak and a
+4. After seven rounds you get your total, a breakdown, your streak, how
+   everyone else did that day (see [Daily stats](#daily-stats)) and a
    **Share** button that copies a spoiler-free result:
 
    ```
@@ -172,6 +173,69 @@ straight away; today, tomorrow and every past day stay exactly as they were.
 Without `--refresh`, new questions wait until the schedule is extended past its
 current end. Never remove a scheduled question or change its tier: the
 validator refuses.
+
+## Daily stats
+
+When stats are switched on, the results screen also shows how everyone else
+did that day:
+- the number of players and their average;
+- "You scored better than X% of players";
+- an engraved histogram of the day's scores with yours marked in red;
+- the hardest question;
+- everyone's average for each question, beside your own scores.
+
+With fewer than 5 players it says it's early days, and the numbers are fetched
+again each time the results are opened. The share line adds "· Top X%" for
+scores in the top half once there are 5 or more players. Archive games are
+compared with that day's players but never counted.
+
+**What is sent.** Only when today's daily puzzle is finished, and only:
+- the date;
+- the total;
+- the seven round scores;
+- a random player ID made once and kept in `localStorage`.
+
+Nothing else is sent or stored: no names, accounts or cookies. Like any web
+request, Supabase's request logs see the visitor's IP address, but the table
+doesn't store it. Archive games never submit.
+
+**Where it lives.** A Supabase table set up by
+[`supabase/daily-stats.sql`](supabase/daily-stats.sql). Run it once in the
+Supabase SQL Editor; it is safe to re-run.
+- **One result per player per day**, enforced by a unique constraint.
+- **Check constraints:** a total of 0–7000, seven rounds of 0–1000 each, and
+  rounds that sum to the total.
+- **Row Level Security:** the public role may insert today's result (Europe/London)
+  and nothing else. Nobody can read, change or delete raw rows through the API,
+  so player IDs never leave the database.
+- **Reading stats:** the browser calls `daily_stats(date, score)`, a
+  `SECURITY DEFINER` function with a fixed `search_path`. It returns only
+  aggregates: count, average, a histogram in 14 bands of 500, per-question
+  averages and a percentile. It refuses future dates.
+- **Profiles later:** the script's closing comment shows how a future profile
+  could claim an anonymous player ID's past results without changing the table.
+
+**Configuration.** The build reads two Vite env vars:
+
+| Variable                        | Value                                              |
+| ------------------------------- | -------------------------------------------------- |
+| `VITE_SUPABASE_URL`             | The project URL, `https://<project>.supabase.co`   |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | The publishable (anon) key, `sb_publishable_…`     |
+
+- **Local development:** copy `.env.example` to `.env.local` (gitignored).
+- **GitHub Pages:** add both as repository secrets; the workflow passes them
+  to the build.
+- **Netlify:** add both under Site configuration → Environment variables.
+- **Unset:** the game has no stats panel and nothing is sent.
+- **Never the secret key.** Use only the publishable key, never the secret or
+  service-role key: the build refuses those.
+
+**Resilience.** The client uses plain `fetch` rather than `supabase-js`, which
+would add ~59 KB gzipped for two calls. Each call times out after 3 seconds
+and never throws. If Supabase is down or slow:
+- the game plays exactly as before;
+- the panel says "Stats unavailable";
+- a failed submission is retried once on the next visit that day, then dropped.
 
 ## Adding questions
 
