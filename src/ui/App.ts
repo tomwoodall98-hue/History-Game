@@ -12,11 +12,16 @@ import {
   shareText,
   type Units,
 } from '../game/scoring';
+import type { CountryLookup } from '../game/countries';
 import { h, roman, countUp, copyText } from './dom';
 
 type Phase = 'start' | 'guess' | 'reveal' | 'results' | 'review';
 
 const PIPS = 7;
+/** Longest wait for the country outlines before scoring on distance alone. */
+const COUNTRIES_WAIT_MS = 8000;
+
+const floorNote = (floor: number) => `Right country, so at least ${formatNumber(floor)} points.`;
 
 export class App {
   private phase: Phase = 'start';
@@ -33,6 +38,7 @@ export class App {
   private revealToken = 0;
   /** Last input type, so keyboard users get focus moved for them. */
   private keyboardMode = false;
+  private confirming = false;
 
   constructor(
     private readonly root: HTMLElement,
@@ -40,6 +46,8 @@ export class App {
     private readonly puzzle: Puzzle,
     private readonly store: Persistence,
     private readonly clock: Clock,
+    /** Country outlines for the same-country floor (scoring only); null if unavailable. */
+    private readonly countries: () => Promise<CountryLookup | null>,
   ) {
     this.units = store.getUnits();
     const saved = store.loadGame(puzzle.dateKey);
@@ -196,7 +204,7 @@ export class App {
     const q = this.question(i);
     const confirm = h(
       'button',
-      { class: 'ink-button primary', type: 'button', disabled: true, onclick: () => this.confirm() },
+      { class: 'ink-button primary', type: 'button', disabled: true, onclick: () => void this.confirm() },
       'Confirm',
     );
     this.primary = confirm;
@@ -253,14 +261,24 @@ export class App {
     if (hint) hint.textContent = 'Click elsewhere to move your mark.';
   }
 
-  private confirm(): void {
-    if (this.phase !== 'guess') return;
+  private async confirm(): Promise<void> {
+    if (this.phase !== 'guess' || this.confirming) return;
     const guess = this.map.getGuess();
     if (!guess) return;
+    // The outlines normally arrived while the map was being read; if not, wait
+    // for them (within reason) so the same-country floor isn't missed.
+    this.confirming = true;
+    this.map.setPickEnabled(false);
+    if (this.primary) this.primary.disabled = true;
+    const countries = await Promise.race([
+      this.countries(),
+      new Promise<null>((resolve) => window.setTimeout(() => resolve(null), COUNTRIES_WAIT_MS)),
+    ]);
+    this.confirming = false;
     const i = this.roundIndex;
     const q = this.question(i);
-    const { distanceKm, score } = scoreGuess(q, guess);
-    this.game.rounds.push({ questionId: q.id, guess, distanceKm, score });
+    const { distanceKm, score, countryFloor } = scoreGuess(q, guess, countries);
+    this.game.rounds.push({ questionId: q.id, guess, distanceKm, score, ...(countryFloor ? { countryFloor } : {}) });
     this.game.pendingGuess = null;
     if (this.game.rounds.length >= ROUNDS) this.game.finished = true;
     this.save();
@@ -299,6 +317,7 @@ export class App {
           h('span', { class: 'distance' }, distance, ' away'),
           this.unitToggle(() => (distance.textContent = formatDistance(r.distanceKm, this.units))),
         ),
+        r.countryFloor ? h('p', { class: 'floor-note' }, floorNote(r.countryFloor)) : null,
         h('p', { class: 'note' }, q.note),
       ),
       h(
@@ -322,7 +341,7 @@ export class App {
       void this.map.showAnswer(answer, r.guess, false);
     }
     this.announce(
-      `${formatNumber(r.score)} points. Your mark was ${formatDistance(r.distanceKm, this.units)} from the answer. ${q.note}`,
+      `${formatNumber(r.score)} points. Your mark was ${formatDistance(r.distanceKm, this.units)} from the answer. ${r.countryFloor ? `${floorNote(r.countryFloor)} ` : ''}${q.note}`,
     );
     requestAnimationFrame(() => next.focus({ preventScroll: true }));
   }
@@ -483,6 +502,7 @@ export class App {
                 h('span', { class: 'grade-chip', 'aria-hidden': 'true' }, emojiFor(r.score)),
                 ` ${formatNumber(r.score)} points · ${formatDistance(r.distanceKm, this.units)} away`,
               ),
+              r.countryFloor ? h('p', { class: 'floor-note' }, floorNote(r.countryFloor)) : null,
               h('p', { class: 'note' }, q.note),
             ]
           : h('p', { class: 'slip-hint' }, 'Every mark you made, and where history happened. Pan and zoom to explore.'),

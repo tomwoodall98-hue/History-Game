@@ -3,6 +3,7 @@ import '@fontsource/im-fell-english/latin-400-italic.css';
 import '@fontsource/im-fell-english-sc/latin-400.css';
 import './styles/main.css';
 import baseMapUrl from './data/basemap.topo.json?url';
+import countriesUrl from './data/countries.topo.json?url';
 import questionsData from './data/questions.json';
 import { MapView } from './map/MapView';
 import type { BaseMap } from './map/tiles';
@@ -11,6 +12,7 @@ import { App } from './ui/App';
 import type { Question, Puzzle, Clock } from './game/types';
 import { dailyPuzzle, londonDateKey, nextLondonMidnight } from './game/daily';
 import { LocalStore } from './game/storage';
+import { CountryIndex, type CountryLookup } from './game/countries';
 
 // Start the map download before anything else.
 const basePromise: Promise<BaseMap> = fetch(baseMapUrl).then((r) => {
@@ -60,6 +62,22 @@ if (saved && saved.questionIds.join() !== daily.questions.map((q) => q.id).join(
   const kept = saved.questionIds.map((id) => byId.get(id));
   if (kept.length === daily.questions.length && kept.every(Boolean)) puzzle.questions = kept as Question[];
 }
+// Country outlines, used only to score the same-country floor and never
+// drawn. Fetched once the map is up; a failed fetch is retried next time.
+let countries: Promise<CountryLookup | null> | null = null;
+const loadCountries = (): Promise<CountryLookup | null> =>
+  (countries ??= fetch(countriesUrl)
+    .then((r) => {
+      if (!r.ok) throw new Error(`Country data failed to load (${r.status})`);
+      return r.json();
+    })
+    .then((topo) => new CountryIndex(topo))
+    .catch((err) => {
+      console.warn(err);
+      countries = null;
+      return null;
+    }));
+
 const clock: Clock = {
   msUntilNext: () => nextLondonMidnight().getTime() - Date.now(),
   todayKey: () => londonDateKey(),
@@ -70,8 +88,9 @@ basePromise
     map.render(base);
     requestAnimationFrame(() => map.svg.classList.add('ready'));
     document.getElementById('loading')?.classList.add('done');
-    const app = new App(root, map, puzzle, store, clock);
+    const app = new App(root, map, puzzle, store, clock, loadCountries);
     app.start();
+    void loadCountries();
     // Handy for debugging in the console.
     (window as unknown as { chronomap: unknown }).chronomap = { map, app };
   })

@@ -74,6 +74,7 @@
     "lng": -49.9469,
     "k": 1500,
     "bullseyeKm": 100,
+    "atSea": true,
     "note": "The liner struck an iceberg about 600 km south-south-east of Newfoundland and sank in under three hours; more than 1,500 people died. The wreck was found in 1985, 3,800 m down.",
     "source": "https://en.wikipedia.org/wiki/Wreck_of_the_Titanic"
   },
@@ -568,6 +569,7 @@
     "lng": -75.668,
     "k": null,
     "bullseyeKm": 15,
+    "country": "USA",
     "note": "Orville Wright flew 37 m in 12 seconds from the sand dunes at Kill Devil Hills near Kitty Hawk, North Carolina: the first controlled, sustained powered flight.",
     "source": "https://en.wikipedia.org/wiki/Wright_Brothers_National_Memorial"
   },
@@ -697,7 +699,7 @@
     "lat": 50.035,
     "lng": 2.7,
     "k": null,
-    "bullseyeKm": 15,
+    "bullseyeKm": 25,
     "note": "On the first day of the Anglo-French offensive in Picardy the British Army suffered 57,000 casualties, its worst single day; the battle dragged on until November.",
     "source": "https://en.wikipedia.org/wiki/First_day_on_the_Somme"
   },
@@ -815,6 +817,7 @@
     "lng": 105.423,
     "k": null,
     "bullseyeKm": 20,
+    "country": "IDN",
     "note": "The volcano in the Sunda Strait between Java and Sumatra blew itself apart; the explosion was heard 4,800 km away, and its tsunamis killed some 36,000 people.",
     "source": "https://en.wikipedia.org/wiki/1883_eruption_of_Krakatoa"
   },
@@ -892,7 +895,7 @@
     "lat": 24.4672,
     "lng": 39.6111,
     "k": null,
-    "bullseyeKm": 20,
+    "bullseyeKm": 50,
     "note": "Muhammad and his followers moved from Mecca to the oasis city of Yathrib, renamed Medina; the year of the Hijra became year one of the Islamic calendar.",
     "source": "https://en.wikipedia.org/wiki/Hijrah"
   },
@@ -1061,7 +1064,7 @@
     "lat": 24.04,
     "lng": -74.53,
     "k": null,
-    "bullseyeKm": 20,
+    "bullseyeKm": 60,
     "note": "Columbus’s first landfall was an island the Lucayans called Guanahani. Most historians identify it with San Salvador in the Bahamas, though Samana Cay and others have been proposed.",
     "source": "https://en.wikipedia.org/wiki/Guanahani"
   },
@@ -1101,6 +1104,7 @@
     "lng": -6.2553,
     "k": null,
     "bullseyeKm": 20,
+    "atSea": true,
     "note": "Nelson’s fleet destroyed the combined French and Spanish fleets off Cape Trafalgar in south-west Spain, ending Napoleon’s hopes of invading Britain; Nelson was killed by a French marksman.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Trafalgar"
   },
@@ -1153,6 +1157,7 @@
     "lng": -8.55,
     "k": null,
     "bullseyeKm": 15,
+    "atSea": true,
     "note": "A German torpedo sank the Cunard liner off the Old Head of Kinsale in southern Ireland; 1,198 people died, 128 of them Americans, hardening US opinion against Germany.",
     "source": "https://en.wikipedia.org/wiki/Sinking_of_the_RMS_Lusitania"
   },
@@ -1217,7 +1222,7 @@
     "lat": 22.0675,
     "lng": -81.03,
     "k": null,
-    "bullseyeKm": 15,
+    "bullseyeKm": 25,
     "note": "About 1,400 CIA-trained Cuban exiles landed on Cuba’s south coast; Castro’s forces defeated them around Playa Girón within three days.",
     "source": "https://en.wikipedia.org/wiki/Bay_of_Pigs_Invasion"
   },
@@ -1282,7 +1287,7 @@
     "lat": 49.2075,
     "lng": 5.4214,
     "k": null,
-    "bullseyeKm": 12,
+    "bullseyeKm": 20,
     "note": "The longest battle of the First World War was fought around the forts north of Verdun; about 300,000 French and German soldiers died. The Douaumont ossuary holds the bones of 130,000 unidentified men.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Verdun"
   },
@@ -1295,7 +1300,7 @@
     "lat": 30.83,
     "lng": 28.95,
     "k": null,
-    "bullseyeKm": 20,
+    "bullseyeKm": 40,
     "note": "Montgomery’s Eighth Army broke through Rommel’s lines between the coast and the Qattara Depression, about 100 km west of Alexandria, turning the war in North Africa.",
     "source": "https://en.wikipedia.org/wiki/Second_Battle_of_El_Alamein"
   },
@@ -1307,8 +1312,9 @@
     "tier": 3,
     "lat": 28.21,
     "lng": -177.37,
-    "k": 1000,
+    "k": 1875,
     "bullseyeKm": 150,
+    "atSea": true,
     "note": "US carrier aircraft sank four Japanese carriers north-west of Midway Atoll, a remote US base about 2,100 km from Hawaii, turning the tide of the Pacific war.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Midway"
   },
@@ -1322,6 +1328,7 @@
     "lng": 141.29,
     "k": null,
     "bullseyeKm": 10,
+    "country": "JPN",
     "note": "Joe Rosenthal’s photograph of Marines raising the flag on Mount Suribachi, the volcanic island’s highest point, became the most reproduced image of the war; the battle lasted five weeks.",
     "source": "https://en.wikipedia.org/wiki/Raising_the_Flag_on_Iwo_Jima"
   },
@@ -1595,6 +1602,7 @@
     "lng": 20.71,
     "k": null,
     "bullseyeKm": 8,
+    "atSea": true,
     "note": "Octavian’s fleet under Agrippa defeated Antony and Cleopatra off the mouth of the Ambracian Gulf in western Greece; their flight to Egypt left Octavian master of the Roman world.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Actium"
   },
@@ -1608,6 +1616,7 @@
     "lng": 23.56,
     "k": null,
     "bullseyeKm": 8,
+    "atSea": true,
     "note": "Themistocles lured Xerxes’ larger fleet into the narrow channel between the island of Salamis and the coast of Attica, where the Greek triremes routed it.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Salamis"
   },
@@ -1621,6 +1630,7 @@
     "lng": 21.15,
     "k": null,
     "bullseyeKm": 15,
+    "atSea": true,
     "note": "The galleys of the Holy League under Don John of Austria destroyed the Ottoman fleet off the Echinades islands at the mouth of the Gulf of Patras; Cervantes lost the use of his left hand in the fight.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Lepanto"
   },
@@ -1659,7 +1669,7 @@
     "lat": 46.76,
     "lng": 0.5,
     "k": null,
-    "bullseyeKm": 25,
+    "bullseyeKm": 40,
     "note": "Charles Martel’s Franks stopped an Umayyad army somewhere between Poitiers and Tours, traditionally at Moussais-la-Bataille; the exact site, and even the year, are disputed.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Tours"
   },
@@ -2023,7 +2033,7 @@
     "lat": -14.735,
     "lng": -75.13,
     "k": null,
-    "bullseyeKm": 20,
+    "bullseyeKm": 30,
     "note": "The Nazca people scraped hundreds of lines and giant animal figures into the desert plateau of southern Peru, between the towns of Nazca and Palpa; they are best seen from the air.",
     "source": "https://en.wikipedia.org/wiki/Nazca_Lines"
   },
@@ -2048,8 +2058,8 @@
     "tier": 4,
     "lat": -9.4281,
     "lng": 160.0549,
-    "k": null,
-    "bullseyeKm": 15,
+    "k": 1720,
+    "bullseyeKm": 40,
     "note": "US Marines seized the airfield the Japanese were building on Guadalcanal in the Solomon Islands; six months of fighting on land and sea ended with Japan’s withdrawal.",
     "source": "https://en.wikipedia.org/wiki/Guadalcanal_campaign"
   },
@@ -2140,7 +2150,7 @@
     "lat": 36.5733,
     "lng": 43.4943,
     "k": null,
-    "bullseyeKm": 15,
+    "bullseyeKm": 30,
     "note": "Alexander broke Darius III’s huge army on a plain in northern Mesopotamia, probably near Tel Gomel north-east of Mosul, opening Babylon and Persia to the Macedonians.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Gaugamela"
   },
@@ -2153,7 +2163,7 @@
     "lat": 52.4064,
     "lng": 8.1286,
     "k": null,
-    "bullseyeKm": 10,
+    "bullseyeKm": 20,
     "note": "Germanic tribes under Arminius ambushed Varus’s army in the Teutoburg Forest; finds since 1987 place the main fighting at Kalkriese, north of Osnabrück.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_the_Teutoburg_Forest"
   },
@@ -2166,7 +2176,7 @@
     "lat": 36.1117,
     "lng": 9.286,
     "k": null,
-    "bullseyeKm": 30,
+    "bullseyeKm": 40,
     "note": "Scipio Africanus defeated Hannibal in what is now northern Tunisia, ending the Second Punic War; the battlefield, somewhere near Zama Regia, has never been located.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Zama"
   },
@@ -2218,7 +2228,8 @@
     "lat": 34.45,
     "lng": 129.95,
     "k": null,
-    "bullseyeKm": 30,
+    "bullseyeKm": 50,
+    "atSea": true,
     "note": "Admiral Togo’s fleet destroyed the Russian Baltic Fleet, which had sailed halfway round the world, in the strait between Korea and Japan; Russia soon sued for peace.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Tsushima"
   },
@@ -2256,8 +2267,9 @@
     "tier": 5,
     "lat": -19.9,
     "lng": -175.1,
-    "k": 600,
+    "k": 2250,
     "bullseyeKm": 60,
+    "atSea": true,
     "note": "Fletcher Christian’s mutineers set Captain Bligh and 18 loyal men adrift near Tofua in Tonga; Bligh sailed the open launch 6,700 km to Timor, while the mutineers hid on Pitcairn Island.",
     "source": "https://en.wikipedia.org/wiki/Mutiny_on_the_Bounty"
   },
@@ -2321,8 +2333,8 @@
     "tier": 5,
     "lat": 36.9263,
     "lng": 108.1717,
-    "k": null,
-    "bullseyeKm": 15,
+    "k": 1875,
+    "bullseyeKm": 40,
     "note": "After a fighting retreat of about 10,000 km from Jiangxi, Mao’s First Front Army reached the communist base at Wuqi in northern Shaanxi with perhaps a tenth of the men who set out.",
     "source": "https://en.wikipedia.org/wiki/Long_March"
   },
@@ -2478,7 +2490,7 @@
     "lat": 60.886,
     "lng": 101.894,
     "k": null,
-    "bullseyeKm": 20,
+    "bullseyeKm": 30,
     "note": "An asteroid or comet fragment exploded in the air over the Siberian taiga near the Podkamennaya Tunguska River, flattening some 80 million trees over 2,150 km².",
     "source": "https://en.wikipedia.org/wiki/Tunguska_event"
   },
@@ -2635,6 +2647,7 @@
     "lng": 128.47,
     "k": null,
     "bullseyeKm": 10,
+    "atSea": true,
     "note": "Yi Sun-sin lured a Japanese fleet out of a narrow strait and destroyed it off Hansan Island in a ‘crane wing’ formation, cutting Japan’s sea supply line during its invasion of Korea.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Hansan_Island"
   },
@@ -2880,8 +2893,8 @@
     "tier": 6,
     "lat": -17.72,
     "lng": 140.78,
-    "k": null,
-    "bullseyeKm": 25,
+    "k": 2030,
+    "bullseyeKm": 50,
     "note": "Robert O’Hara Burke and William Wills reached the tidal mangroves near the Gulf of Carpentaria, completing the first south-to-north crossing of Australia; both died on the way back.",
     "source": "https://en.wikipedia.org/wiki/Burke_and_Wills_expedition"
   },
@@ -2920,7 +2933,7 @@
     "lat": 41.8,
     "lng": 123.43,
     "k": null,
-    "bullseyeKm": 25,
+    "bullseyeKm": 60,
     "note": "The largest land battle before 1914 was fought outside Mukden (Shenyang) in Manchuria; Japan’s victory over Russia came at enormous cost to both sides.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Mukden"
   },
@@ -2946,7 +2959,7 @@
     "lat": 24.817,
     "lng": 93.9368,
     "k": null,
-    "bullseyeKm": 20,
+    "bullseyeKm": 30,
     "note": "British and Indian forces besieged in the Manipur valley around Imphal held out until the Japanese offensive collapsed, in what was later voted Britain’s greatest battle.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Imphal"
   },
@@ -3062,8 +3075,8 @@
     "tier": 6,
     "lat": 20.1926,
     "lng": 85.8406,
-    "k": null,
-    "bullseyeKm": 15,
+    "k": 2030,
+    "bullseyeKm": 60,
     "note": "The Mauryan emperor’s conquest of Kalinga, on India’s east coast, was so bloody that he renounced war and turned to Buddhism; his edicts are carved on a rock at Dhauli, near the traditional battlefield.",
     "source": "https://en.wikipedia.org/wiki/Kalinga_War"
   },
@@ -3090,6 +3103,7 @@
     "lng": 129.75,
     "k": null,
     "bullseyeKm": 10,
+    "atSea": true,
     "note": "The ‘kamikaze’, or divine wind, destroyed the Mongol fleet sheltering off Takashima island in Imari Bay, Kyushu, where archaeologists have since found its wrecks.",
     "source": "https://en.wikipedia.org/wiki/Mongol_invasions_of_Japan"
   },
@@ -3116,6 +3130,7 @@
     "lng": 30.08,
     "k": null,
     "bullseyeKm": 10,
+    "atSea": true,
     "note": "At the Battle of the Nile, Nelson caught the French fleet in Aboukir Bay, east of Alexandria, and destroyed it; the flagship L’Orient blew up, stranding Bonaparte’s army in Egypt.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_the_Nile"
   },
@@ -3310,7 +3325,7 @@
     "lat": 35.8,
     "lng": 112.92,
     "k": null,
-    "bullseyeKm": 20,
+    "bullseyeKm": 30,
     "note": "Qin defeated the state of Zhao near modern Gaoping in Shanxi after a long stand-off and reportedly buried the surrendered Zhao army alive, clearing its path to unify China.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Changping"
   },
@@ -3376,6 +3391,7 @@
     "lng": 130.9625,
     "k": null,
     "bullseyeKm": 8,
+    "atSea": true,
     "note": "The Minamoto clan defeated the Taira at sea in the narrow Kanmon Strait between Honshu and Kyushu; the child emperor Antoku drowned, and the Kamakura shogunate followed.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Dan-no-ura"
   },
@@ -3401,7 +3417,7 @@
     "lat": 47.7,
     "lng": 118.6,
     "k": null,
-    "bullseyeKm": 25,
+    "bullseyeKm": 50,
     "note": "Soviet and Mongolian forces under Georgy Zhukov encircled the Japanese army on the Khalkhin Gol river on the Manchurian border; Japan then turned its ambitions south.",
     "source": "https://en.wikipedia.org/wiki/Battles_of_Khalkhin_Gol"
   },
@@ -3610,6 +3626,7 @@
     "lng": 134.242,
     "k": null,
     "bullseyeKm": 8,
+    "country": "PLW",
     "note": "US Marines and soldiers spent ten weeks taking a small coral island in Palau from Japanese defenders dug into limestone caves, one of the costliest battles of the Pacific war.",
     "source": "https://en.wikipedia.org/wiki/Battle_of_Peleliu"
   },
@@ -3621,8 +3638,9 @@
     "tier": 7,
     "lat": -68.7397,
     "lng": -52.3283,
-    "k": 500,
-    "bullseyeKm": 50,
+    "k": 2625,
+    "bullseyeKm": 100,
+    "atSea": true,
     "note": "Crushed by pack ice in the Weddell Sea, Shackleton’s ship sank off Antarctica; all 28 men survived after an epic journey. The wreck was found in 2022, 3,000 m down.",
     "source": "https://en.wikipedia.org/wiki/Endurance_(1912_ship)"
   },
@@ -3636,6 +3654,7 @@
     "lng": 23.307,
     "k": null,
     "bullseyeKm": 8,
+    "atSea": true,
     "note": "Sponge divers off the small Greek island of Antikythera, between Crete and the Peloponnese, raised objects from a Roman-era wreck, among them a corroded geared astronomical calculator.",
     "source": "https://en.wikipedia.org/wiki/Antikythera_wreck"
   }
