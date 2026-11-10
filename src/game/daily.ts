@@ -1,16 +1,11 @@
 /**
- * Daily puzzle selection.
+ * Puzzle dates.
  *
  * Every player sees the same seven questions on the same calendar day in
  * Europe/London; the puzzle changes at local midnight there (GMT in winter,
- * BST in summer).
- *
- * Each tier is played in "cycles". A cycle shows every question in the tier
- * once, in an order shuffled by a PRNG seeded with the tier and the cycle
- * number, so no question repeats until the whole pool has been used. A new
- * cycle never opens with the question that closed the previous one.
+ * BST in summer). Which questions those are comes from the schedule
+ * (schedule.ts).
  */
-import { TIERS, type Question, type Tier } from './types';
 
 /** Puzzle No. 1 was played on this London date. */
 export const LAUNCH_DATE = '2026-11-06';
@@ -87,6 +82,18 @@ export function puzzleNumber(dateKey: string): number {
   return dayIndex(dateKey) + 1;
 }
 
+/** Past puzzles open to the archive on `todayKey`, newest first: launch day to yesterday. */
+export function archiveDays(todayKey: string): string[] {
+  const out: string[] = [];
+  for (let d = addDays(todayKey, -1); daysBetween(LAUNCH_DATE, d) >= 0; d = addDays(d, -1)) out.push(d);
+  return out;
+}
+
+/** Whether `key` is a real date the archive offers on `todayKey` (not today, not the future). */
+export function isArchiveDay(key: string, todayKey: string): boolean {
+  return /^\d{4}-\d{2}-\d{2}$/.test(key) && addDays(key, 0) === key && daysBetween(LAUNCH_DATE, key) >= 0 && daysBetween(key, todayKey) >= 1;
+}
+
 /** "Friday 6 November 2026". */
 export function formatDateLabel(dateKey: string): string {
   const [y, m, d] = dateKey.split('-').map(Number);
@@ -99,95 +106,4 @@ export function formatDateLabel(dateKey: string): string {
   })
     .format(new Date(Date.UTC(y, m - 1, d)))
     .replace(',', '');
-}
-
-// ------------------------------------------------------------ PRNG ---
-
-/** cyrb53-style string hash → 32-bit seed. */
-export function hashSeed(text: string): number {
-  let h1 = 0xdeadbeef;
-  let h2 = 0x41c6ce57;
-  for (let i = 0; i < text.length; i++) {
-    const ch = text.charCodeAt(i);
-    h1 = Math.imul(h1 ^ ch, 2654435761);
-    h2 = Math.imul(h2 ^ ch, 1597334677);
-  }
-  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
-  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-  return (h1 ^ h2) >>> 0;
-}
-
-/** mulberry32: small, fast, well-distributed 32-bit PRNG returning [0, 1). */
-export function mulberry32(seed: number): () => number {
-  let a = seed >>> 0;
-  return () => {
-    a = (a + 0x6d2b79f5) >>> 0;
-    let t = a;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-/** Fisher–Yates shuffle of 0..n-1 driven by a seeded PRNG. */
-export function seededPermutation(n: number, seedText: string): number[] {
-  const rand = mulberry32(hashSeed(seedText));
-  const out = Array.from({ length: n }, (_, i) => i);
-  for (let i = n - 1; i > 0; i--) {
-    const j = Math.floor(rand() * (i + 1));
-    [out[i], out[j]] = [out[j], out[i]];
-  }
-  return out;
-}
-
-const floorDiv = (a: number, b: number) => Math.floor(a / b);
-const mod = (a: number, b: number) => ((a % b) + b) % b;
-
-/**
- * The order in which a tier's pool is played during one cycle. If the shuffle
- * would open with the question that ended the previous cycle, the first two
- * are swapped so the same question never appears on consecutive days.
- */
-export function cycleOrder(tier: Tier, cycle: number, poolSize: number): number[] {
-  const order = seededPermutation(poolSize, `chronomap/${tier}/${cycle}`);
-  if (poolSize >= 3) {
-    const previous = seededPermutation(poolSize, `chronomap/${tier}/${cycle - 1}`);
-    if (order[0] === previous[poolSize - 1]) [order[0], order[1]] = [order[1], order[0]];
-  }
-  return order;
-}
-
-/** Questions grouped by tier, each pool sorted by id so order is stable. */
-export function poolsByTier(questions: Question[]): Record<Tier, Question[]> {
-  const pools = Object.fromEntries(TIERS.map((t) => [t, [] as Question[]])) as unknown as Record<Tier, Question[]>;
-  for (const q of questions) pools[q.tier]?.push(q);
-  for (const t of TIERS) pools[t].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
-  return pools;
-}
-
-/** The question for one tier on a given day (day 0 = launch). */
-export function questionForDay(pool: Question[], tier: Tier, day: number): Question {
-  if (!pool.length) throw new Error(`No questions in tier ${tier}`);
-  const cycle = floorDiv(day, pool.length);
-  const order = cycleOrder(tier, cycle, pool.length);
-  return pool[order[mod(day, pool.length)]];
-}
-
-export interface DailySelection {
-  dateKey: string;
-  number: number;
-  dateLabel: string;
-  questions: Question[];
-}
-
-/** Today's (or any day's) seven questions, Q1 = tier 1 … Q7 = tier 7. */
-export function dailyPuzzle(questions: Question[], dateKey: string = londonDateKey()): DailySelection {
-  const pools = poolsByTier(questions);
-  const day = dayIndex(dateKey);
-  return {
-    dateKey,
-    number: day + 1,
-    dateLabel: formatDateLabel(dateKey),
-    questions: TIERS.map((t) => questionForDay(pools[t], t, day)),
-  };
 }

@@ -13,6 +13,7 @@
     "validate": "tsx scripts/validate-questions.ts",
     "build:geodata": "tsx scripts/build-geodata.ts",
     "build:countries": "tsx scripts/build-countries.ts",
+    "schedule:extend": "tsx scripts/extend-schedule.ts",
     "check:places": "tsx scripts/check-places.ts",
     "check": "npm run typecheck && npm test && npm run validate",
     "simulate:scoring": "tsx scripts/simulate-scoring.ts"

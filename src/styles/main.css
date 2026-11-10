@@ -390,7 +390,8 @@ button {
 }
 
 [data-phase='start'] .masthead,
-[data-phase='results'] .masthead {
+[data-phase='results'] .masthead,
+[data-phase='ledger'] .masthead {
   visibility: hidden;
 }
 
@@ -1055,5 +1056,165 @@ button {
     from {
       opacity: 0;
     }
+  }
+}
+
+/* ------------------------------------------------------------ archive --- */
+
+/* A red rubber stamp marks every screen of an archive game. */
+.archive-stamp {
+  display: inline-block;
+  padding: 1px 10px 2px;
+  font-family: var(--font-caps);
+  font-size: 17px;
+  letter-spacing: 0.18em;
+  color: var(--red);
+  border: 2px solid var(--red);
+  border-radius: 3px;
+  box-shadow: inset 0 0 0 2px var(--paper-slip), inset 0 0 0 3px var(--red);
+  transform: rotate(-5deg);
+  opacity: 0.88;
+  mix-blend-mode: multiply;
+}
+
+.masthead .archive-stamp {
+  position: absolute;
+  right: 6px;
+  bottom: -6px;
+  font-size: 13px;
+  padding: 0 7px 1px;
+  background: var(--paper-slip);
+}
+
+.start-stamp {
+  margin: -4px 0 4px;
+}
+
+.archive-note {
+  margin: 4px auto 12px;
+  max-width: 46ch;
+  font-size: 15px;
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
+.archive-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 12px 0 0;
+}
+
+a.ink-button {
+  display: inline-block;
+  padding: 6px 16px;
+  text-decoration: none;
+}
+
+/* The almanac: a ruled ledger page with a red margin line. */
+.panel-ledger .rule {
+  margin-bottom: 8px;
+}
+
+.ledger-pages {
+  max-height: min(56vh, 520px);
+  overflow-y: auto;
+  margin: 0 -8px 10px;
+  padding: 0 8px;
+  text-align: left;
+}
+
+.ledger-month h3 {
+  margin: 12px 0 2px;
+  font-family: var(--font-caps);
+  font-weight: normal;
+  font-size: 18px;
+  letter-spacing: 0.08em;
+  color: var(--red);
+}
+
+.ledger {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid rgba(51, 34, 15, 0.45);
+  border-left: 3px double rgba(138, 42, 27, 0.6);
+}
+
+.ledger-row {
+  display: grid;
+  grid-template-columns: 4.2em auto 1fr auto;
+  align-items: baseline;
+  gap: 8px;
+  padding: 6px 8px 5px 10px;
+  border-bottom: 1px solid rgba(51, 34, 15, 0.2);
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 17px;
+}
+
+a.ledger-row:hover {
+  background: rgba(51, 34, 15, 0.06);
+}
+
+a.ledger-row:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: -2px;
+}
+
+.ledger-no {
+  font-family: var(--font-caps);
+  font-size: 15px;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.ledger-ontheday {
+  font-style: italic;
+  font-size: 14px;
+  color: var(--ink-faint);
+}
+
+/* Dotted leader from the date to the entry, as in a printed table. */
+.ledger-leader {
+  align-self: end;
+  margin-bottom: 0.35em;
+  border-bottom: 1.5px dotted rgba(51, 34, 15, 0.35);
+}
+
+.ledger-entry {
+  display: inline-flex;
+  gap: 8px;
+  align-items: baseline;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.ledger-entry.unplayed {
+  font-style: italic;
+  color: var(--ink-faint);
+}
+
+.ledger-squares {
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.ledger-score {
+  min-width: 3.2em;
+  text-align: right;
+}
+
+@media (max-width: 640px) {
+  .ledger-row {
+    grid-template-columns: 3.6em 1fr auto;
+    font-size: 16px;
+  }
+  .ledger-leader {
+    display: none;
+  }
+  .ledger-squares {
+    display: none;
   }
 }

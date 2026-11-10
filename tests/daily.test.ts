@@ -9,13 +9,10 @@ import {
   formatDateLabel,
   addDays,
   daysBetween,
-  dailyPuzzle,
-  questionForDay,
-  poolsByTier,
-  seededPermutation,
+  archiveDays,
+  isArchiveDay,
   LAUNCH_DATE,
 } from '../src/game/daily.ts';
-import { TIERS, type Question, type Tier } from '../src/game/types.ts';
 
 const utc = (s: string) => new Date(s);
 
@@ -58,61 +55,14 @@ test('day arithmetic and puzzle numbers', () => {
   assert.equal(formatDateLabel('2026-11-06'), 'Friday 6 November 2026');
 });
 
-test('seeded permutation is deterministic and a true permutation', () => {
-  const a = seededPermutation(40, 'x');
-  assert.deepEqual(a, seededPermutation(40, 'x'));
-  assert.notDeepEqual(a, seededPermutation(40, 'y'));
-  assert.deepEqual([...a].sort((x, y) => x - y), Array.from({ length: 40 }, (_, i) => i));
-});
-
-function fakeBank(perTier: number): Question[] {
-  const qs: Question[] = [];
-  for (const tier of TIERS) {
-    for (let i = 0; i < perTier; i++) {
-      qs.push({
-        id: `t${tier}-q${String(i).padStart(3, '0')}`,
-        event: `Event ${tier}/${i}`,
-        dateDisplay: '1900',
-        year: 1900,
-        tier,
-        lat: 0,
-        lng: 0,
-        note: '',
-        source: '',
-      });
-    }
-  }
-  return qs;
-}
-
-test('no repeats within a cycle; never the same question two days running', () => {
-  for (const size of [3, 7, 40, 41]) {
-    const pools = poolsByTier(fakeBank(size));
-    for (const tier of [1, 4, 7] as Tier[]) {
-      const pool = pools[tier];
-      for (let cycle = -2; cycle < 6; cycle++) {
-        const ids = new Set<string>();
-        for (let d = cycle * size; d < (cycle + 1) * size; d++) ids.add(questionForDay(pool, tier, d).id);
-        assert.equal(ids.size, size, `tier ${tier}, pool ${size}, cycle ${cycle}`);
-      }
-      for (let d = -50; d < 400; d++) {
-        assert.notEqual(
-          questionForDay(pool, tier, d).id,
-          questionForDay(pool, tier, d + 1).id,
-          `tier ${tier}, pool ${size}, day ${d}`,
-        );
-      }
-    }
-  }
-});
-
-test('daily puzzle: one question per tier, in order, the same for everyone', () => {
-  const bank = fakeBank(40);
-  const a = dailyPuzzle(bank, '2027-03-14');
-  const b = dailyPuzzle([...bank].reverse(), '2027-03-14'); // input order doesn't matter
-  assert.deepEqual(a.questions.map((q) => q.tier), [1, 2, 3, 4, 5, 6, 7]);
-  assert.deepEqual(a.questions.map((q) => q.id), b.questions.map((q) => q.id));
-  assert.equal(a.number, daysBetween(LAUNCH_DATE, '2027-03-14') + 1);
-  const c = dailyPuzzle(bank, '2027-03-15');
-  assert.notDeepEqual(a.questions.map((q) => q.id), c.questions.map((q) => q.id));
+test('the archive runs from launch to yesterday: never today, never the future', () => {
+  assert.deepEqual(archiveDays(LAUNCH_DATE), []);
+  assert.deepEqual(archiveDays('2026-11-10'), ['2026-11-09', '2026-11-08', '2026-11-07', '2026-11-06']);
+  assert.equal(isArchiveDay('2026-11-09', '2026-11-10'), true);
+  assert.equal(isArchiveDay(LAUNCH_DATE, '2026-11-10'), true);
+  assert.equal(isArchiveDay('2026-11-10', '2026-11-10'), false, 'today');
+  assert.equal(isArchiveDay('2026-11-11', '2026-11-10'), false, 'tomorrow');
+  assert.equal(isArchiveDay('2026-11-05', '2026-11-10'), false, 'before launch');
+  assert.equal(isArchiveDay('2026-02-30', '2027-01-01'), false, 'not a date');
+  assert.equal(isArchiveDay('9 Nov', '2026-11-10'), false);
 });

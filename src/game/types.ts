@@ -51,6 +51,8 @@ export interface Puzzle {
   dateKey: string;
   /** e.g. "Friday 6 November 2026". */
   dateLabel: string;
+  /** A past day replayed from the archive, not today's daily. */
+  archive: boolean;
   questions: Question[];
 }
 
@@ -73,9 +75,26 @@ export interface Stats {
   bestScore: number;
 }
 
+/** What the player did on a past day, for the archive ledger. */
+export interface PastDay {
+  /** Played on the day itself, or later from the archive. */
+  via: 'daily' | 'archive';
+  finished: boolean;
+  /** Round scores so far. */
+  scores: number[];
+}
+
 export interface Persistence {
+  /** Today's daily game. */
   loadGame(dateKey: string): SavedGame | null;
+  /** Saves a daily game; a finished one counts towards streaks and stats. */
   saveGame(game: SavedGame): void;
+  /** An archive game: its own save, or else a daily game left unfinished on that day. */
+  loadArchiveGame(dateKey: string): SavedGame | null;
+  /** Saves an archive game apart from daily results; it never touches streaks or stats. */
+  saveArchiveGame(game: SavedGame): void;
+  /** Every past day the player has played, by date key. */
+  pastDays(todayKey: string): Record<string, PastDay>;
   /** Stats including today's finished game, if any. */
   stats(): Stats;
   getUnits(): Units;

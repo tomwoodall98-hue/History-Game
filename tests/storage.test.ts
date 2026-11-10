@@ -98,3 +98,47 @@ test('broken storage never throws', () => {
   const none = new LocalStore(() => '2026-11-08', null);
   assert.doesNotThrow(() => none.saveGame(game('2026-11-08', false, [1])));
 });
+
+test('archive games are stored apart and never touch streaks or stats', () => {
+  const mem = new MemoryStorage() as unknown as Storage;
+  const s = new LocalStore(() => '2026-11-10', mem);
+  s.saveGame(game('2026-11-09', true, [500, 500, 500, 500, 500, 500, 500])); // yesterday, on the day
+  const before = s.stats();
+  // A missed day played later from the archive...
+  s.saveArchiveGame(game('2026-11-07', true, [1000, 1000, 1000, 1000, 1000, 1000, 1000]));
+  s.saveArchiveGame(game('2026-11-08', false, [800]));
+  const t = new LocalStore(() => '2026-11-10', mem);
+  // ...is not a daily result: no streak, no average, no best score from it.
+  assert.deepEqual(t.stats(), before);
+  assert.deepEqual(Object.keys(parseStored(mem.getItem('chronomap:v1')).history), ['2026-11-09']);
+  assert.equal(t.loadGame('2026-11-07'), null, 'the daily slot never sees archive games');
+  assert.equal(t.loadArchiveGame('2026-11-07')?.finished, true);
+  assert.equal(t.loadArchiveGame('2026-11-08')?.rounds.length, 1);
+  assert.equal(t.loadArchiveGame('2026-11-09'), null, 'a day finished on the day is not replayed');
+  assert.deepEqual(t.pastDays('2026-11-10'), {
+    '2026-11-07': { via: 'archive', finished: true, scores: [1000, 1000, 1000, 1000, 1000, 1000, 1000] },
+    '2026-11-08': { via: 'archive', finished: false, scores: [800] },
+    '2026-11-09': { via: 'daily', finished: true, scores: [500, 500, 500, 500, 500, 500, 500] },
+  });
+});
+
+test('a daily game left unfinished carries on in the archive', () => {
+  const mem = new MemoryStorage() as unknown as Storage;
+  const s = new LocalStore(() => '2026-11-10', mem);
+  s.saveGame(game('2026-11-09', false, [700, 600])); // started yesterday, not finished
+  assert.deepEqual(s.pastDays('2026-11-10')['2026-11-09'], { via: 'daily', finished: false, scores: [700, 600] });
+  const resumed = s.loadArchiveGame('2026-11-09')!;
+  assert.equal(resumed.rounds.length, 2);
+  resumed.rounds.push(...game('2026-11-09', true, [1, 2, 3, 4, 5]).rounds);
+  s.saveArchiveGame({ ...resumed, finished: true });
+  assert.equal(s.stats().played, 0, 'finishing it late does not count as a daily');
+  assert.equal(s.pastDays('2026-11-10')['2026-11-09'].via, 'archive');
+  // Today never appears among past days.
+  s.saveGame(game('2026-11-10', true, [1, 1, 1, 1, 1, 1, 1]));
+  assert.equal(s.pastDays('2026-11-10')['2026-11-10'], undefined);
+});
+
+test('malformed archive entries are dropped', () => {
+  const data = parseStored(JSON.stringify({ archive: { '2026-11-07': { dateKey: '2026-11-08' }, nope: {}, '2026-11-06': game('2026-11-06', true, [1]) } }));
+  assert.deepEqual(Object.keys(data.archive), ['2026-11-06']);
+});

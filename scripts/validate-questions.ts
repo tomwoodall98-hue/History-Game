@@ -18,6 +18,9 @@
  *   - years up to 2000, and the year appears in dateDisplay
  *   - notes are one or two sentences
  *   - an even spread of questions across the seven tiers (at least 40 each)
+ *   - the puzzle schedule (src/data/schedule.json): every scheduled id still
+ *     exists in the right tier, and the schedule runs well past today
+ *     (`npm run schedule:extend` adds days)
  *
  * Exits with code 1 if anything fails; warnings don't fail the run.
  */
@@ -31,12 +34,18 @@ import { createProjection, MAP_WIDTH, MAP_HEIGHT, LAT_NORTH, LAT_SOUTH } from '.
 import { TILE_COLS, TILE_ROWS, type BaseMap } from '../src/map/tiles.ts';
 import { EARTH_RADIUS_KM, haversineKm, scoringParams } from '../src/game/scoring.ts';
 import { CountryIndex } from '../src/game/countries.ts';
+import { addDays, daysBetween, londonDateKey, LAUNCH_DATE } from '../src/game/daily.ts';
+import { scheduleEnd, type Schedule } from '../src/game/schedule.ts';
 import { TIERS, type Question } from '../src/game/types.ts';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const QUESTIONS = process.argv[2] ? resolve(process.argv[2]) : resolve(ROOT, 'src/data/questions.json');
 const BASEMAP = resolve(ROOT, 'src/data/basemap.topo.json');
 const COUNTRIES = resolve(ROOT, 'src/data/countries.topo.json');
+const SCHEDULE = resolve(ROOT, 'src/data/schedule.json');
+/** Warn when the schedule runs out within this many days; fail within SCHEDULE_FAIL_DAYS. */
+const SCHEDULE_WARN_DAYS = 90;
+const SCHEDULE_FAIL_DAYS = 14;
 const TILE_DIR = resolve(ROOT, 'public/geo/tiles');
 
 const MIN_PER_TIER = 40;
@@ -275,6 +284,26 @@ for (const q of questions) {
   }
 }
 
+// The schedule: past puzzles are frozen, so every id in it must stay in the bank.
+const schedule = JSON.parse(readFileSync(SCHEDULE, 'utf8')) as Schedule;
+const byId = new Map(questions.map((q) => [q.id, q]));
+if (schedule.start !== LAUNCH_DATE) err('schedule', `starts on ${schedule.start}, not launch day ${LAUNCH_DATE}`);
+schedule.days.forEach((day, i) => {
+  const date = addDays(schedule.start, i);
+  if (!Array.isArray(day) || day.length !== TIERS.length) {
+    err('schedule', `${date} should list ${TIERS.length} question ids`);
+    return;
+  }
+  day.forEach((id, t) => {
+    const q = byId.get(id);
+    if (!q) err('schedule', `${date} plays ${id}, which is no longer in the bank; ids are never removed once scheduled`);
+    else if (q.tier !== TIERS[t]) err('schedule', `${date} plays ${id} as Q${t + 1}, but it is now tier ${q.tier}; scheduled questions keep their tier`);
+  });
+});
+const daysLeft = daysBetween(londonDateKey(), scheduleEnd(schedule));
+if (daysLeft < SCHEDULE_FAIL_DAYS) err('schedule', `runs out on ${scheduleEnd(schedule)}; run npm run schedule:extend and commit the result`);
+else if (daysLeft < SCHEDULE_WARN_DAYS) warn('schedule', `runs out on ${scheduleEnd(schedule)}, in ${daysLeft} days; run npm run schedule:extend soon`);
+
 // Tier spread.
 const perTier = new Map<number, number>(TIERS.map((t) => [t, 0]));
 for (const q of questions) if (TIERS.includes(q.tier)) perTier.set(q.tier, perTier.get(q.tier)! + 1);
@@ -310,6 +339,7 @@ console.log(`Chronomap question bank: ${questions.length} questions`);
 table('Region', region);
 table('Era', (q) => era(q.year));
 console.log(`\nAt sea: ${atSea} (${farOut} more than ${COAST_KM} km from a coast); no same-country floor`);
+console.log(`Schedule: ${schedule.days.length} days, ${schedule.start} to ${scheduleEnd(schedule)}`);
 if (overridden.length) console.log(`Country given by hand (island too small for the outlines): ${overridden.join(', ')}`);
 if (warnings.length) {
   console.log(`\n${warnings.length} warning(s):`);

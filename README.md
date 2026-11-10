@@ -43,6 +43,7 @@ npm run dev          # http://localhost:5173
 | `npm run simulate:scoring` | Expected scores for good, average and poor players (see below) |
 | `npm run build:geodata`    | Rebuild the map data from Natural Earth (rarely needed)        |
 | `npm run build:countries`  | Rebuild the scoring-only country outlines (rarely needed)      |
+| `npm run schedule:extend`  | Append days to the frozen puzzle schedule                      |
 
 ## How to play
 
@@ -63,9 +64,18 @@ Reopening the page after finishing shows your results and a countdown to the
 next puzzle. Leaving mid-game resumes where you left off, including a mark you
 hadn't confirmed yet.
 
+**Past puzzles.** **Past puzzles** (on the start and results screens) opens the
+Almanac: a ledger of every puzzle from launch to yesterday, with your score for
+each day you played. Today's puzzle joins it tomorrow, and there are no future
+days. Any day you didn't finish on the day opens at `?day=YYYY-MM-DD` and plays
+exactly like the daily, marked with a red *Archive* stamp. Archive games are
+saved apart from daily results: they never count towards your streak, played
+days or average, and their share line reads `Chronomap #3 · Archive — …`. A
+daily game you left unfinished carries on in the archive.
+
 **Keyboard:** Tab to the map, then the arrow keys pan, `+`/`−` zoom, Space marks
 the centre crosshair and Enter confirms or continues. `Esc` leaves the results
-map.
+map and closes the Almanac.
 
 ## Scoring
 
@@ -132,21 +142,36 @@ now, an average player at ~4,300 and random clicking at ~190.
   midnight there (GMT or BST). Puzzle No. 1 was played on
   `LAUNCH_DATE` = 2026-11-06 (`src/game/daily.ts`).
 - Q1 comes from tier 1, Q2 from tier 2, and so on.
-- Each tier is played in *cycles*. A cycle shows every question in that tier's
-  pool once, in an order shuffled by a seeded PRNG (mulberry32, seeded from the
-  tier and cycle number). So everyone sees the same questions, and no question
-  repeats until its whole pool has been used. A new cycle never opens with the
-  question that closed the previous one.
-- Everything is computed in the browser. Progress, history, streaks and the
-  km/miles choice live in `localStorage` (every access is wrapped in
-  `try/catch`, so private browsing still plays, it just doesn't remember).
+- **The schedule is frozen.** `src/data/schedule.json` lists the seven
+  question ids for every day from launch, one day per line, and the game reads
+  each day's puzzle from it. A day in the schedule never changes, whatever
+  happens to the question bank, so past puzzles (and the archive) stay exactly
+  as they were played. A test checks that adding questions changes no
+  scheduled day.
+- `npm run schedule:extend` appends days (by default to a year from today;
+  `-- --until YYYY-MM-DD` for another date). It never changes a day that has
+  been played; `--refresh` (below) only redraws days after tomorrow. New days
+  follow the same rules tier by tier: a *cycle* plays every question in the
+  pool once, in a seeded random order (mulberry32), before any repeats, and
+  the same question never appears two days running. Questions added to the
+  bank join the cycle in progress, so they come up within a pool's worth of
+  days.
+- `npm run validate` fails if a scheduled question has been removed or has
+  changed tier, and warns 90 days before the schedule runs out (it fails 14
+  days before). If the schedule ever did run out, later days would be worked
+  out from the current bank, but they wouldn't be frozen until committed.
+- Everything is computed in the browser. Progress, history, streaks, archive
+  games and the km/miles choice live in `localStorage` (every access is
+  wrapped in `try/catch`, so private browsing still plays, it just doesn't
+  remember).
 
-**Changing the bank changes the schedule.** Pools are sorted by id and their
-size sets the cycle length, so adding or removing questions in a tier reshuffles
-that tier's future days (and could repeat a question early within the current
-cycle). A game someone has already started is safe: it stores its question ids
-and keeps them. If the schedule matters, add questions in batches just before a
-cycle boundary, which is every pool-size days from launch.
+**After adding questions,** run `npm run schedule:extend -- --refresh` and
+commit `schedule.json`. It redraws only the scheduled days after tomorrow,
+which nobody can have seen, so the new questions join the cycles in progress
+straight away; today, tomorrow and every past day stay exactly as they were.
+Without `--refresh`, new questions wait until the schedule is extended past its
+current end. Never remove a scheduled question or change its tier: the
+validator refuses.
 
 ## Adding questions
 

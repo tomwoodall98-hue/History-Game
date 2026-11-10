@@ -3,7 +3,7 @@
  * wrapped in try/catch: storage can be disabled, full, or throw in private
  * modes, and the game must still be playable (just not remembered).
  */
-import type { SavedGame, Stats, Persistence } from './types';
+import type { SavedGame, Stats, Persistence, PastDay } from './types';
 import type { Units } from './scoring';
 import { addDays, daysBetween } from './daily';
 
@@ -21,13 +21,16 @@ export interface StoredData {
   version: 1;
   /** The most recent game in full (finished or not). */
   current: SavedGame | null;
-  /** Finished games by London date key. */
+  /** Finished daily games by London date key: streaks and stats come from these alone. */
   history: Record<string, HistoryEntry>;
+  /** Archive games (past days played later), finished or not, by date key. */
+  archive: Record<string, SavedGame>;
   units: Units;
   seenIntro: boolean;
 }
 
-const empty = (): StoredData => ({ version: 1, current: null, history: {}, units: 'km', seenIntro: false });
+const empty = (): StoredData => ({ version: 1, current: null, history: {}, archive: {}, units: 'km', seenIntro: false });
+const DATE_KEY = /^\d{4}-\d{2}-\d{2}$/;
 
 function isSavedGame(v: unknown): v is SavedGame {
   const g = v as SavedGame;
@@ -50,10 +53,13 @@ export function parseStored(raw: string | null): StoredData {
     if (isSavedGame(v.current)) data.current = v.current;
     if (v.history && typeof v.history === 'object') {
       for (const [k, e] of Object.entries(v.history)) {
-        if (/^\d{4}-\d{2}-\d{2}$/.test(k) && e && Array.isArray(e.s) && e.s.every((n) => typeof n === 'number')) {
+        if (DATE_KEY.test(k) && e && Array.isArray(e.s) && e.s.every((n) => typeof n === 'number')) {
           data.history[k] = { p: Number(e.p) || 0, s: e.s };
         }
       }
+    }
+    if (v.archive && typeof v.archive === 'object') {
+      for (const [k, g] of Object.entries(v.archive)) if (DATE_KEY.test(k) && isSavedGame(g) && g.dateKey === k) data.archive[k] = g;
     }
     if (v.units === 'mi' || v.units === 'km') data.units = v.units;
     data.seenIntro = v.seenIntro === true;
@@ -144,6 +150,35 @@ export class LocalStore implements Persistence {
       this.data.history[game.dateKey] = { p: game.puzzle, s: game.rounds.map((r) => r.score) };
     }
     this.write();
+  }
+
+  loadArchiveGame(dateKey: string): SavedGame | null {
+    this.data = this.read();
+    const g = this.data.archive[dateKey] ?? this.data.current;
+    if (!g || g.dateKey !== dateKey) return null;
+    // A daily game finished on the day isn't replayed; one left unfinished carries on here.
+    if (g === this.data.current && g.finished) return null;
+    return structuredClone(g);
+  }
+
+  saveArchiveGame(game: SavedGame): void {
+    this.data = this.read();
+    this.data.archive[game.dateKey] = structuredClone(game);
+    this.write();
+  }
+
+  pastDays(todayKey: string): Record<string, PastDay> {
+    this.data = this.read();
+    const out: Record<string, PastDay> = {};
+    const { current, archive, history } = this.data;
+    if (current && current.dateKey < todayKey && !current.finished && current.rounds.length) {
+      out[current.dateKey] = { via: 'daily', finished: false, scores: current.rounds.map((r) => r.score) };
+    }
+    for (const [k, g] of Object.entries(archive)) {
+      if (k < todayKey && (g.rounds.length || g.finished)) out[k] = { via: 'archive', finished: g.finished, scores: g.rounds.map((r) => r.score) };
+    }
+    for (const [k, e] of Object.entries(history)) if (k < todayKey) out[k] = { via: 'daily', finished: true, scores: e.s };
+    return out;
   }
 
   stats(): Stats {
