@@ -1,6 +1,7 @@
 import type { MapView } from '../map/MapView';
 import { cartoucheSVG, compassRoseSVG } from '../map/ornaments';
-import type { LngLat, Question, Puzzle, SavedGame, Persistence, Clock } from '../game/types';
+import type { LngLat, Question, Puzzle, SavedGame, Persistence, Clock, PastDay } from '../game/types';
+import { archiveDays, formatDateLabel, puzzleNumber, LAUNCH_DATE } from '../game/daily';
 import {
   ROUNDS,
   MAX_SCORE,
@@ -15,13 +16,25 @@ import {
 import type { CountryLookup } from '../game/countries';
 import { h, roman, countUp, copyText } from './dom';
 
-type Phase = 'start' | 'guess' | 'reveal' | 'results' | 'review';
+type Phase = 'start' | 'guess' | 'reveal' | 'results' | 'review' | 'ledger';
 
 const PIPS = 7;
 /** Longest wait for the country outlines before scoring on distance alone. */
 const COUNTRIES_WAIT_MS = 8000;
 
 const floorNote = (floor: number) => `Right country, so at least ${formatNumber(floor)} points.`;
+
+/** Link to a past day in the archive, or (with no day) back to today's puzzle. */
+const dayHref = (dateKey?: string) => (dateKey ? `${location.pathname}?day=${dateKey}` : location.pathname);
+
+const monthLabel = (dateKey: string) => formatDateLabel(dateKey).split(' ').slice(2).join(' '); // "November 2026"
+const shortDate = (dateKey: string) => formatDateLabel(dateKey).split(' ').slice(0, 3).join(' '); // "Monday 9 November"
+
+/** Children for replaceChildren, skipping the ones left out (null). */
+const nodes = (...xs: (Node | null | (Node | null)[])[]): Node[] => xs.flat().filter((x): x is Node => x != null);
+
+/** The red rubber stamp that marks an archive game. */
+const archiveStamp = () => h('span', { class: 'archive-stamp' }, 'Archive');
 
 export class App {
   private phase: Phase = 'start';
@@ -50,7 +63,7 @@ export class App {
     private readonly countries: () => Promise<CountryLookup | null>,
   ) {
     this.units = store.getUnits();
-    const saved = store.loadGame(puzzle.dateKey);
+    const saved = puzzle.archive ? store.loadArchiveGame(puzzle.dateKey) : store.loadGame(puzzle.dateKey);
     const ids = puzzle.questions.map((q) => q.id);
     this.game =
       saved && saved.puzzle === puzzle.number && saved.questionIds.join() === ids.join()
@@ -58,7 +71,15 @@ export class App {
         : { dateKey: puzzle.dateKey, puzzle: puzzle.number, questionIds: ids, rounds: [], pendingGuess: null, finished: false };
 
     this.header = h('header', { class: 'masthead' });
-    this.header.innerHTML = cartoucheSVG({ title: 'Chronomap', subtitle: `No. ${puzzle.number}`, idPrefix: 'mh' });
+    this.header.innerHTML = cartoucheSVG({
+      title: 'Chronomap',
+      subtitle: puzzle.archive ? `Archive · No. ${puzzle.number}` : `No. ${puzzle.number}`,
+      idPrefix: 'mh',
+    });
+    if (puzzle.archive) {
+      this.header.append(archiveStamp());
+      root.dataset.mode = 'archive';
+    }
     this.compass = h('div', { class: 'compass', 'aria-hidden': 'true', html: compassRoseSVG() });
     this.slip = h('section', { class: 'slip', 'aria-label': 'Question', hidden: true });
     this.panel = h('section', { class: 'panel', role: 'dialog', 'aria-modal': 'false' });
@@ -127,7 +148,8 @@ export class App {
   }
 
   private save(): void {
-    this.store.saveGame(this.game);
+    if (this.puzzle.archive) this.store.saveArchiveGame(this.game);
+    else this.store.saveGame(this.game);
   }
 
   private get roundIndex(): number {
@@ -150,26 +172,43 @@ export class App {
     this.map.setPickEnabled(false);
     this.map.clearMarkers();
     this.panel.className = 'panel panel-start';
-    this.panel.setAttribute('aria-label', 'Chronomap');
+    this.panel.setAttribute('aria-label', this.puzzle.archive ? `Chronomap archive, puzzle number ${this.puzzle.number}` : 'Chronomap');
     const begin = h('button', { class: 'ink-button big', type: 'button', onclick: () => this.begin() }, 'Begin');
     this.primary = begin;
     this.panel.replaceChildren(
-      h('div', { class: 'start-cartouche', html: cartoucheSVG({ title: 'Chronomap', subtitle: 'A Daily Atlas of History', idPrefix: 'st' }) }),
-      h('p', { class: 'start-date' }, this.puzzle.dateLabel),
-      h('p', { class: 'start-number' }, `Puzzle No. ${this.puzzle.number}`),
-      h('div', { class: 'rule', 'aria-hidden': 'true' }),
-      h(
-        'p',
-        { class: 'start-blurb' },
-        'Seven events from history, each with its date. Mark on the map where each one took place: the nearer your mark, the more points you score, up to 1,000 a round. The questions grow harder as you go.',
+      ...nodes(
+        h('div', { class: 'start-cartouche', html: cartoucheSVG({ title: 'Chronomap', subtitle: 'A Daily Atlas of History', idPrefix: 'st' }) }),
+        this.puzzle.archive ? h('p', { class: 'start-stamp' }, archiveStamp()) : null,
+        h('p', { class: 'start-date' }, this.puzzle.dateLabel),
+        h('p', { class: 'start-number' }, `Puzzle No. ${this.puzzle.number}`),
+        h('div', { class: 'rule', 'aria-hidden': 'true' }),
+        h(
+          'p',
+          { class: 'start-blurb' },
+          'Seven events from history, each with its date. Mark on the map where each one took place: the nearer your mark, the more points you score, up to 1,000 a round. The questions grow harder as you go.',
+        ),
+        this.puzzle.archive
+          ? h('p', { class: 'archive-note' }, `From the archive: this game is kept apart from your daily results and doesn't count towards your streak.`)
+          : null,
+        this.helpList(),
+        begin,
+        this.archiveLinks(() => this.showStart()),
       ),
-      this.helpList(),
-      begin,
     );
     this.panelVeil.hidden = false;
     this.updateInsets();
     this.map.resetView(0);
     requestAnimationFrame(() => begin.focus());
+  }
+
+  /** "Past puzzles", and in an archive game "Today's puzzle". */
+  private archiveLinks(back: () => void): HTMLElement {
+    return h(
+      'p',
+      { class: 'archive-links' },
+      h('button', { class: 'ink-button subtle', type: 'button', onclick: () => this.showLedger(back) }, 'Past puzzles'),
+      this.puzzle.archive ? h('a', { class: 'ink-button subtle', href: dayHref() }, 'Today’s puzzle') : null,
+    );
   }
 
   /** How-to-play notes; folded away once the player has seen them. */
@@ -392,9 +431,10 @@ export class App {
     const shareStatus = h('span', { class: 'share-status', role: 'status' });
     shareBtn.addEventListener('click', async () => {
       const url = location.href.split('#')[0].split('?')[0];
-      const ok = await copyText(shareText(this.puzzle.number, scores, url));
+      const text = shareText(this.puzzle.number, scores, url, this.puzzle.archive);
+      const ok = await copyText(text);
       shareStatus.textContent = ok ? 'Copied to clipboard' : 'Could not copy. Please copy it by hand.';
-      if (!ok) shareStatus.append(h('pre', { class: 'share-fallback' }, shareText(this.puzzle.number, scores, url)));
+      if (!ok) shareStatus.append(h('pre', { class: 'share-fallback' }, text));
       window.setTimeout(() => (shareStatus.textContent = ''), 4000);
     });
     this.primary = shareBtn;
@@ -427,36 +467,45 @@ export class App {
 
     const stats = this.store.stats();
     const countdown = h('span', { class: 'countdown-value' }, '');
+    const archive = this.puzzle.archive;
     this.panel.className = 'panel panel-results';
-    this.panel.setAttribute('aria-label', `Results for puzzle number ${this.puzzle.number}`);
+    this.panel.setAttribute('aria-label', `Results for ${archive ? 'archive ' : ''}puzzle number ${this.puzzle.number}`);
     this.panel.replaceChildren(
-      h('p', { class: 'results-kicker' }, `Puzzle No. ${this.puzzle.number} · ${this.puzzle.dateLabel}`),
-      h('h2', { class: 'results-title' }, 'Your Atlas'),
-      h(
-        'p',
-        { class: 'total' },
-        totalEl,
-        h('span', { class: 'total-max' }, ` / ${formatNumber(MAX_SCORE)}`),
+      ...nodes(
+        archive ? h('p', { class: 'start-stamp' }, archiveStamp()) : null,
+        h('p', { class: 'results-kicker' }, `Puzzle No. ${this.puzzle.number} · ${this.puzzle.dateLabel}`),
+        h('h2', { class: 'results-title' }, 'Your Atlas'),
+        h(
+          'p',
+          { class: 'total' },
+          totalEl,
+          h('span', { class: 'total-max' }, ` / ${formatNumber(MAX_SCORE)}`),
+        ),
+        h('p', { class: 'emoji-row', 'aria-hidden': 'true' }, scores.map(emojiFor).join('')),
+        table,
+        h('div', { class: 'share-row' }, shareBtn, shareStatus),
+        archive
+          ? h('p', { class: 'archive-note' }, 'Archive games are kept apart from your daily results and don’t count towards your streak.')
+          : [
+              h(
+                'dl',
+                { class: 'stats' },
+                h('div', null, h('dt', null, 'Played'), h('dd', null, String(stats.played))),
+                h('div', null, h('dt', null, 'Streak'), h('dd', null, String(stats.currentStreak))),
+                h('div', null, h('dt', null, 'Best streak'), h('dd', null, String(stats.maxStreak))),
+                h('div', null, h('dt', null, 'Average'), h('dd', null, formatNumber(stats.averageScore))),
+              ),
+              h('p', { class: 'countdown' }, 'Next puzzle in ', countdown),
+            ],
+        h('button', { class: 'ink-button subtle', type: 'button', onclick: () => this.showReview(null) }, 'Explore the map'),
+        this.archiveLinks(() => this.showResults(false)),
       ),
-      h('p', { class: 'emoji-row', 'aria-hidden': 'true' }, scores.map(emojiFor).join('')),
-      table,
-      h('div', { class: 'share-row' }, shareBtn, shareStatus),
-      h(
-        'dl',
-        { class: 'stats' },
-        h('div', null, h('dt', null, 'Played'), h('dd', null, String(stats.played))),
-        h('div', null, h('dt', null, 'Streak'), h('dd', null, String(stats.currentStreak))),
-        h('div', null, h('dt', null, 'Best streak'), h('dd', null, String(stats.maxStreak))),
-        h('div', null, h('dt', null, 'Average'), h('dd', null, formatNumber(stats.averageScore))),
-      ),
-      h('p', { class: 'countdown' }, 'Next puzzle in ', countdown),
-      h('button', { class: 'ink-button subtle', type: 'button', onclick: () => this.showReview(null) }, 'Explore the map'),
     );
     this.panelVeil.hidden = false;
     this.updateInsets();
     this.map.resetView(animate ? 700 : 0);
     if (animate) countUp(totalEl, this.total, formatNumber, 1100);
-    this.startCountdown(countdown);
+    if (!archive) this.startCountdown(countdown);
     this.announce(`Finished. ${formatNumber(this.total)} out of ${formatNumber(MAX_SCORE)}.`);
     requestAnimationFrame(() => shareBtn.focus({ preventScroll: true }));
   }
@@ -515,6 +564,86 @@ export class App {
     requestAnimationFrame(() => back.focus({ preventScroll: true }));
   }
 
+  // ------------------------------------------------------------- ledger ---
+
+  /** The almanac of past puzzles, like a page from a ledger. */
+  private showLedger(back: () => void): void {
+    this.setPhase('ledger');
+    window.clearInterval(this.countdownTimer);
+    this.slip.hidden = true;
+    this.map.setPickEnabled(false);
+    const today = this.clock.todayKey();
+    const days = archiveDays(today);
+    const past = this.store.pastDays(today);
+    const close = h('button', { class: 'ink-button primary', type: 'button', onclick: () => back() }, 'Close');
+    this.primary = close;
+    this.closeLedger = back;
+
+    const months: HTMLElement[] = [];
+    let list: HTMLElement | null = null;
+    let month = '';
+    for (const d of days) {
+      if (monthLabel(d) !== month) {
+        month = monthLabel(d);
+        list = h('ol', { class: 'ledger' });
+        months.push(h('section', { class: 'ledger-month', 'aria-label': month }, h('h3', null, month), list));
+      }
+      list!.append(h('li', null, this.ledgerRow(d, past[d])));
+    }
+
+    this.panel.className = 'panel panel-ledger';
+    this.panel.setAttribute('aria-label', 'Past puzzles');
+    this.panel.replaceChildren(
+      h('p', { class: 'results-kicker' }, `Every puzzle since ${formatDateLabel(LAUNCH_DATE).split(' ').slice(1).join(' ')}`),
+      h('h2', { class: 'results-title' }, 'The Almanac'),
+      h('div', { class: 'rule', 'aria-hidden': 'true' }),
+      days.length
+        ? h('div', { class: 'ledger-pages' }, months)
+        : h('p', { class: 'archive-note' }, 'Nothing here yet: each day’s puzzle joins the almanac the day after.'),
+      h('p', { class: 'archive-note' }, 'Today’s puzzle joins the almanac tomorrow. Archive games don’t count towards your streak.'),
+      close,
+    );
+    this.panelVeil.hidden = false;
+    this.panelVeil.scrollTop = 0;
+    requestAnimationFrame(() => (this.panel.querySelector<HTMLElement>('a.ledger-row') ?? close).focus({ preventScroll: true }));
+  }
+
+  private closeLedger: (() => void) | null = null;
+
+  private ledgerRow(dateKey: string, day: PastDay | undefined): HTMLElement {
+    const total = day ? day.scores.reduce((a, b) => a + b, 0) : 0;
+    const label = `No. ${puzzleNumber(dateKey)}`;
+    const date = shortDate(dateKey);
+    let entry: HTMLElement;
+    let spoken: string;
+    if (!day) {
+      entry = h('span', { class: 'ledger-entry unplayed' }, 'Unplayed');
+      spoken = 'not played';
+    } else if (!day.finished) {
+      entry = h('span', { class: 'ledger-entry unplayed' }, `In progress · ${day.scores.length} of ${ROUNDS}`);
+      spoken = `in progress, ${day.scores.length} of ${ROUNDS} rounds`;
+    } else {
+      entry = h(
+        'span',
+        { class: 'ledger-entry' },
+        h('span', { class: 'ledger-squares', 'aria-hidden': 'true' }, day.scores.map(emojiFor).join('')),
+        h('span', { class: 'ledger-score' }, formatNumber(total)),
+      );
+      spoken = `${formatNumber(total)} points${day.via === 'daily' ? ', played on the day' : ', from the archive'}`;
+    }
+    const cells = [
+      h('span', { class: 'ledger-no' }, label),
+      h('span', { class: 'ledger-date' }, date, day?.via === 'daily' && day.finished ? h('span', { class: 'ledger-ontheday' }, ' · on the day') : null),
+      h('span', { class: 'ledger-leader', 'aria-hidden': 'true' }),
+      entry,
+    ];
+    // A day finished on the day is in the books; everything else opens in the archive.
+    if (day?.via === 'daily' && day.finished) {
+      return h('div', { class: 'ledger-row done', 'aria-label': `${label}, ${date}: ${spoken}` }, cells);
+    }
+    return h('a', { class: 'ledger-row', href: dayHref(dateKey), 'aria-label': `${label}, ${date}: ${spoken}. Open in the archive.` }, cells);
+  }
+
   private closeReview(): void {
     this.slip.hidden = true;
     this.map.highlightReview(null);
@@ -535,6 +664,8 @@ export class App {
       this.primary?.click();
     } else if (e.key === 'Escape' && this.phase === 'review') {
       this.closeReview();
+    } else if (e.key === 'Escape' && this.phase === 'ledger') {
+      this.closeLedger?.();
     }
   }
 }

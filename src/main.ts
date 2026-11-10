@@ -5,12 +5,14 @@ import './styles/main.css';
 import baseMapUrl from './data/basemap.topo.json?url';
 import countriesUrl from './data/countries.topo.json?url';
 import questionsData from './data/questions.json';
+import scheduleData from './data/schedule.json';
 import { MapView } from './map/MapView';
 import type { BaseMap } from './map/tiles';
 import { applyPaperTexture } from './map/texture';
 import { App } from './ui/App';
 import type { Question, Puzzle, Clock } from './game/types';
-import { dailyPuzzle, londonDateKey, nextLondonMidnight } from './game/daily';
+import { isArchiveDay, londonDateKey, nextLondonMidnight } from './game/daily';
+import { dailyPuzzle, type Schedule } from './game/schedule';
 import { LocalStore } from './game/storage';
 import { CountryIndex, type CountryLookup } from './game/countries';
 
@@ -48,15 +50,19 @@ zoomControls.addEventListener('click', (e) => {
   else map.resetView();
 });
 
-// --- Today's puzzle, chosen from the date in Europe/London.
+// --- Today's puzzle, chosen from the date in Europe/London, or a past day
+// from the archive (?day=YYYY-MM-DD; never today or later).
 const allQuestions = questionsData as Question[];
 const todayKey = londonDateKey();
 const store = new LocalStore(() => londonDateKey());
-const daily = dailyPuzzle(allQuestions, todayKey);
-const puzzle: Puzzle = { ...daily };
-// If today's game was started before the question bank changed (a new
-// deploy mid-day), keep the questions the player was actually given.
-const saved = store.loadGame(todayKey);
+const requested = new URLSearchParams(location.search).get('day');
+const archiveDay = requested && isArchiveDay(requested, todayKey) ? requested : null;
+if (requested && !archiveDay) history.replaceState(null, '', location.pathname + location.hash);
+const daily = dailyPuzzle(allQuestions, scheduleData as Schedule, archiveDay ?? todayKey);
+const puzzle: Puzzle = { ...daily, archive: archiveDay != null };
+// If a game was started before the question bank changed (a new deploy
+// mid-day), keep the questions the player was actually given.
+const saved = archiveDay ? store.loadArchiveGame(archiveDay) : store.loadGame(todayKey);
 if (saved && saved.questionIds.join() !== daily.questions.map((q) => q.id).join()) {
   const byId = new Map(allQuestions.map((q) => [q.id, q]));
   const kept = saved.questionIds.map((id) => byId.get(id));

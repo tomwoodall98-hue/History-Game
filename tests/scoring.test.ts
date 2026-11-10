@@ -149,6 +149,7 @@ test('share text format', () => {
   const text = shareText(42, [1000, 900, 650, 820, 300, 520, 40]);
   assert.equal(text, 'Chronomap #42 — 4,230/7,000 🟩🟩🟨🟨🟧🟧🟥');
   assert.equal(MAX_SCORE, 7000);
+  assert.equal(shareText(3, [1000, 0, 0, 0, 0, 0, 0], undefined, true), 'Chronomap #3 · Archive — 1,000/7,000 🟩🟥🟥🟥🟥🟥🟥');
   assert.equal(shareText(1, [0, 0, 0, 0, 0, 0, 0], 'https://example.org/'), 'Chronomap #1 — 0/7,000 🟥🟥🟥🟥🟥🟥🟥\nhttps://example.org/');
 });
 
