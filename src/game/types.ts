@@ -18,10 +18,17 @@ export interface Question {
   tier: Tier;
   lat: number;
   lng: number;
-  /** Score decay distance in km; null/omitted → tier default. */
+  /** Score decay distance in km; null/omitted → tier default (× SEA_K_FACTOR at sea). */
   k?: number | null;
   /** Full marks within this many km; null/omitted → tier default. */
   bullseyeKm?: number | null;
+  /** Happened at sea: no same-country floor, and a longer default k. */
+  atSea?: boolean;
+  /**
+   * ADM0_A3 code of the answer's modern country, for the rare answer the
+   * country outlines miss (an island too small for them). Usually left out.
+   */
+  country?: string;
   /** One or two sentences shown after the guess. */
   note: string;
   /** Where the coordinates can be checked (usually Wikipedia). */
@@ -34,6 +41,8 @@ export interface RoundResult {
   guess: LngLat | null;
   distanceKm: number;
   score: number;
+  /** The same-country floor, when it decided the score. */
+  countryFloor?: number;
 }
 
 export interface Puzzle {

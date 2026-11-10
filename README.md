@@ -19,6 +19,8 @@ from the first to the seventh.
   tiles stream in only when you zoom in.
 - 280 questions (40 per difficulty tier) with notes and sources, checked by
   `npm run validate`.
+- Scoring gives credit for the right country, using Natural Earth's country
+  outlines. They are used for scoring only and never drawn.
 
 ## Running it
 
@@ -29,16 +31,18 @@ npm install
 npm run dev          # http://localhost:5173
 ```
 
-| Command                  | What it does                                                    |
-| ------------------------ | --------------------------------------------------------------- |
-| `npm run dev`            | Dev server with hot reload                                      |
-| `npm run build`          | Type-check and build the static site into `dist/`               |
-| `npm run preview`        | Serve the built `dist/` locally                                 |
-| `npm test`               | Unit tests (scoring, dates and DST, daily selection, storage)   |
-| `npm run validate`       | Check the question bank (see below)                             |
-| `npm run check`          | Type-check + tests + validate, as CI does                       |
-| `npm run check:places`   | Show the nearest towns / ancient sites to each question         |
-| `npm run build:geodata`  | Rebuild the map data from Natural Earth (rarely needed)         |
+| Command                    | What it does                                                   |
+| -------------------------- | -------------------------------------------------------------- |
+| `npm run dev`              | Dev server with hot reload                                     |
+| `npm run build`            | Type-check and build the static site into `dist/`              |
+| `npm run preview`          | Serve the built `dist/` locally                                |
+| `npm test`                 | Unit tests (scoring, countries, dates and DST, daily, storage) |
+| `npm run validate`         | Check the question bank (see below)                            |
+| `npm run check`            | Type-check + tests + validate, as CI does                      |
+| `npm run check:places`     | Show the nearest towns / ancient sites to each question        |
+| `npm run simulate:scoring` | Expected scores for good, average and poor players (see below) |
+| `npm run build:geodata`    | Rebuild the map data from Natural Earth (rarely needed)        |
+| `npm run build:countries`  | Rebuild the scoring-only country outlines (rarely needed)      |
 
 ## How to play
 
@@ -46,12 +50,13 @@ npm run dev          # http://localhost:5173
 2. Pan and zoom, then click or tap where you think it happened. Click again to
    move your mark, then **Confirm**.
 3. The answer appears as a red wax seal, with a dashed great-circle line from
-   your mark, the distance (km or miles), your points and a short note.
+   your mark, the distance (km or miles), your points and a short note. If
+   being in the right country lifted your score, it says so.
 4. After seven rounds you get your total, a breakdown, your streak and a
    **Share** button that copies a spoiler-free result:
 
    ```
-   Chronomap #42 — 5,830/7,000 🟩🟩🟨🟩🟧🟨🟥
+   Chronomap #42 — 6,020/7,000 🟩🟩🟩🟨🟩🟨🟧
    ```
 
 Reopening the page after finishing shows your results and a countdown to the
@@ -65,27 +70,61 @@ map.
 ## Scoring
 
 Distance is the great-circle (haversine) distance between your mark and the
-answer, never screen distance.
+answer, never screen distance. Points fall off along a bell curve, so a near
+miss keeps almost everything and a wild guess scores nothing:
 
 ```
-score = 1000                      if distance ≤ bullseyeKm
-score = round(1000 · e^(−d / k))  otherwise
+score = 1000                          if distance ≤ bullseyeKm
+score = round(1000 · e^(−(d′/k)²))    otherwise, where d′ = distance − bullseyeKm
 ```
 
 `k` and `bullseyeKm` come from the question, or from its tier's defaults if
-they are `null`:
+they are `null`. k grows with the tier: anyone who knows a famous event can put
+it within a few km, so a 1,000 km miss on tier 1 is a real mistake, while even
+experts can only place a deep cut within a few hundred. Later tiers are harder
+because they are obscure, not because the target shrinks.
 
-| Tier | k (km) | Bullseye (km) | At 100 km | At 500 km |
-| ---- | ------ | ------------- | --------- | --------- |
-| 1    | 1,200  | 30            | 920       | 659       |
-| 2    | 1,000  | 25            | 905       | 607       |
-| 3    | 800    | 20            | 882       | 535       |
-| 4    | 650    | 15            | 857       | 463       |
-| 5    | 500    | 15            | 819       | 368       |
-| 6    | 400    | 10            | 779       | 287       |
-| 7    | 300    | 10            | 717       | 189       |
+| Tier | k (km) | Bullseye (km) | At 250 km | At 500 km | At 1,000 km | At 2,000 km |
+| ---- | ------ | ------------- | --------- | --------- | ----------- | ----------- |
+| 1    | 1,000  | 30            | 953       | 802       | 390         | 21          |
+| 2    | 1,125  | 25            | 961       | 837       | 472         | 46          |
+| 3    | 1,250  | 20            | 967       | 863       | 541         | 81          |
+| 4    | 1,375  | 15            | 971       | 883       | 599         | 124         |
+| 5    | 1,500  | 15            | 976       | 901       | 650         | 174         |
+| 6    | 1,625  | 10            | 978       | 913       | 690         | 223         |
+| 7    | 1,750  | 10            | 981       | 925       | 726         | 274         |
 
-Share squares: 🟩 ≥ 800, 🟨 ≥ 500, 🟧 ≥ 200, 🟥 below 200.
+**The right country.** For events on land, a mark in the same modern country as
+the answer scores at least a floor, which is smaller for big countries:
+
+- 500 for countries up to an equivalent radius √(area/π) of 500 km (about
+  800,000 km²: the UK, Germany, France, Spain, Turkey…);
+- 250 from 1,500 km (Australia, Brazil, the USA, China, Canada, Russia);
+- log-linear in between (South Africa 450, Mexico 400, India 340).
+
+"Same country" in Russia can mean 2,000 km away, so a flat floor would pay
+more there than for a near miss across a border elsewhere. The floor only
+counts within 2,500 km of the answer, which leaves out overseas territories (a
+mark in French Guiana doesn't count for Paris). Countries come from Natural
+Earth's admin-0 outlines in `src/data/countries.topo.json`. They are used only
+for scoring, loaded in the background once the map is up: nothing in `src/map`
+imports them (a test checks), and the game never names a country.
+
+**At sea.** Events at sea (`atSea: true`) get no country floor. Instead their
+k defaults to 1.25 × the tier's; the few far out in open ocean set 1.5 ×.
+
+**Spread-out events.** A front, a disputed site or a migration has a bullseye
+of about half its extent, so a mark anywhere on it scores 1,000. Campaigns and
+expeditions also get 1.25 × the tier's k.
+
+Share squares: 🟩 ≥ 900, 🟨 ≥ 600, 🟧 ≥ 300, 🟥 below 300.
+
+`npm run simulate:scoring` plays the whole bank with simulated good, average
+and poor players (and random clicks) and prints the expected score per
+question, per tier and per game, next to the formula this one replaced
+(exponential, with k shrinking from 1,200 km to 300 km). The best real
+player averaged ~4,500 under the old formula; the model puts them at ~6,000
+now, an average player at ~4,300 and random clicking at ~190.
 
 ## The daily puzzle
 
@@ -135,20 +174,22 @@ Questions live in [`src/data/questions.json`](src/data/questions.json):
 | `event`       | What the player sees. Keep it under ~70 characters.                                                 |
 | `dateDisplay` | Free text: `"14 October 1066"`, `"AD 79"`, `"c. 2560 BC"`, `"1814–15"`.                              |
 | `year`        | Integer for sorting and checks; negative for BC (no year 0). Must be ≤ 2000 and appear in `dateDisplay`. |
-| `tier`        | 1 (famous event, famous place) … 7 (deep cut, needs precision).                                     |
+| `tier`        | 1 (famous event, famous place) … 7 (deep cut).                                                      |
 | `lat`, `lng`  | Decimal degrees (WGS84) of the actual site: the battlefield, the building, the wreck. Not the nearest city. Must be between 75°S and 80°N. |
-| `k`           | Score decay distance in km, or `null` for the tier default. Raise it for vague or sea events.        |
-| `bullseyeKm`  | Full marks inside this radius, or `null` for the tier default. Widen it for disputed or spread-out sites. |
+| `k`           | Score decay distance in km, or `null` for the tier default (× 1.25 at sea). Set 1.25 × the tier's for campaigns and expeditions, 1.5 × far out at sea. |
+| `bullseyeKm`  | Full marks inside this radius, or `null` for the tier default. For a spread-out or disputed site, about half its extent. |
+| `atSea`       | `true` for events at sea (naval battles, wrecks): no country floor and a longer default k. Leave out otherwise. |
+| `country`     | Rarely needed: the ADM0_A3 code (e.g. `"JPN"`) of the answer's country when it is on an island too small for the outlines. `npm run validate` says when. |
 | `note`        | One or two sentences. If the location is disputed, use the scholarly consensus and say so here.     |
 | `source`      | A page where the coordinates can be checked, usually Wikipedia.                                     |
 
-**Choosing a tier.** Difficulty is obscurity *and* precision. Tiers 1–2 are
-world-famous events in famous places (the name may give the place away). Tiers
-3–4 need regional knowledge (Waterloo, Runnymede). Tiers 5–6 are less familiar
-events, or ones whose location isn't obvious from the name (Talas, Tordesillas).
-Tier 7 is for deep cuts. From tier 5 up, avoid names that hand over the answer:
-"The Great Siege of Malta" became "The Knights of St John withstand a great
-Ottoman siege".
+**Choosing a tier.** Difficulty is how obscure the event is *and* how hard its
+place is to pin down. Tiers 1–2 are world-famous events in famous places (the
+name may give the place away). Tiers 3–4 need regional knowledge (Waterloo,
+Runnymede). Tiers 5–6 are less familiar events, or ones whose location isn't
+obvious from the name (Talas, Tordesillas). Tier 7 is for deep cuts. From tier
+5 up, avoid names that hand over the answer: "The Great Siege of Malta" became
+"The Knights of St John withstand a great Ottoman siege".
 
 **Checking accuracy.**
 
@@ -169,8 +210,10 @@ Ottoman siege".
 - Notes are one or two sentences; sources are https URLs.
 - **Land or coast:** each point must be on land, or within 50 km of a coast,
   tested against the same Natural Earth geometry the game draws (the detailed
-  tiles where available). Events that really happened far out at sea are listed
-  in `SEA_ALLOWLIST` in `scripts/validate-questions.ts`.
+  tiles where available), unless it is marked `atSea`. A point marked `atSea`
+  mustn't be well inland.
+- **Country:** a land event that falls in no country of the scoring outlines
+  is flagged (it would get no country floor); name its country with `country`.
 - **Even spread:** at least 40 questions per tier, with tiers within 25% of each
   other.
 
@@ -200,6 +243,8 @@ requested with a version query string.
 ```
 scripts/build-geodata.ts      Natural Earth → src/data/basemap.topo.json
                                             → public/geo/tiles/<col>-<row>.json
+scripts/build-countries.ts    Natural Earth admin-0 → src/data/countries.topo.json
+                                            (scoring only, never drawn)
 src/map/projection.ts         the Mercator projection, shared by app and scripts
 src/map/MapView.ts            SVG layers, pan/zoom, markers, route line, keyboard
 src/map/cells.ts              base/detail level-of-detail switching per grid cell

@@ -9,8 +9,12 @@
  *   - no duplicate events (ignoring case/punctuation) or near-identical spots
  *   - lat/lng in range and on the playable sheet (75°S–80°N)
  *   - each point is on land, or within 50 km of a coast, using the same
- *     Natural Earth data the game draws (detail tiles where available);
- *     sea events far from land must be listed in SEA_ALLOWLIST
+ *     Natural Earth data the game draws (detail tiles where available),
+ *     unless the question is marked `atSea`; an `atSea` point shouldn't be
+ *     on land
+ *   - flags land events that fall in no country of the scoring outlines
+ *     (they would get no same-country floor); `country` names one for islands
+ *     too small for the outlines
  *   - years up to 2000, and the year appears in dateDisplay
  *   - notes are one or two sentences
  *   - an even spread of questions across the seven tiers (at least 40 each)
@@ -26,22 +30,18 @@ import type { FeatureCollection, MultiLineString, MultiPolygon } from 'geojson';
 import { createProjection, MAP_WIDTH, MAP_HEIGHT, LAT_NORTH, LAT_SOUTH } from '../src/map/projection.ts';
 import { TILE_COLS, TILE_ROWS, type BaseMap } from '../src/map/tiles.ts';
 import { EARTH_RADIUS_KM, haversineKm, scoringParams } from '../src/game/scoring.ts';
+import { CountryIndex } from '../src/game/countries.ts';
 import { TIERS, type Question } from '../src/game/types.ts';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const QUESTIONS = process.argv[2] ? resolve(process.argv[2]) : resolve(ROOT, 'src/data/questions.json');
 const BASEMAP = resolve(ROOT, 'src/data/basemap.topo.json');
+const COUNTRIES = resolve(ROOT, 'src/data/countries.topo.json');
 const TILE_DIR = resolve(ROOT, 'public/geo/tiles');
-
-/** Events that genuinely happened far out at sea. */
-const SEA_ALLOWLIST = new Set<string>([
-  't1-titanic', // ~600 km off Newfoundland
-  't3-midway', // the carrier battle raged hundreds of km from the atoll
-  't7-endurance', // Weddell Sea, far from any mapped coast
-]);
 
 const MIN_PER_TIER = 40;
 const COAST_KM = 50;
+const INLAND_KM = 5;
 const MAX_YEAR = 2000;
 const NEAR_DUPLICATE_KM = 1;
 
@@ -120,7 +120,7 @@ const projection = createProjection(0);
 const cw = MAP_WIDTH / TILE_COLS;
 const ch = MAP_HEIGHT / TILE_ROWS;
 
-/** On land? If not, distance in km to the nearest mapped coast (≤ ~COAST_KM searched). */
+/** On land? And the distance in km to the nearest mapped coast (only nearby cells are searched). */
 function landCheck(lng: number, lat: number): { onLand: boolean; coastKm: number } {
   const xy = projection([lng, lat]);
   if (!xy) return { onLand: false, coastKm: Infinity };
@@ -128,7 +128,7 @@ function landCheck(lng: number, lat: number): { onLand: boolean; coastKm: number
   const c = Math.min(TILE_COLS - 1, Math.max(0, Math.floor(x / cw)));
   const r = Math.min(TILE_ROWS - 1, Math.max(0, Math.floor(y / ch)));
   const home = cell(c, r);
-  if (home && insideRings(x, y, home.land)) return { onLand: true, coastKm: 0 };
+  const onLand = !!home && insideRings(x, y, home.land);
   // Mercator is conformal: locally, 1 map unit = (2πR / MAP_WIDTH) · cos(lat) km.
   const kmPerUnit = ((2 * Math.PI * EARTH_RADIUS_KM) / MAP_WIDTH) * Math.cos((lat * Math.PI) / 180);
   let best = Infinity;
@@ -144,7 +144,7 @@ function landCheck(lng: number, lat: number): { onLand: boolean; coastKm: number
       }
     }
   }
-  return { onLand: false, coastKm: best * kmPerUnit };
+  return { onLand, coastKm: best * kmPerUnit };
 }
 
 // -------------------------------------------------------------- checks ---
@@ -169,7 +169,7 @@ function sentences(text: string): number {
   return (cleaned.match(/[.!?]['"’”)]*(?=\s+[A-Z'"‘“(]|\s*$)/g) ?? []).length;
 }
 
-const KEYS = ['id', 'event', 'dateDisplay', 'year', 'tier', 'lat', 'lng', 'k', 'bullseyeKm', 'note', 'source'];
+const KEYS = ['id', 'event', 'dateDisplay', 'year', 'tier', 'lat', 'lng', 'k', 'bullseyeKm', 'atSea', 'country', 'note', 'source'];
 const seenIds = new Map<string, number>();
 const seenEvents = new Map<string, string>();
 
@@ -217,6 +217,7 @@ questions.forEach((q, index) => {
     const v = q[key];
     if (v != null && (!isNum(v) || v <= 0)) err(id, `${key} must be a positive number or null`);
   }
+  if (q.atSea !== undefined && typeof q.atSea !== 'boolean') err(id, 'atSea must be true or false (or left out)');
   if (TIERS.includes(q.tier)) {
     const { k, bullseyeKm } = scoringParams(q);
     if (bullseyeKm >= k) err(id, `bullseyeKm (${bullseyeKm}) should be well below k (${k})`);
@@ -244,22 +245,35 @@ for (let i = 0; i < questions.length; i++) {
   }
 }
 
-// Land / coast.
+// Land / coast, and the country each land event scores against.
+const countries = new CountryIndex(JSON.parse(readFileSync(COUNTRIES, 'utf8')));
 let atSea = 0;
+let farOut = 0;
+const overridden: string[] = [];
 for (const q of questions) {
   if (!isNum(q.lat) || !isNum(q.lng) || q.lat < LAT_SOUTH || q.lat > LAT_NORTH) continue;
   const { onLand, coastKm } = landCheck(q.lng, q.lat);
-  const allowed = SEA_ALLOWLIST.has(q.id);
-  if (!onLand && coastKm > COAST_KM) {
+  if (q.atSea === true) {
     atSea++;
-    if (!allowed) {
-      err(q.id, `${Number.isFinite(coastKm) ? `${Math.round(coastKm)} km` : 'far'} from the nearest coast; check the coordinates, or add it to SEA_ALLOWLIST if it really happened at sea`);
+    // A naval battle can be marked on the island it is named after, but not inland.
+    if (onLand && coastKm > INLAND_KM) warn(q.id, `marked atSea but ${Math.round(coastKm)} km inland; check the coordinates or drop atSea`);
+    if (!onLand && coastKm > COAST_KM) farOut++;
+    if (q.country != null) warn(q.id, 'country is ignored for events at sea');
+  } else {
+    if (!onLand && coastKm > COAST_KM) {
+      err(q.id, `${Number.isFinite(coastKm) ? `${Math.round(coastKm)} km` : 'far'} from the nearest coast; check the coordinates, or set "atSea": true if it really happened at sea`);
     }
-  } else if (allowed) {
-    warn(q.id, `in SEA_ALLOWLIST but ${onLand ? 'on land' : `only ${Math.round(coastKm)} km from a coast`}; the entry isn't needed`);
+    const found = countries.countryAt([q.lng, q.lat]);
+    if (q.country != null) {
+      if (typeof q.country !== 'string' || !countries.byCode(q.country)) err(q.id, `country ${JSON.stringify(q.country)} is not an ADM0_A3 code in the outlines`);
+      else if (found && found.code !== q.country) warn(q.id, `country is ${q.country} but the point is in ${found.code}`);
+      else if (found) warn(q.id, `country ${q.country} isn't needed; the outlines find it`);
+      else overridden.push(`${q.id} (${q.country})`);
+    } else if (!found) {
+      warn(q.id, 'no country in the scoring outlines here, so no same-country floor; set "country" to its ADM0_A3 code if it has one');
+    }
   }
 }
-for (const id of SEA_ALLOWLIST) if (!seenIds.has(id)) warn(id, 'in SEA_ALLOWLIST but no such question');
 
 // Tier spread.
 const perTier = new Map<number, number>(TIERS.map((t) => [t, 0]));
@@ -295,7 +309,8 @@ const table = (label: string, keyOf: (q: Question) => string) => {
 console.log(`Chronomap question bank: ${questions.length} questions`);
 table('Region', region);
 table('Era', (q) => era(q.year));
-console.log(`\nAt sea (allowlisted): ${atSea}`);
+console.log(`\nAt sea: ${atSea} (${farOut} more than ${COAST_KM} km from a coast); no same-country floor`);
+if (overridden.length) console.log(`Country given by hand (island too small for the outlines): ${overridden.join(', ')}`);
 if (warnings.length) {
   console.log(`\n${warnings.length} warning(s):`);
   for (const w of warnings) console.log(`  ⚠ ${w}`);

@@ -1,4 +1,5 @@
 import type { LngLat, Question, Tier } from './types';
+import type { CountryLookup } from './countries';
 
 export const ROUNDS = 7;
 export const MAX_ROUND_SCORE = 1000;
@@ -9,19 +10,36 @@ export const EARTH_RADIUS_KM = 6371.0088;
 export const KM_PER_MILE = 1.609344;
 
 /**
- * Per-tier defaults. `k` is the distance at which the score falls to ~368
- * (1000/e); `bullseyeKm` is the radius that earns the full 1,000. Later
- * tiers ask for more precision as well as more knowledge.
+ * Per-tier defaults. Points fall off with distance along a bell curve:
+ * `k` is the distance beyond the bullseye at which a mark scores ~368
+ * (1000/e), and `bullseyeKm` is the radius that earns the full 1,000.
+ *
+ * k grows with tier. Anyone who knows a famous event puts it within a few km,
+ * so a 1,000 km miss on tier 1 is a real mistake; even experts can only place
+ * a deep cut within a few hundred km. Later tiers stay harder because they
+ * are obscure, not because the target shrinks.
  */
 export const TIER_DEFAULTS: Record<Tier, { k: number; bullseyeKm: number }> = {
-  1: { k: 1200, bullseyeKm: 30 },
-  2: { k: 1000, bullseyeKm: 25 },
-  3: { k: 800, bullseyeKm: 20 },
-  4: { k: 650, bullseyeKm: 15 },
-  5: { k: 500, bullseyeKm: 15 },
-  6: { k: 400, bullseyeKm: 10 },
-  7: { k: 300, bullseyeKm: 10 },
+  1: { k: 1000, bullseyeKm: 30 },
+  2: { k: 1125, bullseyeKm: 25 },
+  3: { k: 1250, bullseyeKm: 20 },
+  4: { k: 1375, bullseyeKm: 15 },
+  5: { k: 1500, bullseyeKm: 15 },
+  6: { k: 1625, bullseyeKm: 10 },
+  7: { k: 1750, bullseyeKm: 10 },
 };
+
+/** Events at sea that don't set their own k use the tier's k times this. */
+export const SEA_K_FACTOR = 1.25;
+
+/**
+ * The same-country floor, for events on land: a mark in the answer's modern
+ * country, and within `maxDistanceKm` of it (which leaves out overseas
+ * territories), scores at least `max` points, or less for big countries:
+ * `max` up to an equivalent radius of `fullUpToKm`, `min` from `minFromKm`,
+ * log-linear in between.
+ */
+export const COUNTRY_FLOOR = { max: 500, min: 250, fullUpToKm: 500, minFromKm: 1500, maxDistanceKm: 2500 } as const;
 
 const toRad = (deg: number) => (deg * Math.PI) / 180;
 
@@ -35,31 +53,65 @@ export function haversineKm(a: LngLat, b: LngLat): number {
   return 2 * EARTH_RADIUS_KM * Math.asin(Math.min(1, Math.sqrt(h)));
 }
 
-export function scoringParams(q: Pick<Question, 'tier' | 'k' | 'bullseyeKm'>): { k: number; bullseyeKm: number } {
+export function scoringParams(q: Pick<Question, 'tier' | 'k' | 'bullseyeKm' | 'atSea'>): { k: number; bullseyeKm: number } {
   const d = TIER_DEFAULTS[q.tier];
-  return { k: q.k ?? d.k, bullseyeKm: q.bullseyeKm ?? d.bullseyeKm };
+  return { k: q.k ?? d.k * (q.atSea ? SEA_K_FACTOR : 1), bullseyeKm: q.bullseyeKm ?? d.bullseyeKm };
 }
 
-/** score = round(1000 · e^(−d/k)), or 1000 inside the bullseye. */
+/** score = round(1000 · e^(−(d′/k)²)) with d′ = max(0, d − bullseyeKm). */
 export function scoreForDistance(distanceKm: number, k: number, bullseyeKm: number): number {
   if (!Number.isFinite(distanceKm) || distanceKm < 0) return 0;
-  if (distanceKm <= bullseyeKm) return MAX_ROUND_SCORE;
-  return Math.round(MAX_ROUND_SCORE * Math.exp(-distanceKm / k));
+  const d = Math.max(0, distanceKm - bullseyeKm);
+  return Math.round(MAX_ROUND_SCORE * Math.exp(-((d / k) ** 2)));
 }
 
-export function scoreGuess(q: Question, guess: LngLat | null): { distanceKm: number; score: number } {
+/** The same-country floor for a country of equivalent radius `radiusKm`, in steps of 10. */
+export function countryFloor(radiusKm: number): number {
+  const { max, min, fullUpToKm, minFromKm } = COUNTRY_FLOOR;
+  const t = Math.min(1, Math.max(0, Math.log(radiusKm / fullUpToKm) / Math.log(minFromKm / fullUpToKm)));
+  return Math.round((max - (max - min) * t) / 10) * 10;
+}
+
+export interface Scored {
+  score: number;
+  /** Set when the same-country floor decided the score. */
+  countryFloor?: number;
+}
+
+/**
+ * Points for a mark `distanceKm` from the answer. `countryRadiusKm` is the
+ * answer country's size when the mark is in that country, otherwise null.
+ */
+export function pointsFor(q: Pick<Question, 'tier' | 'k' | 'bullseyeKm' | 'atSea'>, distanceKm: number, countryRadiusKm: number | null = null): Scored {
+  const { k, bullseyeKm } = scoringParams(q);
+  const score = scoreForDistance(distanceKm, k, bullseyeKm);
+  if (q.atSea || countryRadiusKm == null || !(distanceKm <= COUNTRY_FLOOR.maxDistanceKm)) return { score };
+  const floor = countryFloor(countryRadiusKm);
+  return floor > score ? { score: floor, countryFloor: floor } : { score };
+}
+
+/**
+ * Scores a mark. With `countries`, a mark in the answer's country can earn the
+ * same-country floor; without them (still loading, or failed), distance alone.
+ */
+export function scoreGuess(q: Question, guess: LngLat | null, countries: CountryLookup | null = null): Scored & { distanceKm: number } {
   if (!guess) return { distanceKm: Infinity, score: 0 };
   const distanceKm = haversineKm(guess, [q.lng, q.lat]);
-  const { k, bullseyeKm } = scoringParams(q);
-  return { distanceKm, score: scoreForDistance(distanceKm, k, bullseyeKm) };
+  let countryRadiusKm: number | null = null;
+  if (countries && !q.atSea && distanceKm <= COUNTRY_FLOOR.maxDistanceKm) {
+    const answer = q.country ? countries.byCode(q.country) : countries.countryAt([q.lng, q.lat]);
+    if (answer && countries.countryAt(guess)?.code === answer.code) countryRadiusKm = answer.radiusKm;
+  }
+  return { distanceKm, ...pointsFor(q, distanceKm, countryRadiusKm) };
 }
 
 export type Grade = 'great' | 'good' | 'fair' | 'poor';
 
+/** Share squares: 🟩 900+, 🟨 600+, 🟧 300+, 🟥 below. */
 export function gradeFor(score: number): Grade {
-  if (score >= 800) return 'great';
-  if (score >= 500) return 'good';
-  if (score >= 200) return 'fair';
+  if (score >= 900) return 'great';
+  if (score >= 600) return 'good';
+  if (score >= 300) return 'fair';
   return 'poor';
 }
 
