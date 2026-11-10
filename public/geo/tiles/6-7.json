@@ -1,1 +1,0 @@
-{"type":"Topology","objects":{"cell":{"type":"GeometryCollection","geometries":[{"type":"MultiPolygon","arcs":[[[0]]],"id":"land"},{"type":"MultiLineString","arcs":[[0]],"id":"coast"}]}},"arcs":[[[3190,9999],[-3190,-9999],[9999,3274],[-6809,6725]]],"transform":{"scale":[0.000008715315976042384,0.0000067855960029379835],"translate":[387.9215111111111,446.1222042431001]}}

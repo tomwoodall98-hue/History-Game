@@ -1,22 +1,26 @@
 # Chronomap
 
 *A daily atlas of history.* Every day, everyone gets the same seven events from
-history, each with its date. Mark on an antique map where each one happened:
+history, each with its date. Mark on an antique library globe where each one happened:
 the nearer your mark, the more points, up to 1,000 a round. Questions get harder
 from the first to the seventh.
 
-![Chronomap on a desktop: a revealed answer with the guess, wax seal and great-circle route](docs/screenshot-desktop.jpg)
+![Chronomap on a desktop: the library globe in its brass meridian ring, with a mark placed near the Suez Canal](docs/screenshot-desktop.jpg)
 
-<p align="center"><img src="docs/screenshot-phone.jpg" alt="Chronomap on a phone" width="300"></p>
+<p align="center"><img src="docs/screenshot-phone.jpg" alt="Chronomap on a phone: a revealed answer with the guess, wax seal and great-circle route" width="300"></p>
 
 - Static site: Vite and TypeScript, no framework and no backend.
-- Map drawn as SVG with [d3-geo](https://github.com/d3/d3-geo) (Mercator, 75°S–80°N)
-  from bundled [Natural Earth](https://www.naturalearthdata.com/) data: land,
-  coastline, major rivers and lakes only. There are no borders and no labels.
-- Victorian engraved style: parchment, water-lined coasts, unlabelled graticule,
-  graduated neatline, compass rose, scrolled cartouche, IM Fell type.
-- Pan and zoom with mouse, trackpad, pinch, buttons or keyboard. Finer coastline
-  tiles stream in only when you zoom in.
+- A globe drawn on `<canvas>` with [d3-geo](https://github.com/d3/d3-geo)'s
+  orthographic projection, from bundled [Natural Earth](https://www.naturalearthdata.com/)
+  data: land, coastline, major rivers and lakes only. There are no borders and no
+  labels.
+- Styled as a Victorian library globe: varnished, yellowed paper gores with
+  seams and craquelure, water-lined coasts, an unlabelled graticule, a brass
+  meridian ring and a wooden horizon ring on a turned stand, with the parchment,
+  compass rose, scrolled cartouche and IM Fell type around it.
+- Turn it by dragging (with a little inertia), zoom with wheel, pinch, buttons or
+  keyboard, down to about 100 m per pixel. Finer coastline tiles stream in only
+  when you zoom in.
 - 280 questions (40 per difficulty tier) with notes and sources, checked by
   `npm run validate`.
 - Scoring gives credit for the right country, using Natural Earth's country
@@ -41,7 +45,7 @@ npm run dev          # http://localhost:5173
 | `npm run check`            | Type-check + tests + validate, as CI does                      |
 | `npm run check:places`     | Show the nearest towns / ancient sites to each question        |
 | `npm run simulate:scoring` | Expected scores for good, average and poor players (see below) |
-| `npm run build:geodata`    | Rebuild the map data from Natural Earth (rarely needed)        |
+| `npm run build:geodata`    | Rebuild the globe's map data from Natural Earth (rarely needed) |
 | `npm run build:countries`  | Rebuild the scoring-only country outlines (rarely needed)      |
 | `npm run schedule:extend`  | Append days to the frozen puzzle schedule                      |
 
@@ -74,9 +78,15 @@ saved apart from daily results: they never count towards your streak, played
 days or average, and their share line reads `Chronomap #3 · Archive — …`. A
 daily game you left unfinished carries on in the archive.
 
-**Keyboard:** Tab to the map, then the arrow keys pan, `+`/`−` zoom, Space marks
-the centre crosshair and Enter confirms or continues. `Esc` leaves the results
-map and closes the Almanac.
+**Touch and mouse:** drag to turn the globe; a press that moves more than a few
+pixels (or uses two fingers, or stops a spinning globe) never places a mark,
+so only a deliberate tap or click does. On the reveal, the globe turns (and
+zooms out if need be) until your mark and the answer are both in view, then
+draws the great-circle route between them.
+
+**Keyboard:** Tab to the globe, then the arrow keys turn it, `+`/`−` zoom,
+Space marks the centre crosshair and Enter confirms or continues. `Esc` leaves
+the results map and closes the Almanac.
 
 ## Scoring
 
@@ -264,7 +274,7 @@ Questions live in [`src/data/questions.json`](src/data/questions.json):
 | `dateDisplay` | Free text: `"14 October 1066"`, `"AD 79"`, `"c. 2560 BC"`, `"1814–15"`.                              |
 | `year`        | Integer for sorting and checks; negative for BC (no year 0). Must be ≤ 2000 and appear in `dateDisplay`. |
 | `tier`        | 1 (famous event, famous place) … 7 (deep cut).                                                      |
-| `lat`, `lng`  | Decimal degrees (WGS84) of the actual site: the battlefield, the building, the wreck. Not the nearest city. Must be between 75°S and 80°N. |
+| `lat`, `lng`  | Decimal degrees (WGS84) of the actual site: the battlefield, the building, the wreck. Not the nearest city. |
 | `k`           | Score decay distance in km, or `null` for the tier default (× 1.25 at sea). Set 1.25 × the tier's for campaigns and expeditions, 1.5 × far out at sea. |
 | `bullseyeKm`  | Full marks inside this radius, or `null` for the tier default. For a spread-out or disputed site, about half its extent. |
 | `atSea`       | `true` for events at sea (naval battles, wrecks): no country floor and a longer default k. Leave out otherwise. |
@@ -294,7 +304,7 @@ obvious from the name (Talas, Tordesillas). Tier 7 is for deep cuts. From tier
 
 - Schema and types; kebab-case, unique ids; no duplicate events (ignoring case
   and punctuation); spots under 1 km apart are flagged.
-- Latitude/longitude in range and on the playable sheet.
+- Latitude/longitude in range.
 - Year ≤ 2000, shown in `dateDisplay`, and BC consistent with its sign.
 - Notes are one or two sentences; sources are https URLs.
 - **Land or coast:** each point must be on land, or within 50 km of a coast,
@@ -324,51 +334,70 @@ command (`npm run validate && npm run build`), the publish folder (`dist`) and
 cache headers.
 
 **Anywhere else.** Run `npm run build` and upload `dist/` to any static host.
-Serve `assets/` with long-lived caching. Detail tiles in `geo/tiles/` are
+Serve `assets/` with long-lived caching. Detail tiles in `geo/globe/` are
 requested with a version query string.
 
-## How the map works
+## How the globe works
 
 ```
-scripts/build-geodata.ts      Natural Earth → src/data/basemap.topo.json
-                                            → public/geo/tiles/<col>-<row>.json
+scripts/build-geodata.ts      Natural Earth → src/data/globe.topo.json
+                                            → public/geo/globe/<col>-<row>.json
 scripts/build-countries.ts    Natural Earth admin-0 → src/data/countries.topo.json
                                             (scoring only, never drawn)
-src/map/projection.ts         the Mercator projection, shared by app and scripts
-src/map/MapView.ts            SVG layers, pan/zoom, markers, route line, keyboard
-src/map/cells.ts              base/detail level-of-detail switching per grid cell
+src/map/globeData.ts          the data's layout and its 15° detail grid
+src/map/GlobeView.ts          canvas drawing, styling, gestures, markers, fly-tos
+src/map/fastOrtho.ts          the fast orthographic projector used for drawing
+src/map/globeMath.ts          tap vs drag, screen → lng/lat, rotation, view fitting
 src/map/ornaments.ts          compass rose, cartouche, guess mark, wax seal
 src/map/texture.ts            parchment grain, fibres, foxing and stains (SVG filters)
 ```
 
-- **Projection.** `d3.geoMercator`, centred on 11°E so the sheet's edge falls in
-  the Bering Strait, clipped to 75°S–80°N.
+- **Projection.** `d3.geoOrthographic`, showing only the near hemisphere. North
+  stays up: dragging turns the globe about its axis and tips it towards the
+  poles, never rolls it. At deep zoom the view is effectively flat.
 - **Geodata.** The build script downloads the pinned Natural Earth v5.1.2
-  GeoJSON once, simplifies it with `topojson-simplify` in Mercator space, projects
-  it with the game's own projection and cuts it into a 16 × 12 grid. That gives
-  two levels: a **base map** (~140 KB gzip) shipped with the page, and **detail
-  tiles** (finer 10m coastlines, more rivers and lakes) fetched per cell once you
-  zoom past ~4 px per map unit. Cutting into cells keeps the browser from redrawing
-  the whole world's coastline on every frame. Reservoirs are left out: they would be
-  anachronisms on a Victorian sheet. The outputs are committed, so you only need
-  `npm run build:geodata` after changing the projection or the data settings.
-- **Water-lining.** The ripple lines along every coast come from one screen-space
-  SVG filter: the land silhouette is blurred, and thin bands of the blurred alpha
-  are inked. The rings stay a fixed distance from the shore at any zoom, and the
-  cost doesn't grow with coastline detail. On devices that can't keep up, the
-  ripples are hidden while the map moves and redrawn when it stops.
-- **No text on the map.** The only lettering is the title in the cartouche.
+  GeoJSON once and keeps it in plain longitude/latitude, since the globe
+  projects it afresh as it turns. Three levels:
+  - **coarse** 1:110m land, drawn while the globe moves and is zoomed out;
+  - a **base** level, shipped with the page (~140 KB gzip);
+  - **detail tiles** (1:10m coastlines, more rivers and lakes) cut on a
+    15° grid, fetched only for the cells in view once you zoom past about
+    2.5 km per pixel.
+
+  Every polygon's winding is checked so d3 never fills the wrong side of the
+  sphere. Coastlines leave out Natural Earth's artificial cuts along the
+  antimeridian and the South Pole, so no seam is ever inked. Reservoirs are
+  left out as anachronisms. The outputs are committed.
+- **Drawing.** Each frame projects the geometry with a small dedicated
+  orthographic projector (`fastOrtho.ts`): unit vectors computed once, then a
+  few multiplications per point. That's several times faster than d3's general
+  pipeline, and checked pixel for pixel against d3 over 150 random views. d3
+  still projects the markers and the route, which sit in an SVG overlay and
+  hide when they turn to the far side.
+- **Smoothness.** While the globe moves (drag, inertia, zoom, fly-to) it draws
+  the lighter geometry and skips the costly layers: water-lining, rivers,
+  craquelure. About 140 ms after it settles, it redraws in full. With the CPU
+  slowed 4× at 390 px wide, a moving frame takes about 6 ms.
+- **Water-lining.** Ripple lines ruled offshore at fixed pixel distances: the
+  coastline is stroked wide in ink, then slightly narrower in sea colour, from
+  the outermost ripple in; the land fill covers their inland halves.
+- **Styling.** Gore seams every 30° and the polar calottes, a fine craquelure
+  (random hairline cracks in longitude/latitude, so they turn with the globe),
+  yellowed varnish, tea-stained toning towards the rim and the light on a ball
+  (highlight top-left, darkening to the edge). The brass meridian ring and the
+  wooden horizon ring and stand scale with zoom but don't rotate.
+- **No text on the globe.** The only lettering is the title in the cartouche.
 
 ## Accessibility
 
 - Every control is a real button, with visible focus rings. Keyboard play is
-  described above. When you play by keyboard, focus moves to the map and then to
+  described above. When you play by keyboard, focus moves to the globe and then to
   the next action.
-- Rounds and results are announced in a polite live region; the map has an
+- Rounds and results are announced in a polite live region; the globe has an
   application role and instructions.
 - Text is dark ink on cream paper (contrast above 12:1 for question text).
-- `prefers-reduced-motion` turns off the fly-to animations, the route drawing and
-  other motion.
+- `prefers-reduced-motion` turns off the fly-to animations, inertia, the route
+  drawing and other motion.
 
 ## Credits
 

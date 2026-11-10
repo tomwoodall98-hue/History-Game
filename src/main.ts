@@ -2,12 +2,12 @@ import '@fontsource/im-fell-english/latin-400.css';
 import '@fontsource/im-fell-english/latin-400-italic.css';
 import '@fontsource/im-fell-english-sc/latin-400.css';
 import './styles/main.css';
-import baseMapUrl from './data/basemap.topo.json?url';
+import globeUrl from './data/globe.topo.json?url';
 import countriesUrl from './data/countries.topo.json?url';
 import questionsData from './data/questions.json';
 import scheduleData from './data/schedule.json';
-import { MapView } from './map/MapView';
-import type { BaseMap } from './map/tiles';
+import { GlobeView } from './map/GlobeView';
+import type { GlobeBase } from './map/globeData';
 import { applyPaperTexture } from './map/texture';
 import { App } from './ui/App';
 import type { Question, Puzzle, Clock } from './game/types';
@@ -18,7 +18,7 @@ import { CountryIndex, type CountryLookup } from './game/countries';
 import { createStatsService, statsConfig } from './game/statsApi';
 
 // Start the map download before anything else.
-const basePromise: Promise<BaseMap> = fetch(baseMapUrl).then((r) => {
+const basePromise: Promise<GlobeBase> = fetch(globeUrl).then((r) => {
   if (!r.ok) throw new Error(`Map data failed to load (${r.status})`);
   return r.json();
 });
@@ -40,8 +40,8 @@ zoomControls.innerHTML = `
   </button>`;
 root.appendChild(zoomControls);
 
-const tileBaseUrl = new URL(`${import.meta.env.BASE_URL}geo/tiles/`, document.baseURI).href;
-const map = new MapView(document.getElementById('map')!, tileBaseUrl);
+const tileBaseUrl = new URL(`${import.meta.env.BASE_URL}geo/globe/`, document.baseURI).href;
+const map = new GlobeView(document.getElementById('map')!, tileBaseUrl);
 zoomControls.addEventListener('click', (e) => {
   const btn = (e.target as Element).closest<HTMLButtonElement>('[data-zoom]');
   if (!btn) return;
@@ -98,7 +98,7 @@ const clock: Clock = {
 basePromise
   .then((base) => {
     map.render(base);
-    requestAnimationFrame(() => map.svg.classList.add('ready'));
+    requestAnimationFrame(() => map.element.classList.add('ready'));
     document.getElementById('loading')?.classList.add('done');
     const app = new App(root, map, puzzle, store, clock, loadCountries, statsService);
     app.start();
