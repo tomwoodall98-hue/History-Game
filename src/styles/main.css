@@ -650,7 +650,7 @@ button {
 }
 
 .unit:focus-visible,
-.source-link:focus-visible,
+.b-more:focus-visible,
 .breakdown-row:focus-visible {
   outline: 2px solid var(--red);
   outline-offset: 2px;
@@ -665,15 +665,25 @@ button {
   hyphens: auto;
 }
 
-.source-link {
-  color: var(--ink-soft);
-  font-style: italic;
-  font-size: 15px;
+/* "Read more" on the reveal and review slips: opens the gazetteer entry. */
+.ink-button.read-more {
+  padding-left: 14px;
+  padding-right: 16px;
 }
 
-.source-link::after {
-  content: ' ↗';
-  font-style: normal;
+.ink-button.read-more::before {
+  content: '';
+  display: inline-block;
+  width: 1.05em;
+  height: 0.8em;
+  margin-right: 0.4em;
+  vertical-align: -0.04em;
+  background: currentColor;
+  /* An open book. */
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 21 16'%3E%3Cpath d='M10.5 3C8 1.2 4.6.8 1 1.3v12.4c3.6-.5 7 0 9.5 1.8C13 13.7 16.4 13.2 20 13.7V1.3C16.4.8 13 1.2 10.5 3zm-.7 10.4C7.6 12.2 5 11.8 2.3 12V2.5c2.7-.2 5.4.3 7.5 1.6zm8.9-1.4c-2.7-.2-5.3.2-7.5 1.4V4.1c2.1-1.3 4.8-1.8 7.5-1.6z'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 21 16'%3E%3Cpath d='M10.5 3C8 1.2 4.6.8 1 1.3v12.4c3.6-.5 7 0 9.5 1.8C13 13.7 16.4 13.2 20 13.7V1.3C16.4.8 13 1.2 10.5 3zm-.7 10.4C7.6 12.2 5 11.8 2.3 12V2.5c2.7-.2 5.4.3 7.5 1.6zm8.9-1.4c-2.7-.2-5.3.2-7.5 1.4V4.1c2.1-1.3 4.8-1.8 7.5-1.6z'/%3E%3C/svg%3E")
+    center / contain no-repeat;
 }
 
 /* -------------------------------------------------------------- panel --- */
@@ -834,26 +844,76 @@ button {
   border-top: 1px solid rgba(51, 34, 15, 0.35);
 }
 
-.breakdown li {
+/*
+ * Each entry: the round on one line (a button that shows it on the map),
+ * then its date, "Read more" and everyone's average beneath, on the same
+ * columns (the button is a subgrid of the entry).
+ */
+.breakdown-item {
+  --b-cols: 2.2em minmax(0, 1fr) auto 3.6em 1.6em;
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--b-cols);
+  column-gap: 8px;
+  align-items: baseline;
+  padding: 6px 4px 4px;
   border-bottom: 1px solid rgba(51, 34, 15, 0.18);
+}
+
+.breakdown-item:hover {
+  background: rgba(138, 42, 27, 0.06);
 }
 
 .breakdown-row {
   appearance: none;
-  width: 100%;
+  grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: 2.2em 1fr auto 3.6em 1.6em;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 4px;
+  grid-template-columns: var(--b-cols);
+  grid-template-columns: subgrid;
+  align-items: baseline;
+  column-gap: 8px;
+  padding: 0;
   border: 0;
   background: transparent;
   text-align: left;
   cursor: pointer;
 }
 
-.breakdown-row:hover {
-  background: rgba(138, 42, 27, 0.06);
+/* The whole entry shows the round on the map, all but its "Read more". */
+.breakdown-row::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.b-sub {
+  grid-column: 2 / 4;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 12px;
+  min-width: 0;
+}
+
+.b-more {
+  position: relative;
+  z-index: 1;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 2px 0;
+  min-height: 24px;
+  font-size: 14px;
+  font-style: italic;
+  color: var(--red);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.b-more:hover {
+  color: var(--red-bright);
 }
 
 .b-num {
@@ -861,13 +921,8 @@ button {
   color: var(--red);
 }
 
-.b-event {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-}
-
 .b-title {
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -887,16 +942,14 @@ button {
 }
 
 .b-score {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
   font-variant-numeric: tabular-nums;
   text-align: right;
-  line-height: 1.15;
 }
 
 /* Everyone's average for the question, under the player's own score. */
 .b-avg {
+  grid-column: 4;
+  text-align: right;
   font-size: 12px;
   font-style: italic;
   color: var(--ink-faint);
@@ -1018,9 +1071,12 @@ button {
   .total {
     font-size: 40px;
   }
+  .breakdown-item {
+    --b-cols: 1.8em minmax(0, 1fr) auto 3.2em 1.4em;
+    column-gap: 6px;
+  }
   .breakdown-row {
-    grid-template-columns: 1.8em 1fr auto 3.2em 1.4em;
-    gap: 6px;
+    column-gap: 6px;
   }
   .b-dist {
     font-size: 13px;
@@ -1314,4 +1370,359 @@ a.ledger-row:focus-visible {
   font-size: 13px;
   letter-spacing: 0.04em;
   fill: var(--red);
+}
+
+/* ---------------------------------------------------------- gazetteer --- */
+/*
+ * "Read more": an entry in a Victorian gazetteer. A modal <dialog> in the
+ * top layer; a centred page on wide screens, a full-screen sheet on phones.
+ */
+
+.gazetteer {
+  --gz-paper: #f5ecd3;
+  width: min(640px, calc(100% - 32px));
+  max-width: none;
+  max-height: min(860px, calc(100% - 40px));
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  overflow: visible;
+}
+
+.gazetteer[open] {
+  display: flex;
+  flex-direction: column;
+  animation: gz-open 0.28s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.gazetteer::backdrop {
+  background: radial-gradient(ellipse at center, rgba(52, 33, 12, 0.38), rgba(30, 18, 6, 0.62));
+  animation: fade-in 0.28s ease;
+}
+
+@keyframes gz-open {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.985);
+  }
+}
+
+.gz-sheet {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--gz-paper);
+  /* Foxed, toned edges over the shared paper grain. */
+  background-image:
+    radial-gradient(ellipse 120% 90% at 50% 45%, transparent 58%, rgba(146, 98, 38, 0.2) 100%),
+    var(--paper-grain);
+  border: 1px solid #9c8156;
+  box-shadow:
+    0 1px 2px rgba(30, 18, 6, 0.25),
+    0 18px 50px rgba(30, 18, 6, 0.45);
+}
+
+/* The printer's double rule round the page, above the scrolling text. */
+.gz-sheet::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(51, 34, 15, 0.6);
+  box-shadow: inset 0 0 0 2px var(--gz-paper), inset 0 0 0 3px rgba(51, 34, 15, 0.35);
+  pointer-events: none;
+}
+
+.gz-x {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1;
+  width: 40px;
+  height: 40px;
+  padding: 0 0 4px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  font-size: 30px;
+  line-height: 1;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+
+.gz-x:hover {
+  color: var(--ink);
+  background: rgba(51, 34, 15, 0.07);
+}
+
+.gz-scroll {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 26px 40px 18px;
+}
+
+.gz-running {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 36px 16px 0;
+  padding-bottom: 5px;
+  border-bottom: 3px double rgba(51, 34, 15, 0.55);
+  font-family: var(--font-caps);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  color: var(--ink-soft);
+}
+
+.gz-title {
+  margin: 0;
+  font-family: var(--font-caps);
+  font-weight: normal;
+  font-size: 30px;
+  line-height: 1.12;
+  letter-spacing: 0.03em;
+  text-align: center;
+  text-wrap: balance;
+  outline: none;
+}
+
+.gz-date {
+  margin: 6px 0 14px;
+  font-size: 18px;
+  font-style: italic;
+  text-align: center;
+  color: var(--ink-soft);
+}
+
+.gz-body {
+  font-size: 17.5px;
+  line-height: 1.5;
+  text-align: justify;
+  hyphens: auto;
+}
+
+.gz-body p {
+  margin: 0 0 0.6em;
+}
+
+.gz-summary p + p {
+  text-indent: 1.4em;
+}
+
+/* Our note opens the entry, under a rubricated drop cap. */
+.gz-lead::first-letter {
+  float: left;
+  margin: 0.06em 0.09em -0.05em 0;
+  padding: 0.04em 0.09em 0;
+  font-size: 3.55em;
+  line-height: 0.82;
+  color: var(--red);
+  border: 1px solid rgba(138, 42, 27, 0.45);
+  background: rgba(138, 42, 27, 0.05);
+}
+
+.gz-loading {
+  font-style: italic;
+  color: var(--ink-faint);
+  text-align: center;
+}
+
+.gz-summary[hidden] {
+  display: none;
+}
+
+.gz-rule {
+  clear: both;
+  width: 120px;
+  margin: 16px auto 10px;
+  color: rgba(51, 34, 15, 0.7);
+}
+
+.gz-rule svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* The source article's headword, as a sub-entry. */
+.gz-article {
+  margin: 0 0 8px;
+  font-family: var(--font-caps);
+  font-weight: normal;
+  font-size: 17px;
+  letter-spacing: 0.08em;
+  text-align: center;
+  color: var(--ink-soft);
+}
+
+/* The article's picture, printed like an engraving in a double-ruled frame. */
+.gz-plate {
+  float: right;
+  width: min(44%, 240px);
+  margin: 0.3em 0 0.7em 1.2em;
+  text-align: center;
+}
+
+.gz-frame {
+  padding: 4px;
+  border: 1px solid rgba(51, 34, 15, 0.85);
+  box-shadow:
+    0 0 0 3px var(--gz-paper),
+    0 0 0 4px rgba(51, 34, 15, 0.45);
+  background: #ece0bf;
+}
+
+.gz-plate img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: grayscale(1) sepia(0.55) contrast(1.18) brightness(0.96);
+  mix-blend-mode: multiply;
+}
+
+.gz-plate figcaption {
+  margin-top: 8px;
+  font-size: 12.5px;
+  font-style: italic;
+  line-height: 1.3;
+}
+
+.gz-plate a,
+.gz-credit a {
+  color: var(--ink-soft);
+}
+
+.gz-more {
+  clear: both;
+  padding-top: 6px;
+  text-align: center;
+}
+
+.gz-continue {
+  font-family: var(--font-caps);
+  font-size: 18px;
+  letter-spacing: 0.05em;
+  color: var(--red);
+  text-underline-offset: 3px;
+}
+
+.gz-continue::after {
+  content: ' ↗';
+  font-family: var(--font-body);
+}
+
+.gz-continue:focus-visible,
+.gz-plate a:focus-visible,
+.gz-credit a:focus-visible,
+.gz-x:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
+
+.gz-credit {
+  margin-top: 4px;
+  font-size: 13.5px;
+  font-style: italic;
+  text-align: center;
+  color: var(--ink-soft);
+}
+
+.gz-credit[hidden] {
+  display: none;
+}
+
+.gz-actions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 0 10px 10px;
+  padding: 10px 30px 4px;
+  border-top: 1px solid rgba(51, 34, 15, 0.3);
+}
+
+.gz-actions .ink-button {
+  background-color: transparent;
+}
+
+.gz-actions .ink-button.primary,
+.gz-actions .ink-button:only-child {
+  margin-left: auto;
+}
+
+.gz-actions .ink-button.primary {
+  background-color: var(--ink);
+}
+
+/* Phones: a full-screen sheet that rises from the bottom. */
+@media (max-width: 600px) {
+  .gazetteer {
+    width: 100%;
+    height: 100%;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+  }
+  .gazetteer[open] {
+    animation-name: gz-rise;
+  }
+  .gz-sheet {
+    border: 0;
+    box-shadow: none;
+  }
+  .gz-sheet::after {
+    inset: calc(var(--safe-top) + 4px) calc(var(--safe-right) + 4px) calc(var(--safe-bottom) + 4px) calc(var(--safe-left) + 4px);
+  }
+  .gz-x {
+    top: calc(var(--safe-top) + 8px);
+    right: calc(var(--safe-right) + 8px);
+  }
+  .gz-scroll {
+    padding: calc(var(--safe-top) + 20px) calc(var(--safe-right) + 20px) 14px calc(var(--safe-left) + 20px);
+  }
+  .gz-running {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+  }
+  .gz-title {
+    font-size: 25px;
+  }
+  .gz-date {
+    font-size: 17px;
+  }
+  .gz-body {
+    font-size: 17px;
+    line-height: 1.48;
+    text-align: left;
+  }
+  .gz-plate {
+    float: none;
+    width: min(100%, 300px);
+    margin: 4px auto 16px;
+  }
+  .gz-actions {
+    margin: 0 calc(var(--safe-right) + 8px) calc(var(--safe-bottom) + 8px) calc(var(--safe-left) + 8px);
+    padding: 10px 12px 2px;
+  }
+}
+
+@keyframes gz-rise {
+  from {
+    transform: translateY(36px);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gazetteer[open],
+  .gazetteer::backdrop {
+    animation: none;
+  }
 }

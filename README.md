@@ -23,6 +23,9 @@ from the first to the seventh.
   when you zoom in.
 - 280 questions (40 per difficulty tier) with notes and sources, checked by
   `npm run validate`.
+- **Read more** after each answer: the event's entry in a Victorian gazetteer,
+  with our note, Wikipedia's summary and a picture, fetched only once your
+  guess is locked in.
 - Scoring gives credit for the right country, using Natural Earth's country
   outlines. They are used for scoring only and never drawn.
 
@@ -40,10 +43,11 @@ npm run dev          # http://localhost:5173
 | `npm run dev`              | Dev server with hot reload                                     |
 | `npm run build`            | Type-check and build the static site into `dist/`              |
 | `npm run preview`          | Serve the built `dist/` locally                                |
-| `npm test`                 | Unit tests (scoring, countries, dates and DST, daily, storage) |
+| `npm test`                 | Unit tests (scoring, globe, dates, daily, storage, Read more)  |
 | `npm run validate`         | Check the question bank (see below)                            |
 | `npm run check`            | Type-check + tests + validate, as CI does                      |
 | `npm run check:places`     | Show the nearest towns / ancient sites to each question        |
+| `npm run check:sources`    | Check every source gives a usable Wikipedia summary (network)  |
 | `npm run simulate:scoring` | Expected scores for good, average and poor players (see below) |
 | `npm run build:geodata`    | Rebuild the globe's map data from Natural Earth (rarely needed) |
 | `npm run build:countries`  | Rebuild the scoring-only country outlines (rarely needed)      |
@@ -56,7 +60,8 @@ npm run dev          # http://localhost:5173
    move your mark, then **Confirm**.
 3. The answer appears as a red wax seal, with a dashed great-circle line from
    your mark, the distance (km or miles), your points and a short note. If
-   being in the right country lifted your score, it says so.
+   being in the right country lifted your score, it says so. **Read more**
+   opens the event's entry (see [Read more](#read-more)).
 4. After seven rounds you get your total, a breakdown, your streak, how
    everyone else did that day (see [Daily stats](#daily-stats)) and a
    **Share** button that copies a spoiler-free result:
@@ -85,8 +90,46 @@ zooms out if need be) until your mark and the answer are both in view, then
 draws the great-circle route between them.
 
 **Keyboard:** Tab to the globe, then the arrow keys turn it, `+`/`−` zoom,
-Space marks the centre crosshair and Enter confirms or continues. `Esc` leaves
-the results map and closes the Almanac.
+Space marks the centre crosshair and Enter confirms or continues. `Esc` closes
+a Read more entry, leaves the results map and closes the Almanac.
+
+## Read more
+
+Once a guess is confirmed, **Read more** (on the reveal, beside each round of
+the results, and on the results map) opens that event's entry in *A Gazetteer
+of History*: a page of aged paper with the event, its date, our note as the
+lead under a red drop cap, then the summary of its Wikipedia article and the
+article's picture, printed like an engraving. *Continue reading on Wikipedia*
+opens the article in a new tab, and every entry carries the credit the licence
+asks for: "From Wikipedia, CC BY-SA", linking to the article and the licence.
+On phones it is a full-screen sheet. It closes with its buttons, `Esc` or a
+tap outside, and on the reveal it has its own **Next question** button, so
+reading never costs an extra tap. Archive games have it too.
+
+**No spoilers.** An article's title names the answer, so nothing about a
+question is fetched, or put in the page, until its guess is confirmed: no
+prefetching, no link, no title in a request. All requests go through one guard
+([`src/game/readMore.ts`](src/game/readMore.ts)) that holds the day's questions
+and refuses any that haven't been answered. The summary is fetched as the
+reveal starts, so it's usually there by the time you tap. Two questions citing
+the same article (Hiroshima and Nagasaki) both wait until both are answered.
+`tests/readMore.test.ts` plays whole daily and archive games in a simulated
+browser, recording every request, and fails if anything about a question shows
+up before its guess is confirmed.
+
+**Where it comes from.** The summary comes from Wikipedia's REST API
+(`https://en.wikipedia.org/api/rest_v1/page/summary/<title>`, the title taken
+from the question's `source`), straight from the player's browser: no key, no
+server of ours. Like any visit to Wikipedia, Wikimedia sees the request (and
+the player's IP address); nothing else about the player or their game is sent. The extract is shown as plain text (any HTML stripped).
+Pictures are shown only when they come from Wikimedia Commons, where every
+file is freely licensed, with a link to the file's page for its author and
+licence; pictures kept on Wikipedia itself are often non-free and are left
+out. Summaries are kept in memory for the visit.
+
+**When Wikipedia is slow or down.** After 4 seconds without an answer (or on
+any error), the entry shows our note and the link to Wikipedia only. The game
+never waits for it.
 
 ## Scoring
 
@@ -280,7 +323,7 @@ Questions live in [`src/data/questions.json`](src/data/questions.json):
 | `atSea`       | `true` for events at sea (naval battles, wrecks): no country floor and a longer default k. Leave out otherwise. |
 | `country`     | Rarely needed: the ADM0_A3 code (e.g. `"JPN"`) of the answer's country when it is on an island too small for the outlines. `npm run validate` says when. |
 | `note`        | One or two sentences. If the location is disputed, use the scholarly consensus and say so here.     |
-| `source`      | A page where the coordinates can be checked, usually Wikipedia.                                     |
+| `source`      | The Wikipedia article for the event, where the coordinates can be checked. **Read more** shows its summary. |
 
 **Choosing a tier.** Difficulty is how obscure the event is *and* how hard its
 place is to pin down. Tiers 1–2 are world-famous events in famous places (the
@@ -299,6 +342,12 @@ obvious from the name (Talas, Tordesillas). Tier 7 is for deep cuts. From tier
    namesake village is right; one 3,000 km away has a swapped sign. (The first
    run downloads ~35 MB of gazetteers into `.cache/`; they are never bundled.)
 3. Run `npm run validate` and fix everything it reports.
+4. Run `npm run check:sources -- <id>` to check the source against Wikipedia:
+   it must be an article, not a disambiguation page, and not a redirect to a
+   section of something else (the summary would be of the whole article).
+   Plain redirects are reported; `--fix` points them at their target. It
+   also flags articles placed far from your coordinates and articles without
+   a free picture. It needs the network, so it isn't part of `npm run check`.
 
 ### What `npm run validate` checks
 
@@ -306,7 +355,8 @@ obvious from the name (Talas, Tordesillas). Tier 7 is for deep cuts. From tier
   and punctuation); spots under 1 km apart are flagged.
 - Latitude/longitude in range.
 - Year ≤ 2000, shown in `dateDisplay`, and BC consistent with its sign.
-- Notes are one or two sentences; sources are https URLs.
+- Notes are one or two sentences; sources are https URLs, and Wikipedia
+  articles (it notes any two questions that share one).
 - **Land or coast:** each point must be on land, or within 50 km of a coast,
   tested against the same Natural Earth geometry the game draws (the detailed
   tiles where available), unless it is marked `atSea`. A point marked `atSea`
@@ -391,7 +441,8 @@ src/map/texture.ts            parchment grain, fibres, foxing and stains (SVG fi
 ## Accessibility
 
 - Every control is a real button, with visible focus rings. Keyboard play is
-  described above. When you play by keyboard, focus moves to the globe and then to
+  described above. A Read more entry is a modal dialog: focus moves to its
+  heading, stays inside it, and returns to the button that opened it. When you play by keyboard, focus moves to the globe and then to
   the next action.
 - Rounds and results are announced in a polite live region; the globe has an
   application role and instructions.
@@ -409,3 +460,8 @@ src/map/texture.ts            parchment grain, fibres, foxing and stains (SVG fi
   [cities.json](https://github.com/lutangar/cities.json) (CC BY 4.0) and the
   [Pleiades](https://pleiades.stoa.org/) gazetteer of ancient places (CC BY 3.0).
 - Question notes are original; each question links to a source for its location.
+- Read more: text from [Wikipedia](https://en.wikipedia.org/), under
+  [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/), credited
+  and linked in each entry; pictures from
+  [Wikimedia Commons](https://commons.wikimedia.org/), each linked to its
+  file page for author and licence.

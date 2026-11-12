@@ -16,6 +16,7 @@ import { dailyPuzzle, type Schedule } from './game/schedule';
 import { LocalStore } from './game/storage';
 import { CountryIndex, type CountryLookup } from './game/countries';
 import { createStatsService, statsConfig } from './game/statsApi';
+import { SummaryCache } from './game/wikipedia';
 
 // Start the map download before anything else.
 const basePromise: Promise<GlobeBase> = fetch(globeUrl).then((r) => {
@@ -90,6 +91,10 @@ const loadCountries = (): Promise<CountryLookup | null> =>
 const statsCfg = statsConfig(import.meta.env);
 const statsService = statsCfg ? createStatsService(statsCfg) : null;
 
+// "Read more": Wikipedia summaries, fetched only for questions already
+// answered (the App's ReadMore guard sees to that) and kept for the visit.
+const summaries = new SummaryCache((url, init) => fetch(url, init));
+
 const clock: Clock = {
   msUntilNext: () => nextLondonMidnight().getTime() - Date.now(),
   todayKey: () => londonDateKey(),
@@ -100,7 +105,7 @@ basePromise
     map.render(base);
     requestAnimationFrame(() => map.element.classList.add('ready'));
     document.getElementById('loading')?.classList.add('done');
-    const app = new App(root, map, puzzle, store, clock, loadCountries, statsService);
+    const app = new App(root, map, puzzle, store, clock, loadCountries, statsService, summaries);
     app.start();
     void loadCountries();
     // Handy for debugging in the console.

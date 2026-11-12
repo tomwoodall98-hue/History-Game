@@ -15,6 +15,7 @@
     "build:countries": "tsx scripts/build-countries.ts",
     "schedule:extend": "tsx scripts/extend-schedule.ts",
     "check:places": "tsx scripts/check-places.ts",
+    "check:sources": "tsx scripts/check-sources.ts",
     "check": "npm run typecheck && npm test && npm run validate",
     "simulate:scoring": "tsx scripts/simulate-scoring.ts"
   },
@@ -28,6 +29,7 @@
     "topojson-client": "3.1.0"
   },
   "devDependencies": {
+    "@happy-dom/global-registrator": "21.0.4",
     "@types/d3-geo": "3.1.1",
     "@types/d3-selection": "3.0.12",
     "@types/d3-transition": "3.0.9",
@@ -38,6 +40,7 @@
     "@types/topojson-server": "3.0.4",
     "@types/topojson-simplify": "3.0.3",
     "@types/topojson-specification": "1.0.5",
+    "happy-dom": "21.0.4",
     "topojson-server": "3.0.1",
     "topojson-simplify": "3.0.3",
     "tsx": "4.23.15",
