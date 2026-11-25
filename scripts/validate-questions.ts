@@ -17,6 +17,8 @@
  *     too small for the outlines
  *   - years up to 2000, and the year appears in dateDisplay
  *   - notes are one or two sentences
+ *   - sources are Wikipedia articles ("Read more" shows their summaries;
+ *     `npm run check:sources` checks each one against Wikipedia itself)
  *   - an even spread of questions across the seven tiers (at least 40 each)
  *   - the puzzle schedule (src/data/schedule.json): every scheduled id still
  *     exists in the right tier, and the schedule runs well past today
@@ -36,6 +38,7 @@ import { CountryIndex } from '../src/game/countries.ts';
 import { addDays, daysBetween, londonDateKey, LAUNCH_DATE } from '../src/game/daily.ts';
 import { scheduleEnd, type Schedule } from '../src/game/schedule.ts';
 import { TIERS, type Question } from '../src/game/types.ts';
+import { summaryUrl } from '../src/game/wikipedia.ts';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const QUESTIONS = process.argv[2] ? resolve(process.argv[2]) : resolve(ROOT, 'src/data/questions.json');
@@ -237,7 +240,7 @@ questions.forEach((q, index) => {
   }
 
   if (!isStr(q.source) || !/^https:\/\/\S+$/.test(q.source)) err(id, 'source must be an https URL');
-  else if (!/wikipedia\.org\/wiki\//.test(q.source)) warn(id, 'source is not a Wikipedia article; fine, but check it gives coordinates');
+  else if (!summaryUrl(q.source)) warn(id, 'source is not a Wikipedia article: "Read more" will show the note and a link only');
 });
 
 // Near-identical locations usually mean a copy-paste slip.
@@ -338,6 +341,11 @@ table('Era', (q) => era(q.year));
 console.log(`\nAt sea: ${atSea} (${farOut} more than ${COAST_KM} km from a coast); no same-country floor`);
 console.log(`Schedule: ${schedule.days.length} days, ${schedule.start} to ${scheduleEnd(schedule)}`);
 if (overridden.length) console.log(`Country given by hand (island too small for the outlines): ${overridden.join(', ')}`);
+// "Read more" holds back an article shared with a question still to play that day.
+const bySource = new Map<string, string[]>();
+for (const q of questions) if (isStr(q.source)) bySource.set(summaryUrl(q.source) ?? q.source, [...(bySource.get(summaryUrl(q.source) ?? q.source) ?? []), q.id]);
+const shared = [...bySource.values()].filter((ids) => ids.length > 1).map((ids) => ids.join(' & '));
+if (shared.length) console.log(`Sharing a source ("Read more" waits until each is answered): ${shared.join('; ')}`);
 if (warnings.length) {
   console.log(`\n${warnings.length} warning(s):`);
   for (const w of warnings) console.log(`  ⚠ ${w}`);

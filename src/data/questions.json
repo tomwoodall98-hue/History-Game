@@ -76,7 +76,7 @@
     "bullseyeKm": 100,
     "atSea": true,
     "note": "The liner struck an iceberg about 600 km south-south-east of Newfoundland and sank in under three hours; more than 1,500 people died. The wreck was found in 1985, 3,800 m down.",
-    "source": "https://en.wikipedia.org/wiki/Wreck_of_the_Titanic"
+    "source": "https://en.wikipedia.org/wiki/Sinking_of_the_Titanic"
   },
   {
     "id": "t1-declaration-independence",
@@ -89,7 +89,7 @@
     "k": null,
     "bullseyeKm": 20,
     "note": "The Second Continental Congress adopted the Declaration in the Pennsylvania State House, now Independence Hall, in Philadelphia.",
-    "source": "https://en.wikipedia.org/wiki/Independence_Hall"
+    "source": "https://en.wikipedia.org/wiki/United_States_Declaration_of_Independence"
   },
   {
     "id": "t1-caesar",
@@ -232,7 +232,7 @@
     "k": null,
     "bullseyeKm": 25,
     "note": "Red Guards took the Winter Palace in Petrograd, seat of the Provisional Government, with little resistance: the climax of the October Revolution (25 October in the old calendar).",
-    "source": "https://en.wikipedia.org/wiki/Winter_Palace"
+    "source": "https://en.wikipedia.org/wiki/October_Revolution"
   },
   {
     "id": "t1-constantinople",
@@ -258,7 +258,7 @@
     "k": null,
     "bullseyeKm": 25,
     "note": "The first Games of the modern era were held in the marble Panathenaic Stadium in Athens, rebuilt on its ancient site. Spyridon Louis, a Greek water-carrier, won the first marathon.",
-    "source": "https://en.wikipedia.org/wiki/Panathenaic_Stadium"
+    "source": "https://en.wikipedia.org/wiki/1896_Summer_Olympics"
   },
   {
     "id": "t1-mandela-release",
@@ -271,7 +271,7 @@
     "k": null,
     "bullseyeKm": 30,
     "note": "After 27 years in prison, Mandela walked out of Victor Verster Prison near Paarl, then spoke to a huge crowd from the balcony of Cape Town City Hall that evening.",
-    "source": "https://en.wikipedia.org/wiki/Drakenstein_Correctional_Centre"
+    "source": "https://en.wikipedia.org/wiki/Nelson_Mandela"
   },
   {
     "id": "t1-hastings",
@@ -297,7 +297,7 @@
     "k": null,
     "bullseyeKm": 25,
     "note": "Gandhi was shot by the Hindu nationalist Nathuram Godse on his way to an evening prayer meeting in the garden of Birla House, New Delhi.",
-    "source": "https://en.wikipedia.org/wiki/Gandhi_Smriti"
+    "source": "https://en.wikipedia.org/wiki/Assassination_of_Mahatma_Gandhi"
   },
   {
     "id": "t1-everest",
@@ -349,7 +349,7 @@
     "k": null,
     "bullseyeKm": 20,
     "note": "Germany and the Allies signed the peace in the Hall of Mirrors at Versailles, the room where the German Empire had been proclaimed in 1871.",
-    "source": "https://en.wikipedia.org/wiki/Hall_of_Mirrors"
+    "source": "https://en.wikipedia.org/wiki/Treaty_of_Versailles"
   },
   {
     "id": "t1-boston-tea-party",
@@ -401,7 +401,7 @@
     "k": null,
     "bullseyeKm": 20,
     "note": "The emperor Titus opened the Flavian Amphitheatre in Rome with 100 days of games; it could hold perhaps 50,000 spectators.",
-    "source": "https://en.wikipedia.org/wiki/Colosseum"
+    "source": "https://en.wikipedia.org/wiki/Inaugural_games_of_the_Colosseum"
   },
   {
     "id": "t1-napoleon-moscow",
@@ -453,7 +453,7 @@
     "k": null,
     "bullseyeKm": 25,
     "note": "Alexander laid out his new city on the Mediterranean coast of Egypt; under the Ptolemies it became home to the great Library and the Pharos lighthouse.",
-    "source": "https://en.wikipedia.org/wiki/Alexandria"
+    "source": "https://en.wikipedia.org/wiki/History_of_Alexandria"
   },
   {
     "id": "t1-suez-canal",
@@ -479,7 +479,7 @@
     "k": null,
     "bullseyeKm": 20,
     "note": "The Franks hid in a secret annexe behind Otto Frank’s business on the Prinsengracht for two years, where Anne kept her diary, until they were betrayed in August 1944.",
-    "source": "https://en.wikipedia.org/wiki/Anne_Frank_House"
+    "source": "https://en.wikipedia.org/wiki/Anne_Frank"
   },
   {
     "id": "t1-castro-havana",
@@ -531,7 +531,7 @@
     "k": null,
     "bullseyeKm": null,
     "note": "Ash and pumice entombed Pompeii and Herculaneum on the Bay of Naples. Pliny the Younger watched from Misenum across the bay and wrote the only eyewitness account.",
-    "source": "https://en.wikipedia.org/wiki/Pompeii"
+    "source": "https://en.wikipedia.org/wiki/Eruption_of_Mount_Vesuvius_in_79_AD"
   },
   {
     "id": "t2-sarajevo",
@@ -571,7 +571,7 @@
     "bullseyeKm": 15,
     "country": "USA",
     "note": "Orville Wright flew 37 m in 12 seconds from the sand dunes at Kill Devil Hills near Kitty Hawk, North Carolina: the first controlled, sustained powered flight.",
-    "source": "https://en.wikipedia.org/wiki/Wright_Brothers_National_Memorial"
+    "source": "https://en.wikipedia.org/wiki/Wright_Flyer"
   },
   {
     "id": "t2-gettysburg",
@@ -675,7 +675,7 @@
     "k": null,
     "bullseyeKm": 15,
     "note": "Carter uncovered the steps to the boy king’s almost intact tomb in the Valley of the Kings, on the west bank of the Nile opposite Luxor.",
-    "source": "https://en.wikipedia.org/wiki/KV62"
+    "source": "https://en.wikipedia.org/wiki/Discovery_of_the_tomb_of_Tutankhamun"
   },
   {
     "id": "t2-missouri-surrender",
@@ -740,7 +740,7 @@
     "k": null,
     "bullseyeKm": 15,
     "note": "Guided by Makololo boatmen, the Scottish missionary viewed the great falls of the Zambezi, known locally as Mosi-oa-Tunya, ‘the smoke that thunders’, from an island on their lip and named them after his queen.",
-    "source": "https://en.wikipedia.org/wiki/Victoria_Falls"
+    "source": "https://en.wikipedia.org/wiki/David_Livingstone"
   },
   {
     "id": "t2-lisbon-earthquake",
@@ -766,7 +766,7 @@
     "k": null,
     "bullseyeKm": 15,
     "note": "King was shot on the balcony of the Lorraine Motel in Memphis, where he had come to support striking sanitation workers; the motel is now the National Civil Rights Museum.",
-    "source": "https://en.wikipedia.org/wiki/Lorraine_Motel"
+    "source": "https://en.wikipedia.org/wiki/Assassination_of_Martin_Luther_King_Jr."
   },
   {
     "id": "t2-fall-of-saigon",
@@ -805,7 +805,7 @@
     "k": null,
     "bullseyeKm": 25,
     "note": "Khomeini flew home from Paris to a welcome from millions in Tehran; within ten days the Shah’s last government had collapsed.",
-    "source": "https://en.wikipedia.org/wiki/Iranian_revolution"
+    "source": "https://en.wikipedia.org/wiki/Iranian_Revolution"
   },
   {
     "id": "t2-krakatoa",
@@ -845,7 +845,7 @@
     "k": null,
     "bullseyeKm": 15,
     "note": "Soviet soldiers reached the largest Nazi death camp, beside the Polish town of Oświęcim, and found about 7,000 prisoners still alive; some 1.1 million people had been murdered there.",
-    "source": "https://en.wikipedia.org/wiki/Auschwitz_concentration_camp"
+    "source": "https://en.wikipedia.org/wiki/Liberation_of_Auschwitz_concentration_camp"
   },
   {
     "id": "t2-thermopylae",
@@ -910,7 +910,7 @@
     "k": null,
     "bullseyeKm": 15,
     "note": "Australian and New Zealand soldiers came ashore at a narrow cove on the Gallipoli peninsula, beginning an eight-month campaign that failed to force open the Dardanelles.",
-    "source": "https://en.wikipedia.org/wiki/Anzac_Cove"
+    "source": "https://en.wikipedia.org/wiki/Landing_at_Anzac_Cove"
   },
   {
     "id": "t2-dunkirk",
@@ -936,7 +936,7 @@
     "k": null,
     "bullseyeKm": 20,
     "note": "Kwame Nkrumah declared the Gold Coast independent as Ghana at midnight on the Old Polo Ground in Accra, where his memorial park now stands.",
-    "source": "https://en.wikipedia.org/wiki/Kwame_Nkrumah_Memorial_Park"
+    "source": "https://en.wikipedia.org/wiki/Ghana_Independence_Act_1957"
   },
   {
     "id": "t2-galapagos",
@@ -949,7 +949,7 @@
     "k": null,
     "bullseyeKm": 150,
     "note": "HMS Beagle spent five weeks among the volcanic islands, about 900 km off Ecuador; their finches and giant tortoises later helped Darwin towards his theory of natural selection.",
-    "source": "https://en.wikipedia.org/wiki/Galápagos_Islands"
+    "source": "https://en.wikipedia.org/wiki/Second_voyage_of_HMS_Beagle"
   },
   {
     "id": "t2-moai",
@@ -975,7 +975,7 @@
     "k": null,
     "bullseyeKm": 25,
     "note": "Brazil moved its capital from Rio de Janeiro to a new city on the central plateau, laid out by Lúcio Costa with buildings by Oscar Niemeyer, built in under four years.",
-    "source": "https://en.wikipedia.org/wiki/Brasília"
+    "source": "https://en.wikipedia.org/wiki/History_of_Brasília"
   },
   {
     "id": "t2-rumble-jungle",
@@ -1027,7 +1027,7 @@
     "k": null,
     "bullseyeKm": 20,
     "note": "Raffles signed a treaty with the Sultan of Johor allowing the East India Company to set up a post at the mouth of the Singapore River, the start of modern Singapore.",
-    "source": "https://en.wikipedia.org/wiki/Founding_of_modern_Singapore"
+    "source": "https://en.wikipedia.org/wiki/1819_Singapore_Treaty"
   },
   {
     "id": "t2-israel-declaration",
@@ -1040,7 +1040,7 @@
     "k": null,
     "bullseyeKm": 20,
     "note": "David Ben-Gurion read the declaration of independence in the Tel Aviv Museum, hours before the British Mandate expired; neighbouring Arab states invaded the next day.",
-    "source": "https://en.wikipedia.org/wiki/Independence_Hall_of_Israel"
+    "source": "https://en.wikipedia.org/wiki/Israeli_Declaration_of_Independence"
   },
   {
     "id": "t3-waterloo",
@@ -1066,7 +1066,7 @@
     "k": null,
     "bullseyeKm": 60,
     "note": "Columbus’s first landfall was an island the Lucayans called Guanahani. Most historians identify it with San Salvador in the Bahamas, though Samana Cay and others have been proposed.",
-    "source": "https://en.wikipedia.org/wiki/Guanahani"
+    "source": "https://en.wikipedia.org/wiki/Voyages_of_Christopher_Columbus"
   },
   {
     "id": "t3-marathon",
@@ -1159,7 +1159,7 @@
     "bullseyeKm": 15,
     "atSea": true,
     "note": "A German torpedo sank the Cunard liner off the Old Head of Kinsale in southern Ireland; 1,198 people died, 128 of them Americans, hardening US opinion against Germany.",
-    "source": "https://en.wikipedia.org/wiki/Sinking_of_the_RMS_Lusitania"
+    "source": "https://en.wikipedia.org/wiki/Sinking_of_RMS_Lusitania"
   },
   {
     "id": "t3-yalta",
@@ -1198,7 +1198,7 @@
     "k": null,
     "bullseyeKm": 10,
     "note": "Champlain built his ‘Habitation’ below the cliffs where the St Lawrence narrows, founding Quebec, the first permanent settlement of New France.",
-    "source": "https://en.wikipedia.org/wiki/Quebec_City"
+    "source": "https://en.wikipedia.org/wiki/History_of_Quebec_City"
   },
   {
     "id": "t3-ipiranga",
@@ -1237,7 +1237,7 @@
     "k": null,
     "bullseyeKm": 10,
     "note": "A strike at the Lenin Shipyard in Gdańsk, led by the electrician Lech Wałęsa, won the right to form Solidarity, the first independent trade union in the Soviet bloc.",
-    "source": "https://en.wikipedia.org/wiki/Gdańsk_Agreement"
+    "source": "https://en.wikipedia.org/wiki/August_Agreements"
   },
   {
     "id": "t3-culloden",
@@ -1356,7 +1356,7 @@
     "k": null,
     "bullseyeKm": 10,
     "note": "Cook anchored in a bay he named for the plants his naturalists collected there; the landing at Kurnell was the first British contact with Aboriginal people on Australia’s east coast.",
-    "source": "https://en.wikipedia.org/wiki/Kurnell,_New_South_Wales"
+    "source": "https://en.wikipedia.org/wiki/First_voyage_of_James_Cook"
   },
   {
     "id": "t3-waitangi",
@@ -1434,7 +1434,7 @@
     "k": null,
     "bullseyeKm": 10,
     "note": "At the end of the Second Opium War, troops looted and then burned the emperors’ vast gardens of Yuanmingyuan, north-west of Beijing, in reprisal for the torture of envoys.",
-    "source": "https://en.wikipedia.org/wiki/Old_Summer_Palace"
+    "source": "https://en.wikipedia.org/wiki/Second_Opium_War"
   },
   {
     "id": "t3-becket",
@@ -1447,7 +1447,7 @@
     "k": null,
     "bullseyeKm": 8,
     "note": "Four knights who took Henry II’s angry words as an order killed the archbishop in Canterbury Cathedral; he was made a saint within three years.",
-    "source": "https://en.wikipedia.org/wiki/Canterbury_Cathedral"
+    "source": "https://en.wikipedia.org/wiki/Thomas_Becket"
   },
   {
     "id": "t3-dead-sea-scrolls",
@@ -1486,7 +1486,7 @@
     "k": null,
     "bullseyeKm": 10,
     "note": "Muhammad XII (Boabdil) handed the Alhambra and the city of Granada to Ferdinand and Isabella, ending almost eight centuries of Muslim rule in Iberia.",
-    "source": "https://en.wikipedia.org/wiki/Fall_of_Granada"
+    "source": "https://en.wikipedia.org/wiki/Granada_War"
   },
   {
     "id": "t3-dandi",
@@ -1525,7 +1525,7 @@
     "k": null,
     "bullseyeKm": 8,
     "note": "The Virginia Company’s settlers built a fort on a marshy island in the James River: the first permanent English settlement in the Americas, where most died in the first years.",
-    "source": "https://en.wikipedia.org/wiki/Jamestown,_Virginia"
+    "source": "https://en.wikipedia.org/wiki/Jamestown"
   },
   {
     "id": "t3-alexander-babylon",
@@ -1551,7 +1551,7 @@
     "k": null,
     "bullseyeKm": 10,
     "note": "Barnard’s team at Groote Schuur Hospital in Cape Town gave Louis Washkansky the heart of a young road-accident victim; he lived for 18 days.",
-    "source": "https://en.wikipedia.org/wiki/Groote_Schuur_Hospital"
+    "source": "https://en.wikipedia.org/wiki/Louis_Washkansky"
   },
   {
     "id": "t3-carthage",
@@ -1577,7 +1577,7 @@
     "k": null,
     "bullseyeKm": 8,
     "note": "The charter was agreed at Runnymede, a Thames-side meadow between Windsor and Staines where the rebel barons met the king on neutral ground. The exact spot is unknown.",
-    "source": "https://en.wikipedia.org/wiki/Runnymede"
+    "source": "https://en.wikipedia.org/wiki/Magna_Carta"
   },
   {
     "id": "t4-cannae",
@@ -1697,7 +1697,7 @@
     "k": null,
     "bullseyeKm": 8,
     "note": "James Marshall spotted gold flakes in the tailrace of a sawmill he was building for John Sutter on the South Fork of the American River, setting off the California Gold Rush.",
-    "source": "https://en.wikipedia.org/wiki/Sutter's_Mill"
+    "source": "https://en.wikipedia.org/wiki/California_gold_rush"
   },
   {
     "id": "t4-prokhorovka",
@@ -1801,7 +1801,7 @@
     "k": null,
     "bullseyeKm": 8,
     "note": "After an eight-month search, the journalist Henry Morton Stanley found the missionary at Ujiji on Lake Tanganyika and greeted him, he later claimed, with ‘Dr Livingstone, I presume?’",
-    "source": "https://en.wikipedia.org/wiki/Ujiji"
+    "source": "https://en.wikipedia.org/wiki/Henry_Morton_Stanley"
   },
   {
     "id": "t4-marconi",
@@ -1814,7 +1814,7 @@
     "k": null,
     "bullseyeKm": 8,
     "note": "Guglielmo Marconi heard the Morse letter ‘S’, sent from Poldhu in Cornwall, on a receiver at Signal Hill above St John’s, Newfoundland, its aerial held aloft by a kite.",
-    "source": "https://en.wikipedia.org/wiki/Signal_Hill,_St._John%27s"
+    "source": "https://en.wikipedia.org/wiki/Guglielmo_Marconi"
   },
   {
     "id": "t4-golden-spike",
@@ -1866,7 +1866,7 @@
     "k": null,
     "bullseyeKm": 8,
     "note": "Cook was killed in a skirmish on the shore of Kealakekua Bay, on the Kona coast of Hawaii’s Big Island, after trying to take a chief hostage over a stolen boat.",
-    "source": "https://en.wikipedia.org/wiki/Kealakekua_Bay"
+    "source": "https://en.wikipedia.org/wiki/Death_of_James_Cook"
   },
   {
     "id": "t4-borodino",
@@ -1983,7 +1983,7 @@
     "k": null,
     "bullseyeKm": 6,
     "note": "Norse raiders sacked the monastery on Holy Island off the Northumbrian coast, an attack usually taken as the start of the Viking Age in Britain.",
-    "source": "https://en.wikipedia.org/wiki/Lindisfarne"
+    "source": "https://en.wikipedia.org/wiki/Sack_of_Lindisfarne"
   },
   {
     "id": "t4-lanse-aux-meadows",
@@ -1996,7 +1996,7 @@
     "k": null,
     "bullseyeKm": 8,
     "note": "The only confirmed Norse site in the Americas lies at the northern tip of Newfoundland; tree rings show the Vikings were cutting wood there in 1021.",
-    "source": "https://en.wikipedia.org/wiki/L'Anse_aux_Meadows"
+    "source": "https://en.wikipedia.org/wiki/Norse_settlement_of_North_America"
   },
   {
     "id": "t4-great-zimbabwe",
@@ -2035,7 +2035,7 @@
     "k": null,
     "bullseyeKm": 30,
     "note": "The Nazca people scraped hundreds of lines and giant animal figures into the desert plateau of southern Peru, between the towns of Nazca and Palpa; they are best seen from the air.",
-    "source": "https://en.wikipedia.org/wiki/Nazca_Lines"
+    "source": "https://en.wikipedia.org/wiki/Nazca_lines"
   },
   {
     "id": "t4-council-nicaea",
@@ -2362,7 +2362,7 @@
     "k": null,
     "bullseyeKm": 15,
     "note": "Donald Johanson and Tom Gray found the 3.2-million-year-old skeleton of an Australopithecus afarensis at Hadar in Ethiopia’s Afar region; she was named after a Beatles song.",
-    "source": "https://en.wikipedia.org/wiki/Lucy_(Australopithecus)"
+    "source": "https://en.wikipedia.org/wiki/Lucy_(hominid)"
   },
   {
     "id": "t5-sutton-hoo",
@@ -2518,7 +2518,7 @@
     "k": null,
     "bullseyeKm": 10,
     "note": "Mary Leakey found the skull of Paranthropus boisei in Olduvai Gorge, on the edge of the Serengeti in Tanzania, putting East Africa at the centre of the search for human origins.",
-    "source": "https://en.wikipedia.org/wiki/Olduvai_Gorge"
+    "source": "https://en.wikipedia.org/wiki/Paranthropus_boisei"
   },
   {
     "id": "t5-gobekli-tepe",
@@ -3366,7 +3366,7 @@
     "k": null,
     "bullseyeKm": 8,
     "note": "A small British and Indian garrison held the fort of Chitral, deep in the Hindu Kush, for about seven weeks until relief columns fought their way over the mountain passes.",
-    "source": "https://en.wikipedia.org/wiki/Siege_of_Chitral"
+    "source": "https://en.wikipedia.org/wiki/Chitral_Expedition"
   },
   {
     "id": "t7-nagashino",
@@ -3458,7 +3458,7 @@
     "k": null,
     "bullseyeKm": 8,
     "note": "After a night march across the desert, Wolseley’s army stormed Urabi Pasha’s trenches at Tel el-Kebir, between Cairo and the Suez Canal, beginning Britain’s long occupation of Egypt.",
-    "source": "https://en.wikipedia.org/wiki/Battle_of_Tel_El_Kebir"
+    "source": "https://en.wikipedia.org/wiki/Battle_of_Tell_El_Kebir"
   },
   {
     "id": "t7-majuba",
@@ -3497,7 +3497,7 @@
     "k": null,
     "bullseyeKm": 6,
     "note": "Mapungubwe, by the meeting of the Limpopo and Shashe rivers, was the capital of southern Africa’s first great kingdom; a gold-foil rhinoceros from a royal grave on its hill was found in 1933.",
-    "source": "https://en.wikipedia.org/wiki/Kingdom_of_Mapungubwe"
+    "source": "https://en.wikipedia.org/wiki/Golden_Rhinoceros_of_Mapungubwe"
   },
   {
     "id": "t7-alcacer-quibir",
@@ -3536,7 +3536,7 @@
     "k": null,
     "bullseyeKm": 6,
     "note": "Jackson’s army, with Cherokee and Lower Creek allies, stormed the Red Sticks’ fortified bend of the Tallapoosa River in Alabama, ending the Creek War.",
-    "source": "https://en.wikipedia.org/wiki/Battle_of_Horseshoe_Bend_(1814)"
+    "source": "https://en.wikipedia.org/wiki/Battle_of_Horseshoe_Bend"
   },
   {
     "id": "t7-curupayty",
@@ -3656,6 +3656,6 @@
     "bullseyeKm": 8,
     "atSea": true,
     "note": "Sponge divers off the small Greek island of Antikythera, between Crete and the Peloponnese, raised objects from a Roman-era wreck, among them a corroded geared astronomical calculator.",
-    "source": "https://en.wikipedia.org/wiki/Antikythera_wreck"
+    "source": "https://en.wikipedia.org/wiki/Antikythera_mechanism"
   }
 ]

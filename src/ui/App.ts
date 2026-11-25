@@ -17,6 +17,9 @@ import type { CountryLookup } from '../game/countries';
 import type { StatsService } from '../game/statsApi';
 import { betterThan, hardestQuestion, isEarlyDays, topPercent, type DayStats } from '../game/stats';
 import { statsPlateSVG } from './statsPlate';
+import { ReadMore } from '../game/readMore';
+import type { SummaryCache } from '../game/wikipedia';
+import { Gazetteer, type EntryOptions } from './gazetteer';
 import { h, roman, countUp, copyText } from './dom';
 
 type Phase = 'start' | 'guess' | 'reveal' | 'results' | 'review' | 'ledger';
@@ -65,6 +68,9 @@ export class App {
   /** Where the results screen shows stats, while it is open. */
   private statsSlot: HTMLElement | null = null;
   private averageCells: { cell: HTMLElement; row: HTMLElement; label: string }[] = [];
+  /** Wikipedia, reachable only for questions already answered. */
+  private readonly readMore: ReadMore;
+  private readonly gazetteer: Gazetteer;
 
   constructor(
     private readonly root: HTMLElement,
@@ -76,6 +82,8 @@ export class App {
     private readonly countries: () => Promise<CountryLookup | null>,
     /** Anonymous daily stats; null when not configured. */
     private readonly statsService: StatsService | null = null,
+    /** Wikipedia summaries for "Read more"; null to offer the note and link alone. */
+    summaries: SummaryCache | null = null,
   ) {
     this.units = store.getUnits();
     const saved = puzzle.archive ? store.loadArchiveGame(puzzle.dateKey) : store.loadGame(puzzle.dateKey);
@@ -101,6 +109,8 @@ export class App {
     this.panelVeil = h('div', { class: 'panel-veil', hidden: true }, this.panel);
     this.live = h('div', { class: 'sr-only', 'aria-live': 'polite', 'aria-atomic': 'true' });
     root.append(this.compass, this.header, this.slip, this.panelVeil, this.live);
+    this.readMore = new ReadMore(puzzle.questions, () => this.game.rounds, summaries);
+    this.gazetteer = new Gazetteer(root);
 
     map.onPick((p) => this.onPick(p));
     new ResizeObserver(() => this.updateInsets()).observe(this.slip);
@@ -377,12 +387,14 @@ export class App {
       h(
         'div',
         { class: 'slip-actions' },
-        h('a', { class: 'source-link', href: q.source, target: '_blank', rel: 'noopener' }, 'Read more'),
+        this.readMoreButton(i, { label: last ? 'See results' : 'Next question', go: () => next.click() }) ?? h('span'),
         next,
       ),
     );
     this.slip.hidden = false;
     this.updateInsets();
+    // The guess is locked in, so the entry can be fetched while the reveal plays.
+    this.readMore.prefetch(i);
     const token = ++this.revealToken;
     const pts: LngLat[] = r.guess ? [r.guess, answer] : [answer];
     this.map.fitPoints(pts, animate ? 850 : 0, 12);
@@ -462,18 +474,21 @@ export class App {
       ...rounds.map((r, i) => {
         const q = this.question(i);
         const label = `Round ${i + 1}: ${q.event}, ${formatNumber(r.score)} points, ${formatDistance(r.distanceKm, this.units)} away`;
-        const average = h('span', { class: 'b-avg' });
+        const average = h('span', { class: 'b-avg', 'aria-hidden': 'true' });
         const row = h(
           'button',
           { type: 'button', class: 'breakdown-row', 'aria-label': `${label}. Show on map.`, onclick: () => this.showReview(i) },
           h('span', { class: 'b-num' }, roman(i + 1)),
-          h('span', { class: 'b-event' }, h('span', { class: 'b-title' }, q.event), h('span', { class: 'b-date' }, q.dateDisplay)),
+          h('span', { class: 'b-title' }, q.event),
           h('span', { class: 'b-dist' }, formatDistance(r.distanceKm, this.units)),
-          h('span', { class: 'b-score' }, h('span', null, formatNumber(r.score)), average),
+          h('span', { class: 'b-score' }, formatNumber(r.score)),
           h('span', { class: 'b-emoji', 'aria-hidden': 'true' }, emojiFor(r.score)),
         );
         this.averageCells.push({ cell: average, row, label });
-        return h('li', null, row);
+        const more = this.readMoreButton(i);
+        more?.setAttribute('aria-label', `Read more about ${q.event}`);
+        if (more) more.className = 'b-more';
+        return h('li', { class: 'breakdown-item' }, row, h('span', { class: 'b-sub' }, h('span', { class: 'b-date' }, q.dateDisplay), more), average);
       }),
     );
     this.statsSlot = this.statsService ? h('section', { class: 'day-stats', 'aria-label': 'How everyone else did', 'aria-live': 'polite' }) : null;
@@ -670,7 +685,7 @@ export class App {
             ]
           : h('p', { class: 'slip-hint' }, 'Every mark you made, and where history happened. Turn and zoom the globe to explore.'),
       ),
-      h('div', { class: 'slip-actions' }, q ? h('a', { class: 'source-link', href: q.source, target: '_blank', rel: 'noopener' }, 'Read more') : h('span'), back),
+      h('div', { class: 'slip-actions' }, (index != null ? this.readMoreButton(index) : null) ?? h('span'), back),
     );
     this.slip.hidden = false;
     this.updateInsets();
@@ -764,10 +779,30 @@ export class App {
     this.showResults(false);
   }
 
+  // ---------------------------------------------------------- read more ---
+
+  /** "Read more" for an answered question; nothing for one still to play. */
+  private readMoreButton(i: number, next?: EntryOptions['next']): HTMLButtonElement | null {
+    if (!this.readMore.unlocked(i)) return null;
+    return h(
+      'button',
+      { class: 'ink-button subtle read-more', type: 'button', 'aria-haspopup': 'dialog', onclick: () => this.openEntry(i, next) },
+      'Read more',
+    );
+  }
+
+  private openEntry(i: number, next?: EntryOptions['next']): void {
+    const articleUrl = this.readMore.articleUrl(i);
+    if (!articleUrl) return;
+    this.gazetteer.open({ question: this.question(i), index: i, articleUrl, summary: this.readMore.summary(i), next });
+  }
+
   // ----------------------------------------------------------- keyboard ---
 
   private onKey(e: KeyboardEvent): void {
     if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+    // The open entry handles its own keys (Escape closes it).
+    if (this.gazetteer.isOpen) return;
     const target = e.target as HTMLElement | null;
     const tag = target?.tagName;
     const onControl = tag === 'BUTTON' || tag === 'A' || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
