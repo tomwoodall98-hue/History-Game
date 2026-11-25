@@ -21,7 +21,8 @@ from the first to the seventh.
 - Turn it by dragging (with a little inertia), zoom with wheel, pinch, buttons or
   keyboard, down to about 100 m per pixel. Finer coastline tiles stream in only
   when you zoom in.
-- 280 questions (40 per difficulty tier) with notes and sources, checked by
+- 1,280 questions (about 180 per difficulty tier, from every continent) with notes
+  and sources, checked by
   `npm run validate`.
 - **Read more** after each answer: the event's entry in a Victorian gazetteer,
   with our note, Wikipedia's summary and a picture, fetched only once your

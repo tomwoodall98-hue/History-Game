@@ -4,7 +4,7 @@ import '@fontsource/im-fell-english-sc/latin-400.css';
 import './styles/main.css';
 import globeUrl from './data/globe.topo.json?url';
 import countriesUrl from './data/countries.topo.json?url';
-import questionsData from './data/questions.json';
+import questionsUrl from './data/questions.json?url';
 import scheduleData from './data/schedule.json';
 import { GlobeView } from './map/GlobeView';
 import type { GlobeBase } from './map/globeData';
@@ -18,11 +18,16 @@ import { CountryIndex, type CountryLookup } from './game/countries';
 import { createStatsService, statsConfig } from './game/statsApi';
 import { SummaryCache } from './game/wikipedia';
 
-// Start the map download before anything else.
-const basePromise: Promise<GlobeBase> = fetch(globeUrl).then((r) => {
-  if (!r.ok) throw new Error(`Map data failed to load (${r.status})`);
-  return r.json();
-});
+// Start the map and question downloads before anything else. The question
+// bank is a file of its own rather than part of the script, so the two
+// download in parallel and the script stays small.
+const getJson = <T>(url: string, what: string): Promise<T> =>
+  fetch(url).then((r) => {
+    if (!r.ok) throw new Error(`${what} failed to load (${r.status})`);
+    return r.json() as Promise<T>;
+  });
+const basePromise = getJson<GlobeBase>(globeUrl, 'Map data');
+const questionsPromise = getJson<Question[]>(questionsUrl, 'The questions');
 
 const root = document.getElementById('app')!;
 applyPaperTexture(document.documentElement);
@@ -54,21 +59,24 @@ zoomControls.addEventListener('click', (e) => {
 
 // --- Today's puzzle, chosen from the date in Europe/London, or a past day
 // from the archive (?day=YYYY-MM-DD; never today or later).
-const allQuestions = questionsData as Question[];
 const todayKey = londonDateKey();
 const store = new LocalStore(() => londonDateKey());
 const requested = new URLSearchParams(location.search).get('day');
 const archiveDay = requested && isArchiveDay(requested, todayKey) ? requested : null;
 if (requested && !archiveDay) history.replaceState(null, '', location.pathname + location.hash);
-const daily = dailyPuzzle(allQuestions, scheduleData as Schedule, archiveDay ?? todayKey);
-const puzzle: Puzzle = { ...daily, archive: archiveDay != null };
-// If a game was started before the question bank changed (a new deploy
-// mid-day), keep the questions the player was actually given.
-const saved = archiveDay ? store.loadArchiveGame(archiveDay) : store.loadGame(todayKey);
-if (saved && saved.questionIds.join() !== daily.questions.map((q) => q.id).join()) {
-  const byId = new Map(allQuestions.map((q) => [q.id, q]));
-  const kept = saved.questionIds.map((id) => byId.get(id));
-  if (kept.length === daily.questions.length && kept.every(Boolean)) puzzle.questions = kept as Question[];
+
+function makePuzzle(allQuestions: Question[]): Puzzle {
+  const daily = dailyPuzzle(allQuestions, scheduleData as Schedule, archiveDay ?? todayKey);
+  const puzzle: Puzzle = { ...daily, archive: archiveDay != null };
+  // If a game was started before the question bank changed (a new deploy
+  // mid-day), keep the questions the player was actually given.
+  const saved = archiveDay ? store.loadArchiveGame(archiveDay) : store.loadGame(todayKey);
+  if (saved && saved.questionIds.join() !== daily.questions.map((q) => q.id).join()) {
+    const byId = new Map(allQuestions.map((q) => [q.id, q]));
+    const kept = saved.questionIds.map((id) => byId.get(id));
+    if (kept.length === daily.questions.length && kept.every(Boolean)) puzzle.questions = kept as Question[];
+  }
+  return puzzle;
 }
 // Country outlines, used only to score the same-country floor and never
 // drawn. Fetched once the map is up; a failed fetch is retried next time.
@@ -100,8 +108,9 @@ const clock: Clock = {
   todayKey: () => londonDateKey(),
 };
 
-basePromise
-  .then((base) => {
+Promise.all([basePromise, questionsPromise])
+  .then(([base, questions]) => {
+    const puzzle = makePuzzle(questions);
     map.render(base);
     requestAnimationFrame(() => map.element.classList.add('ready'));
     document.getElementById('loading')?.classList.add('done');
@@ -114,5 +123,5 @@ basePromise
   .catch((err) => {
     console.error(err);
     const loading = document.getElementById('loading');
-    if (loading) loading.textContent = 'The map could not be loaded. Please refresh the page.';
+    if (loading) loading.textContent = 'The globe could not be loaded. Please refresh the page.';
   });
