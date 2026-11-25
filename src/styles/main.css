@@ -2059,6 +2059,108 @@ a.ledger-row:focus-visible {
   display: none;
 }
 
+/* Further reading: a short bibliography, each book with its cover tipped in. */
+.gz-reading[hidden] {
+  display: none;
+}
+
+.gz-reading-title {
+  margin: 0 0 10px;
+  font-family: var(--font-caps);
+  font-weight: normal;
+  font-size: 19px;
+  letter-spacing: 0.08em;
+  text-align: center;
+  color: var(--ink);
+}
+
+.gz-books {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+  hyphens: manual;
+}
+
+.gz-book {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 10px 0;
+  border-top: 1px dotted rgba(51, 34, 15, 0.35);
+}
+
+.gz-book:first-child {
+  border-top: 0;
+}
+
+.gz-cover {
+  flex: 0 0 auto;
+  display: block;
+  width: 60px;
+  padding: 3px;
+  border: 1px solid rgba(51, 34, 15, 0.7);
+  background: #ece0bf;
+  box-shadow: 1px 2px 3px rgba(30, 18, 6, 0.2);
+}
+
+.gz-cover img {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 40px;
+  filter: sepia(0.85) saturate(0.8) contrast(1.05) brightness(0.95);
+  mix-blend-mode: multiply;
+}
+
+.gz-book-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.gz-body .gz-book-text p {
+  margin: 0;
+}
+
+.gz-book-title {
+  font-style: italic;
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.gz-book-title a {
+  color: var(--ink);
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(51, 34, 15, 0.4);
+}
+
+.gz-book-title a:hover {
+  color: var(--red);
+}
+
+.gz-book-title a:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
+
+.gz-book-by {
+  margin-top: 1px;
+  font-family: var(--font-caps);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+}
+
+.gz-body .gz-book-text .gz-book-why {
+  margin-top: 3px;
+  font-size: 15.5px;
+  line-height: 1.4;
+}
+
+.gz-reading .gz-credit {
+  margin-top: 8px;
+}
+
 .gz-actions {
   position: relative;
   z-index: 1;

@@ -36,6 +36,11 @@ export interface Question {
    * happened; "Read more" shows its summary.
    */
   source: string;
+  /**
+   * One or two topics (ids in data/reading/topics.json) for the "Further
+   * reading" books in Read more.
+   */
+  topics?: string[];
 }
 
 export interface RoundResult {

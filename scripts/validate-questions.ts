@@ -19,6 +19,8 @@
  *   - notes are one or two sentences
  *   - sources are Wikipedia articles ("Read more" shows their summaries;
  *     `npm run check:sources` checks each one against Wikipedia itself)
+ *   - one or two "Further reading" topics each, all defined in
+ *     data/reading/topics.json (`npm run reading:verify` checks the books)
  *   - an even spread of questions across the seven tiers (at least 40 each)
  *   - the puzzle schedule (src/data/schedule.json): every scheduled id still
  *     exists in the right tier, and the schedule runs well past today
@@ -179,7 +181,12 @@ function sentences(text: string): number {
   return (cleaned.match(/[.!?]['"’”)]*(?=\s+[A-Z'"‘“(]|\s*$)/g) ?? []).length;
 }
 
-const KEYS = ['id', 'event', 'dateDisplay', 'year', 'tier', 'lat', 'lng', 'k', 'bullseyeKm', 'atSea', 'country', 'note', 'source'];
+const KEYS = ['id', 'event', 'dateDisplay', 'year', 'tier', 'lat', 'lng', 'k', 'bullseyeKm', 'atSea', 'country', 'note', 'source', 'topics'];
+/** "Further reading" topics (data/reading/topics.json). */
+const READING_TOPICS = resolve(ROOT, 'data/reading/topics.json');
+const topicIds = existsSync(READING_TOPICS)
+  ? new Set((JSON.parse(readFileSync(READING_TOPICS, 'utf8')) as { id: string }[]).map((t) => t.id))
+  : null;
 const seenIds = new Map<string, number>();
 const seenEvents = new Map<string, string>();
 
@@ -241,6 +248,13 @@ questions.forEach((q, index) => {
 
   if (!isStr(q.source) || !/^https:\/\/\S+$/.test(q.source)) err(id, 'source must be an https URL');
   else if (!summaryUrl(q.source)) warn(id, 'source is not a Wikipedia article: "Read more" will show the note and a link only');
+
+  if (!Array.isArray(q.topics) || q.topics.length < 1 || q.topics.length > 2 || !q.topics.every(isStr)) {
+    err(id, 'topics must list one or two "Further reading" topics');
+  } else {
+    if (new Set(q.topics).size !== q.topics.length) err(id, 'topics repeats a topic');
+    for (const t of q.topics) if (topicIds && !topicIds.has(t)) err(id, `unknown topic "${t}" (see data/reading/topics.json)`);
+  }
 });
 
 // Near-identical locations usually mean a copy-paste slip.

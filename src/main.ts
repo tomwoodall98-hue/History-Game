@@ -5,6 +5,7 @@ import './styles/main.css';
 import globeUrl from './data/globe.topo.json?url';
 import countriesUrl from './data/countries.topo.json?url';
 import questionsUrl from './data/questions.json?url';
+import readingUrl from './data/reading.json?url';
 import scheduleData from './data/schedule.json';
 import { GlobeView } from './map/GlobeView';
 import type { GlobeBase } from './map/globeData';
@@ -17,6 +18,7 @@ import { LocalStore } from './game/storage';
 import { CountryIndex, type CountryLookup } from './game/countries';
 import { createStatsService, statsConfig } from './game/statsApi';
 import { SummaryCache } from './game/wikipedia';
+import { ReadingList } from './game/reading';
 
 // Start the map and question downloads before anything else. The question
 // bank is a file of its own rather than part of the script, so the two
@@ -102,6 +104,8 @@ const statsService = statsCfg ? createStatsService(statsCfg) : null;
 // "Read more": Wikipedia summaries, fetched only for questions already
 // answered (the App's ReadMore guard sees to that) and kept for the visit.
 const summaries = new SummaryCache((url, init) => fetch(url, init));
+// "Further reading": a file of its own, fetched when a Read more entry first opens.
+const reading = new ReadingList(() => getJson<unknown>(readingUrl, 'Further reading'));
 
 const clock: Clock = {
   msUntilNext: () => nextLondonMidnight().getTime() - Date.now(),
@@ -114,7 +118,7 @@ Promise.all([basePromise, questionsPromise])
     map.render(base);
     requestAnimationFrame(() => map.element.classList.add('ready'));
     document.getElementById('loading')?.classList.add('done');
-    const app = new App(root, map, puzzle, store, clock, loadCountries, statsService, summaries);
+    const app = new App(root, map, puzzle, store, clock, loadCountries, statsService, summaries, reading);
     app.start();
     void loadCountries();
     // Handy for debugging in the console.

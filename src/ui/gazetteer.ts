@@ -4,10 +4,15 @@
  * follows it with Wikipedia's summary of the source article, if that comes
  * in time; otherwise the note and a link to the article stand alone.
  *
+ * Under the summary, "Further reading" lists two or three books on the
+ * event, each checked against Open Library, with its cover and a link to
+ * its Open Library page.
+ *
  * It is a modal <dialog>, closed by its buttons, Escape or a tap outside.
  * On the reveal screen it carries the next-question button too, so reading
  * never costs the player an extra tap.
  */
+import { coverUrl, workUrl, type Book } from '../game/reading';
 import type { Question } from '../game/types';
 import type { WikiSummary } from '../game/wikipedia';
 import { h, roman } from './dom';
@@ -20,6 +25,8 @@ export interface EntryOptions {
   articleUrl: string;
   /** Wikipedia's summary; null when there is none or it didn't arrive in time. */
   summary: Promise<WikiSummary | null>;
+  /** Books on the event; empty when there are none or the list couldn't be loaded. */
+  books?: Promise<Book[]>;
   /** On the reveal screen: go on to the next question (or the results) from inside the entry. */
   next?: { label: string; go: () => void };
 }
@@ -74,6 +81,7 @@ export class Gazetteer {
       { class: 'gz-summary', 'aria-busy': 'true' },
       h('p', { class: 'gz-loading' }, 'Consulting the gazetteer…'),
     );
+    const readingSlot = h('section', { class: 'gz-reading', 'aria-labelledby': 'gz-reading-title', hidden: true });
     const continueLink = external(opts.articleUrl, 'Continue reading on Wikipedia', { class: 'gz-continue' });
     const sourceLink = external(opts.articleUrl, 'Wikipedia');
     const credit = h(
@@ -112,7 +120,7 @@ export class Gazetteer {
         title,
         h('p', { class: 'gz-date' }, q.dateDisplay),
       ),
-      h('div', { class: 'gz-body' }, h('p', { class: 'gz-lead' }, q.note), summarySlot, h('p', { class: 'gz-more' }, continueLink), credit),
+      h('div', { class: 'gz-body' }, h('p', { class: 'gz-lead' }, q.note), summarySlot, h('p', { class: 'gz-more' }, continueLink), credit, readingSlot),
     );
     this.element.replaceChildren(
       h(
@@ -148,6 +156,43 @@ export class Gazetteer {
       credit.hidden = false;
     };
     opts.summary.then(fill, () => fill(null));
+
+    const fillReading = (books: Book[]) => {
+      if (token !== this.token || !books.length) return;
+      readingSlot.replaceChildren(
+        h('div', { class: 'gz-rule', 'aria-hidden': 'true', html: ORNAMENT }),
+        h('h3', { class: 'gz-reading-title', id: 'gz-reading-title' }, 'Further reading'),
+        h('ul', { class: 'gz-books' }, ...books.map((b) => this.book(b))),
+        h('p', { class: 'gz-credit' }, 'Book details and covers from ', external('https://openlibrary.org/', 'Open Library')),
+      );
+      readingSlot.hidden = false;
+    };
+    opts.books?.then(fillReading, () => {});
+  }
+
+  /** One book: its cover (if Open Library has one), title, author, year and why to read it. */
+  private book(b: Book): HTMLElement {
+    const link = workUrl(b);
+    const src = coverUrl(b);
+    let cover: HTMLElement | null = null;
+    if (src) {
+      const img = h('img', { src, alt: '', loading: 'lazy', decoding: 'async', width: '60', height: '90' });
+      cover = h('a', { class: 'gz-cover', href: link, target: '_blank', rel: 'noopener', tabindex: '-1', 'aria-hidden': 'true' }, img);
+      // No cover after all (or Open Library is down): drop the frame, keep the entry.
+      img.addEventListener('error', () => cover?.remove());
+    }
+    return h(
+      'li',
+      { class: 'gz-book' },
+      cover,
+      h(
+        'div',
+        { class: 'gz-book-text' },
+        h('p', { class: 'gz-book-title' }, external(link, b.title, { 'aria-label': `${b.title}, on Open Library` })),
+        h('p', { class: 'gz-book-by' }, `${b.author} · ${b.year}`),
+        h('p', { class: 'gz-book-why' }, b.why),
+      ),
+    );
   }
 
   /** The article's picture, printed like an engraving, with a link to its author and licence. */

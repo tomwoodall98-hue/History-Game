@@ -26,7 +26,8 @@ from the first to the seventh.
   `npm run validate`.
 - **Read more** after each answer: the event's entry in a Victorian gazetteer,
   with our note, Wikipedia's summary and a picture, fetched only once your
-  guess is locked in.
+  guess is locked in, and **Further reading**: two or three real books on the
+  event, each checked against Open Library.
 - Scoring gives credit for the right country, using Natural Earth's country
   outlines. They are used for scoring only and never drawn.
 
@@ -49,6 +50,8 @@ npm run dev          # http://localhost:5173
 | `npm run check`            | Type-check + tests + validate, as CI does                      |
 | `npm run check:places`     | Show the nearest towns / ancient sites to each question        |
 | `npm run check:sources`    | Check every source gives a usable Wikipedia summary (network)  |
+| `npm run reading:verify`   | Check the Further reading books on Open Library, then build them (network) |
+| `npm run reading:build`    | Rebuild the Further reading list from earlier checks (no network) |
 | `npm run simulate:scoring` | Expected scores for good, average and poor players (see below) |
 | `npm run build:geodata`    | Rebuild the globe's map data from Natural Earth (rarely needed) |
 | `npm run build:countries`  | Rebuild the scoring-only country outlines (rarely needed)      |
@@ -131,6 +134,59 @@ out. Summaries are kept in memory for the visit.
 **When Wikipedia is slow or down.** After 4 seconds without an answer (or on
 any error), the entry shows our note and the link to Wikipedia only. The game
 never waits for it.
+
+### Further reading
+
+Under the Wikipedia summary, **Further reading** lists two or three books on
+the event: the cover (from Open Library, toned sepia, loaded lazily and left
+out if there isn't one), title, author, year of first publication, a line on
+why it's worth reading, and a link to the book's Open Library page. Like the
+rest of the entry it appears only once the guess is confirmed, in the daily
+game, the results, the review map and archive games alike.
+
+**Where the books come from.** Every question has one or two `topics` in
+`src/data/questions.json` (198 of them, such as `napoleon`, `vikings` or
+`war-of-the-pacific`). Each topic in
+[`data/reading/topics.json`](data/reading/topics.json) recommends three books,
+usually a readable popular history and an authoritative scholarly one, and
+[`data/reading/events.json`](data/reading/events.json) adds a book of its own
+for events that have an obvious one (Ross King on Brunelleschi's dome,
+*A Bridge Too Far* for Arnhem). An entry shows the event's own book first, then
+its topics' books in turn, three in all.
+
+**Every book is checked.** Invented books are the main risk with a list like
+this, so nothing is shown unless Open Library has it.
+[`scripts/verify-reading.ts`](scripts/verify-reading.ts) searches Open Library
+for each book by title and author, and counts it only if a work there has the
+same title (ignoring case, punctuation, subtitles and dates) and the first
+author's surname. It records the Open Library work and a cover in
+[`data/reading/openlibrary.json`](data/reading/openlibrary.json), then builds
+`src/data/reading.json` from the books it confirmed and nothing else. Anything
+not found, or found only under another author, is left out and listed in
+[`data/reading/REPORT.md`](data/reading/REPORT.md) with the pass rate and the
+number of books each question ends up with. `tests/reading.test.ts` rebuilds
+the list from those records and fails if the shipped file differs, so an
+unchecked book can't slip in by hand, and also fails if any question has
+fewer than two books.
+
+```bash
+npm run reading:verify                    # check new or changed books, then build
+npm run reading:verify -- --tier 1        # just the books tier-1 questions use
+npm run reading:verify -- --topic vikings # just one topic
+npm run reading:verify -- --recheck       # ask again about every book
+npm run reading:build                     # rebuild from earlier checks, no network
+```
+
+Batches can run one after another: answers are saved as they arrive, and the
+list is rebuilt from everything checked so far, so a partial run is usable.
+Where Open Library can't be reached, run the **Verify further reading**
+workflow from the Actions tab (optionally for some tiers only): it does the
+same checks on GitHub and commits the results to the branch.
+
+**Loading.** The list is a file of its own (about 235 KB, 55 KB gzipped),
+fetched the first time a Read more entry opens and never before, so it costs
+nothing until then and isn't in the script bundle. Covers come straight from
+`covers.openlibrary.org`, only for the books in the open entry.
 
 ## Scoring
 

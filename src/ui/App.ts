@@ -19,6 +19,7 @@ import { betterThan, hardestQuestion, isEarlyDays, topPercent, type DayStats } f
 import { statsPlateSVG } from './statsPlate';
 import { ReadMore } from '../game/readMore';
 import type { SummaryCache } from '../game/wikipedia';
+import type { ReadingList } from '../game/reading';
 import { Gazetteer, type EntryOptions } from './gazetteer';
 import { RollOfHonour } from './honours';
 import { h, roman, countUp, copyText } from './dom';
@@ -87,6 +88,8 @@ export class App {
     private readonly statsService: StatsService | null = null,
     /** Wikipedia summaries for "Read more"; null to offer the note and link alone. */
     summaries: SummaryCache | null = null,
+    /** "Further reading" books for Read more; null to leave them out. */
+    reading: ReadingList | null = null,
   ) {
     this.units = store.getUnits();
     const saved = puzzle.archive ? store.loadArchiveGame(puzzle.dateKey) : store.loadGame(puzzle.dateKey);
@@ -112,7 +115,7 @@ export class App {
     this.panelVeil = h('div', { class: 'panel-veil', hidden: true }, this.panel);
     this.live = h('div', { class: 'sr-only', 'aria-live': 'polite', 'aria-atomic': 'true' });
     root.append(this.compass, this.header, this.slip, this.panelVeil, this.live);
-    this.readMore = new ReadMore(puzzle.questions, () => this.game.rounds, summaries);
+    this.readMore = new ReadMore(puzzle.questions, () => this.game.rounds, summaries, reading);
     this.gazetteer = new Gazetteer(root);
 
     map.onPick((p) => this.onPick(p));
@@ -828,7 +831,14 @@ export class App {
   private openEntry(i: number, next?: EntryOptions['next']): void {
     const articleUrl = this.readMore.articleUrl(i);
     if (!articleUrl) return;
-    this.gazetteer.open({ question: this.question(i), index: i, articleUrl, summary: this.readMore.summary(i), next });
+    this.gazetteer.open({
+      question: this.question(i),
+      index: i,
+      articleUrl,
+      summary: this.readMore.summary(i),
+      books: this.readMore.books(i),
+      next,
+    });
   }
 
   // ----------------------------------------------------------- keyboard ---

@@ -1,0 +1,1384 @@
+{
+  "t1-alexandria-founded": [
+    {
+      "title": "The Rise and Fall of Alexandria: Birthplace of the Modern Mind",
+      "author": "Justin Pollard",
+      "year": 2006,
+      "why": "The story of Alexander's city."
+    }
+  ],
+  "t1-anne-frank": [
+    {
+      "title": "The Diary of a Young Girl",
+      "author": "Anne Frank",
+      "year": 1947,
+      "why": "Anne's own diary of the years in hiding."
+    }
+  ],
+  "t1-apollo-11": [
+    {
+      "title": "Carrying the Fire: An Astronaut's Journeys",
+      "author": "Michael Collins",
+      "year": 1974,
+      "why": "Apollo 11's command module pilot on his journey to the Moon."
+    }
+  ],
+  "t1-bastogne": [
+    {
+      "title": "Snow and Steel: The Battle of the Bulge, 1944–45",
+      "author": "Peter Caddick-Adams",
+      "year": 2014,
+      "why": "The Battle of the Bulge from both sides."
+    }
+  ],
+  "t1-berlin-wall": [
+    {
+      "title": "The Collapse: The Accidental Opening of the Berlin Wall",
+      "author": "Mary Elise Sarotte",
+      "year": 2014,
+      "why": "How a botched announcement opened the Wall, hour by hour."
+    }
+  ],
+  "t1-boston-tea-party": [
+    {
+      "title": "Defiance of the Patriots: The Boston Tea Party and the Making of America",
+      "author": "Benjamin L. Carp",
+      "year": 2010,
+      "why": "The Boston Tea Party and how it pushed the colonies towards revolution."
+    }
+  ],
+  "t1-brooklyn-bridge": [
+    {
+      "title": "The Great Bridge",
+      "author": "David McCullough",
+      "year": 1972,
+      "why": "The epic story of the building of the Brooklyn Bridge."
+    }
+  ],
+  "t1-chernobyl": [
+    {
+      "title": "Chernobyl: The History of a Nuclear Catastrophe",
+      "author": "Serhii Plokhy",
+      "year": 2018,
+      "why": "The prize-winning history of the disaster."
+    }
+  ],
+  "t1-colosseum": [
+    {
+      "title": "The Colosseum",
+      "author": "Keith Hopkins",
+      "year": 2005,
+      "why": "The building, its gladiator games and its long afterlife."
+    }
+  ],
+  "t1-constantinople": [
+    {
+      "title": "1453: The Holy War for Constantinople and the Clash of Islam and the West",
+      "author": "Roger Crowley",
+      "year": 2005,
+      "why": "A gripping account of the siege and fall of the city."
+    }
+  ],
+  "t1-declaration-independence": [
+    {
+      "title": "American Scripture: Making the Declaration of Independence",
+      "author": "Pauline Maier",
+      "year": 1997,
+      "why": "How the Declaration was written and what it meant."
+    }
+  ],
+  "t1-eiffel-tower": [
+    {
+      "title": "Eiffel's Tower",
+      "author": "Jill Jonnes",
+      "year": 2009,
+      "why": "The tower and the 1889 Paris Exposition it crowned."
+    }
+  ],
+  "t1-fall-of-singapore": [
+    {
+      "title": "Singapore Burning: Heroism and Surrender in World War II",
+      "author": "Colin Smith",
+      "year": 2005,
+      "why": "Britain's worst defeat, from the Japanese landings to the surrender."
+    }
+  ],
+  "t1-florence-dome": [
+    {
+      "title": "Brunelleschi's Dome: How a Renaissance Genius Reinvented Architecture",
+      "author": "Ross King",
+      "year": 2000,
+      "why": "How Brunelleschi built the great dome without a frame."
+    }
+  ],
+  "t1-gandhi": [
+    {
+      "title": "Gandhi: The Years That Changed the World, 1914–1948",
+      "author": "Ramachandra Guha",
+      "year": 2018,
+      "why": "Gandhi's life in India, to his assassination."
+    }
+  ],
+  "t1-globe-theatre": [
+    {
+      "title": "1599: A Year in the Life of William Shakespeare",
+      "author": "James Shapiro",
+      "year": 2005,
+      "why": "The year the Globe was built, and the plays Shakespeare wrote for it."
+    }
+  ],
+  "t1-great-exhibition": [
+    {
+      "title": "The Great Exhibition of 1851: A Nation on Display",
+      "author": "Jeffrey A. Auerbach",
+      "year": 1999,
+      "why": "The Crystal Palace and what Victorian Britain chose to put on show."
+    }
+  ],
+  "t1-great-fire-london": [
+    {
+      "title": "By Permission of Heaven: The Story of the Great Fire of London",
+      "author": "Adrian Tinniswood",
+      "year": 2003,
+      "why": "The fire, the people who fought it and the city that rose after."
+    }
+  ],
+  "t1-hagia-sophia": [
+    {
+      "title": "Istanbul: A Tale of Three Cities",
+      "author": "Bettany Hughes",
+      "year": 2017,
+      "why": "Byzantium, Constantinople and Istanbul, with Hagia Sophia at its heart."
+    }
+  ],
+  "t1-halifax-explosion": [
+    {
+      "title": "Curse of the Narrows: The Halifax Explosion of 1917",
+      "author": "Laura M. MacDonald",
+      "year": 2005,
+      "why": "The explosion and the city's recovery."
+    }
+  ],
+  "t1-hoover-dam": [
+    {
+      "title": "Colossus: Hoover Dam and the Making of the American Century",
+      "author": "Michael Hiltzik",
+      "year": 2010,
+      "why": "How the dam was built in the Depression, and what it made possible."
+    }
+  ],
+  "t1-kanto-earthquake": [
+    {
+      "title": "The Great Kantō Earthquake and the Chimera of National Reconstruction in Japan",
+      "author": "J. Charles Schencking",
+      "year": 2013,
+      "why": "The 1923 earthquake and the rebuilding of Tokyo."
+    }
+  ],
+  "t1-klondike": [
+    {
+      "title": "Klondike: The Last Great Gold Rush, 1896–1899",
+      "author": "Pierre Berton",
+      "year": 1958,
+      "why": "The classic history of the Klondike rush."
+    }
+  ],
+  "t1-last-supper": [
+    {
+      "title": "Leonardo and the Last Supper",
+      "author": "Ross King",
+      "year": 2012,
+      "why": "The painting of the Last Supper and Leonardo's Milan."
+    }
+  ],
+  "t1-lexington-concord": [
+    {
+      "title": "Paul Revere's Ride",
+      "author": "David Hackett Fischer",
+      "year": 1994,
+      "why": "The night ride and the fighting at Lexington and Concord."
+    }
+  ],
+  "t1-liberation-paris": [
+    {
+      "title": "Is Paris Burning?",
+      "author": "Larry Collins",
+      "year": 1965,
+      "why": "How Paris was liberated, and spared Hitler's order to destroy it."
+    }
+  ],
+  "t1-lighthouse-alexandria": [
+    {
+      "title": "The Rise and Fall of Alexandria: Birthplace of the Modern Mind",
+      "author": "Justin Pollard",
+      "year": 2006,
+      "why": "The story of Alexander's city and its wonders."
+    }
+  ],
+  "t1-lincoln": [
+    {
+      "title": "Manhunt: The 12-Day Chase for Lincoln's Killer",
+      "author": "James L. Swanson",
+      "year": 2006,
+      "why": "The assassination and the hunt for John Wilkes Booth."
+    }
+  ],
+  "t1-louvre-opens": [
+    {
+      "title": "Inventing the Louvre: Art, Politics, and the Origins of the Modern Museum in Eighteenth-Century Paris",
+      "author": "Andrew McClellan",
+      "year": 1994,
+      "why": "How the Louvre became a public museum."
+    }
+  ],
+  "t1-mohenjo-daro": [
+    {
+      "title": "Ancient Cities of the Indus Valley Civilization",
+      "author": "Jonathan Mark Kenoyer",
+      "year": 1998,
+      "why": "The cities of the Indus, Mohenjo-daro among them."
+    }
+  ],
+  "t1-nautilus-north-pole": [
+    {
+      "title": "Nautilus 90 North",
+      "author": "William R. Anderson",
+      "year": 1959,
+      "why": "The submarine's captain on the voyage under the ice."
+    }
+  ],
+  "t1-nuremberg-trials": [
+    {
+      "title": "Nuremberg: Infamy on Trial",
+      "author": "Joseph E. Persico",
+      "year": 1994,
+      "why": "A gripping narrative of the trial of the Nazi leaders."
+    }
+  ],
+  "t1-panama-canal": [
+    {
+      "title": "The Path Between the Seas: The Creation of the Panama Canal, 1870–1914",
+      "author": "David McCullough",
+      "year": 1977,
+      "why": "The French failure and the American triumph at Panama."
+    }
+  ],
+  "t1-parthenon": [
+    {
+      "title": "The Parthenon",
+      "author": "Mary Beard",
+      "year": 2002,
+      "why": "The Parthenon's long history, from temple to ruin to icon."
+    }
+  ],
+  "t1-paul-revere": [
+    {
+      "title": "Paul Revere's Ride",
+      "author": "David Hackett Fischer",
+      "year": 1994,
+      "why": "Revere's ride and the opening of the war."
+    }
+  ],
+  "t1-pearl-harbor": [
+    {
+      "title": "At Dawn We Slept: The Untold Story of Pearl Harbor",
+      "author": "Gordon W. Prange",
+      "year": 1981,
+      "why": "The definitive history of the attack."
+    }
+  ],
+  "t1-penicillin": [
+    {
+      "title": "The Mold in Dr. Florey's Coat: The Story of the Penicillin Miracle",
+      "author": "Eric Lax",
+      "year": 2004,
+      "why": "How penicillin went from Fleming's dish to a drug."
+    }
+  ],
+  "t1-petra": [
+    {
+      "title": "Petra and the Lost Kingdom of the Nabataeans",
+      "author": "Jane Taylor",
+      "year": 2001,
+      "why": "A richly illustrated history of Petra and the people who carved it."
+    }
+  ],
+  "t1-salem-witch-trials": [
+    {
+      "title": "The Witches: Salem, 1692",
+      "author": "Stacy Schiff",
+      "year": 2015,
+      "why": "A vivid account of the Salem witch trials."
+    }
+  ],
+  "t1-siege-of-leningrad": [
+    {
+      "title": "The 900 Days: The Siege of Leningrad",
+      "author": "Harrison E. Salisbury",
+      "year": 1969,
+      "why": "The classic account of the siege."
+    }
+  ],
+  "t1-sistine-ceiling": [
+    {
+      "title": "Michelangelo and the Pope's Ceiling",
+      "author": "Ross King",
+      "year": 2002,
+      "why": "The four years Michelangelo spent painting the ceiling."
+    }
+  ],
+  "t1-taj-mahal": [
+    {
+      "title": "The Complete Taj Mahal and the Riverfront Gardens of Agra",
+      "author": "Ebba Koch",
+      "year": 2006,
+      "why": "The definitive study of the Taj Mahal."
+    }
+  ],
+  "t1-versailles-treaty": [
+    {
+      "title": "Paris 1919: Six Months That Changed the World",
+      "author": "Margaret MacMillan",
+      "year": 2001,
+      "why": "The peacemakers of 1919 and the world they made."
+    }
+  ],
+  "t1-vienna-1683": [
+    {
+      "title": "The Enemy at the Gate: Habsburgs, Ottomans and the Battle for Europe",
+      "author": "Andrew Wheatcroft",
+      "year": 2008,
+      "why": "The siege of Vienna in 1683."
+    }
+  ],
+  "t1-wall-street-crash": [
+    {
+      "title": "The Great Crash, 1929",
+      "author": "John Kenneth Galbraith",
+      "year": 1954,
+      "why": "A witty classic on the boom and the crash."
+    }
+  ],
+  "t1-warsaw-uprising": [
+    {
+      "title": "Rising '44: The Battle for Warsaw",
+      "author": "Norman Davies",
+      "year": 2003,
+      "why": "The Home Army's doomed rising against the Germans."
+    }
+  ],
+  "t2-aqaba-1917": [
+    {
+      "title": "Seven Pillars of Wisdom",
+      "author": "T. E. Lawrence",
+      "year": 1926,
+      "why": "Lawrence's own account of the Arab Revolt and the taking of Aqaba."
+    }
+  ],
+  "t2-auschwitz": [
+    {
+      "title": "Auschwitz: The Nazis and the 'Final Solution'",
+      "author": "Laurence Rees",
+      "year": 2005,
+      "why": "How Auschwitz grew from a prison camp into a death factory."
+    }
+  ],
+  "t2-axum": [
+    {
+      "title": "Aksum: An African Civilisation of Late Antiquity",
+      "author": "Stuart Munro-Hay",
+      "year": 1991,
+      "why": "The standard history of Aksum, its obelisks and its trade."
+    }
+  ],
+  "t2-bismarck": [
+    {
+      "title": "Pursuit: The Sinking of the Bismarck",
+      "author": "Ludovic Kennedy",
+      "year": 1974,
+      "why": "The hunt for the Bismarck, by a veteran of the chase."
+    }
+  ],
+  "t2-black-hole-calcutta": [
+    {
+      "title": "The Black Hole of Empire: History of a Global Practice of Power",
+      "author": "Partha Chatterjee",
+      "year": 2012,
+      "why": "The Black Hole of Calcutta and how its story served empire."
+    }
+  ],
+  "t2-challenger": [
+    {
+      "title": "The Challenger Launch Decision: Risky Technology, Culture, and Deviance at NASA",
+      "author": "Diane Vaughan",
+      "year": 1996,
+      "why": "A sociologist on why NASA launched the Challenger."
+    }
+  ],
+  "t2-charles-i": [
+    {
+      "title": "The Trial of Charles I",
+      "author": "C. V. Wedgwood",
+      "year": 1964,
+      "why": "The king's trial and execution."
+    }
+  ],
+  "t2-chosin": [
+    {
+      "title": "On Desperate Ground: The Marines at the Reservoir, the Korean War's Greatest Battle",
+      "author": "Hampton Sides",
+      "year": 2018,
+      "why": "The battle of the Chosin Reservoir."
+    }
+  ],
+  "t2-christmas-truce": [
+    {
+      "title": "Silent Night: The Story of the World War I Christmas Truce",
+      "author": "Stanley Weintraub",
+      "year": 2001,
+      "why": "The Christmas truce of 1914."
+    }
+  ],
+  "t2-congress-vienna": [
+    {
+      "title": "Rites of Peace: The Fall of Napoleon and the Congress of Vienna",
+      "author": "Adam Zamoyski",
+      "year": 2007,
+      "why": "The congress that remade Europe."
+    }
+  ],
+  "t2-dolly": [
+    {
+      "title": "Clone: The Road to Dolly, and the Path Ahead",
+      "author": "Gina Kolata",
+      "year": 1997,
+      "why": "A science reporter on how Dolly was made, and what it meant."
+    }
+  ],
+  "t2-dresden": [
+    {
+      "title": "Dresden: Tuesday, February 13, 1945",
+      "author": "Frederick Taylor",
+      "year": 2004,
+      "why": "A balanced history of the raid and the city it destroyed."
+    }
+  ],
+  "t2-dunkirk": [
+    {
+      "title": "The Miracle of Dunkirk",
+      "author": "Walter Lord",
+      "year": 1982,
+      "why": "The evacuation of the British army from Dunkirk."
+    }
+  ],
+  "t2-easter-rising": [
+    {
+      "title": "Easter 1916: The Irish Rebellion",
+      "author": "Charles Townshend",
+      "year": 2005,
+      "why": "The definitive history of the Easter Rising."
+    }
+  ],
+  "t2-entebbe": [
+    {
+      "title": "Operation Thunderbolt: Flight 139 and the Raid on Entebbe Airport",
+      "author": "Saul David",
+      "year": 2015,
+      "why": "The hijacking and Israel's rescue mission, hour by hour."
+    }
+  ],
+  "t2-eureka": [
+    {
+      "title": "Eureka: The Unfinished Revolution",
+      "author": "Peter FitzSimons",
+      "year": 2012,
+      "why": "The miners' rebellion at Ballarat."
+    }
+  ],
+  "t2-four-minute-mile": [
+    {
+      "title": "The First Four Minutes",
+      "author": "Roger Bannister",
+      "year": 1955,
+      "why": "Bannister's own account of the first sub-four-minute mile."
+    }
+  ],
+  "t2-galapagos": [
+    {
+      "title": "The Voyage of the Beagle",
+      "author": "Charles Darwin",
+      "year": 1839,
+      "why": "Darwin's own account of the voyage."
+    }
+  ],
+  "t2-gettysburg": [
+    {
+      "title": "Gettysburg: The Last Invasion",
+      "author": "Allen C. Guelzo",
+      "year": 2013,
+      "why": "A modern history of the battle."
+    }
+  ],
+  "t2-glencoe": [
+    {
+      "title": "Glencoe: The Story of the Massacre",
+      "author": "John Prebble",
+      "year": 1966,
+      "why": "The massacre of the MacDonalds and the politics behind it."
+    }
+  ],
+  "t2-gunpowder-plot": [
+    {
+      "title": "The Gunpowder Plot: Terror and Faith in 1605",
+      "author": "Antonia Fraser",
+      "year": 1996,
+      "why": "The plotters, their faith and their discovery."
+    }
+  ],
+  "t2-harpers-ferry": [
+    {
+      "title": "Midnight Rising: John Brown and the Raid That Sparked the Civil War",
+      "author": "Tony Horwitz",
+      "year": 2011,
+      "why": "John Brown's raid and its consequences."
+    }
+  ],
+  "t2-ho-chi-minh": [
+    {
+      "title": "Ho Chi Minh: A Life",
+      "author": "William J. Duiker",
+      "year": 2000,
+      "why": "The definitive biography of Ho Chi Minh."
+    }
+  ],
+  "t2-hue": [
+    {
+      "title": "Hue 1968: A Turning Point of the American War in Vietnam",
+      "author": "Mark Bowden",
+      "year": 2017,
+      "why": "The battle for Huế during the Tet Offensive."
+    }
+  ],
+  "t2-hungarian-revolution": [
+    {
+      "title": "Twelve Days: The Story of the 1956 Hungarian Revolution",
+      "author": "Victor Sebestyen",
+      "year": 2006,
+      "why": "A day-by-day account of the 1956 revolution and its crushing."
+    }
+  ],
+  "t2-kuwait-1990": [
+    {
+      "title": "Crusade: The Untold Story of the Persian Gulf War",
+      "author": "Rick Atkinson",
+      "year": 1993,
+      "why": "A Pulitzer-winning reporter's history of the war to free Kuwait."
+    }
+  ],
+  "t2-leyte-gulf": [
+    {
+      "title": "The Last Stand of the Tin Can Sailors",
+      "author": "James D. Hornfischer",
+      "year": 2004,
+      "why": "The destroyers' stand off Samar at Leyte Gulf."
+    }
+  ],
+  "t2-mary-rose": [
+    {
+      "title": "The Mary Rose: The Excavation and Raising of Henry VIII's Flagship",
+      "author": "Margaret Rule",
+      "year": 1982,
+      "why": "The excavation leader on raising the Mary Rose."
+    }
+  ],
+  "t2-moai": [
+    {
+      "title": "The Statues That Walked: Unraveling the Mystery of Easter Island",
+      "author": "Terry Hunt",
+      "year": 2011,
+      "why": "How the moai were made and moved."
+    }
+  ],
+  "t2-mogadishu-1993": [
+    {
+      "title": "Black Hawk Down: A Story of Modern War",
+      "author": "Mark Bowden",
+      "year": 1999,
+      "why": "The battle of Mogadishu, minute by minute."
+    }
+  ],
+  "t2-monte-cassino": [
+    {
+      "title": "Monte Cassino: The Hardest-Fought Battle of World War II",
+      "author": "Matthew Parker",
+      "year": 2003,
+      "why": "The battles for Monte Cassino."
+    }
+  ],
+  "t2-nagasaki": [
+    {
+      "title": "Nagasaki: Life After Nuclear War",
+      "author": "Susan Southard",
+      "year": 2015,
+      "why": "Five survivors of the Nagasaki bomb."
+    }
+  ],
+  "t2-ned-kelly": [
+    {
+      "title": "Ned Kelly: The Story of Australia's Most Notorious Legend",
+      "author": "Peter FitzSimons",
+      "year": 2013,
+      "why": "The life and last stand of Ned Kelly."
+    }
+  ],
+  "t2-otzi": [
+    {
+      "title": "The Man in the Ice",
+      "author": "Konrad Spindler",
+      "year": 1994,
+      "why": "The scientist in charge of Ötzi on what the body revealed."
+    }
+  ],
+  "t2-passchendaele": [
+    {
+      "title": "They Called It Passchendaele",
+      "author": "Lyn Macdonald",
+      "year": 1978,
+      "why": "The battle told through those who fought it."
+    }
+  ],
+  "t2-peterloo": [
+    {
+      "title": "Peterloo: The English Uprising",
+      "author": "Robert Poole",
+      "year": 2019,
+      "why": "The definitive account of the massacre and the reform movement behind it."
+    }
+  ],
+  "t2-phnom-penh-1975": [
+    {
+      "title": "When the War Was Over: Cambodia and the Khmer Rouge Revolution",
+      "author": "Elizabeth Becker",
+      "year": 1986,
+      "why": "Cambodia under the Khmer Rouge."
+    }
+  ],
+  "t2-pompeii": [
+    {
+      "title": "Pompeii: The Life of a Roman Town",
+      "author": "Mary Beard",
+      "year": 2008,
+      "why": "What the ruins reveal about everyday life in the buried town."
+    }
+  ],
+  "t2-rabin": [
+    {
+      "title": "Killing a King: The Assassination of Yitzhak Rabin and the Remaking of Israel",
+      "author": "Dan Ephron",
+      "year": 2015,
+      "why": "Rabin's assassination and his assassin."
+    }
+  ],
+  "t2-rasputin": [
+    {
+      "title": "Rasputin: Faith, Power, and the Twilight of the Romanovs",
+      "author": "Douglas Smith",
+      "year": 2016,
+      "why": "The definitive life of Rasputin, myths stripped away."
+    }
+  ],
+  "t2-romanovs": [
+    {
+      "title": "Ekaterinburg: The Last Days of the Romanovs",
+      "author": "Helen Rappaport",
+      "year": 2008,
+      "why": "The last two weeks of the imperial family, day by day."
+    }
+  ],
+  "t2-sarajevo": [
+    {
+      "title": "The Trigger: Hunting the Assassin Who Brought the World to War",
+      "author": "Tim Butcher",
+      "year": 2014,
+      "why": "The story of Gavrilo Princip, retracing his steps."
+    }
+  ],
+  "t2-scopes-trial": [
+    {
+      "title": "Summer for the Gods: The Scopes Trial and America's Continuing Debate over Science and Religion",
+      "author": "Edward J. Larson",
+      "year": 1997,
+      "why": "The Pulitzer-winning history of the Monkey Trial."
+    }
+  ],
+  "t2-seneca-falls": [
+    {
+      "title": "The Road to Seneca Falls: Elizabeth Cady Stanton and the First Woman's Rights Convention",
+      "author": "Judith Wellman",
+      "year": 2004,
+      "why": "The story of the convention and the women who called it."
+    }
+  ],
+  "t2-siege-orleans": [
+    {
+      "title": "Joan of Arc: A History",
+      "author": "Helen Castor",
+      "year": 2014,
+      "why": "Joan and the relief of Orléans, set in the politics of her time."
+    }
+  ],
+  "t2-telephone": [
+    {
+      "title": "Reluctant Genius: Alexander Graham Bell and the Passion for Invention",
+      "author": "Charlotte Gray",
+      "year": 2006,
+      "why": "A life of Bell, the telephone and his other inventions."
+    }
+  ],
+  "t2-trial-socrates": [
+    {
+      "title": "The Trial of Socrates",
+      "author": "I. F. Stone",
+      "year": 1988,
+      "why": "A journalist's lively inquiry into why Athens put Socrates to death."
+    }
+  ],
+  "t2-triangle-fire": [
+    {
+      "title": "Triangle: The Fire That Changed America",
+      "author": "David Von Drehle",
+      "year": 2003,
+      "why": "The fire and the reforms it brought."
+    }
+  ],
+  "t2-tutankhamun": [
+    {
+      "title": "The Tomb of Tut-ankh-Amen",
+      "author": "Howard Carter",
+      "year": 1923,
+      "why": "Carter's own account of the discovery."
+    }
+  ],
+  "t2-victoria-falls": [
+    {
+      "title": "Livingstone",
+      "author": "Tim Jeal",
+      "year": 1973,
+      "why": "The classic biography of Livingstone, who named Victoria Falls."
+    }
+  ],
+  "t3-agincourt": [
+    {
+      "title": "Agincourt: The King, the Campaign, the Battle",
+      "author": "Juliet Barker",
+      "year": 2005,
+      "why": "Henry V's campaign and the battle, from the records of the men who fought."
+    }
+  ],
+  "t3-amritsar": [
+    {
+      "title": "The Amritsar Massacre: The Untold Story of One Fateful Day",
+      "author": "Nick Lloyd",
+      "year": 2011,
+      "why": "A careful reconstruction of the Jallianwala Bagh massacre."
+    }
+  ],
+  "t3-batavia-wreck": [
+    {
+      "title": "Batavia's Graveyard",
+      "author": "Mike Dash",
+      "year": 2002,
+      "why": "The wreck of the Batavia and the massacre that followed."
+    }
+  ],
+  "t3-bay-of-pigs": [
+    {
+      "title": "The Brilliant Disaster: JFK, Castro, and America's Doomed Invasion of Cuba's Bay of Pigs",
+      "author": "Jim Rasenberger",
+      "year": 2011,
+      "why": "How the CIA's invasion of Cuba went so badly wrong."
+    }
+  ],
+  "t3-becket": [
+    {
+      "title": "Thomas Becket: Warrior, Priest, Rebel",
+      "author": "John Guy",
+      "year": 2012,
+      "why": "A modern life of Becket."
+    }
+  ],
+  "t3-columbus-landfall": [
+    {
+      "title": "Admiral of the Ocean Sea: A Life of Christopher Columbus",
+      "author": "Samuel Eliot Morison",
+      "year": 1942,
+      "why": "The Pulitzer-winning life of Columbus by a sailor-historian."
+    }
+  ],
+  "t3-dien-bien-phu": [
+    {
+      "title": "Hell in a Very Small Place: The Siege of Dien Bien Phu",
+      "author": "Bernard B. Fall",
+      "year": 1966,
+      "why": "The classic history of the siege."
+    }
+  ],
+  "t3-dunhuang-library": [
+    {
+      "title": "Foreign Devils on the Silk Road",
+      "author": "Peter Hopkirk",
+      "year": 1980,
+      "why": "The explorers who carried off the Silk Road's treasures, Dunhuang's included."
+    }
+  ],
+  "t3-el-alamein": [
+    {
+      "title": "Alamein",
+      "author": "Stephen Bungay",
+      "year": 2002,
+      "why": "The battle of El Alamein reassessed."
+    }
+  ],
+  "t3-haymarket": [
+    {
+      "title": "Death in the Haymarket: A Story of Chicago, the First Labor Movement and the Bombing That Divided Gilded Age America",
+      "author": "James Green",
+      "year": 2006,
+      "why": "The Haymarket bombing and the labour movement it shattered."
+    }
+  ],
+  "t3-iwo-jima": [
+    {
+      "title": "Flags of Our Fathers",
+      "author": "James Bradley",
+      "year": 2000,
+      "why": "The six men in the famous photograph, by the son of one of them."
+    }
+  ],
+  "t3-jamestown": [
+    {
+      "title": "A Land as God Made It: Jamestown and the Birth of America",
+      "author": "James Horn",
+      "year": 2005,
+      "why": "The founding of Jamestown and its first desperate years."
+    }
+  ],
+  "t3-joan-of-arc": [
+    {
+      "title": "Joan of Arc: A History",
+      "author": "Helen Castor",
+      "year": 2014,
+      "why": "Joan's life, trial and death, set in the politics of her time."
+    }
+  ],
+  "t3-kazan-1552": [
+    {
+      "title": "Ivan the Terrible",
+      "author": "Isabel de Madariaga",
+      "year": 2005,
+      "why": "The life and reign of Ivan IV, conqueror of Kazan."
+    }
+  ],
+  "t3-lumumba": [
+    {
+      "title": "The Lumumba Plot: The Secret History of the CIA and a Cold War Assassination",
+      "author": "Stuart A. Reid",
+      "year": 2023,
+      "why": "How Lumumba was toppled and killed, and the CIA’s part in it."
+    }
+  ],
+  "t3-marne": [
+    {
+      "title": "The Marne, 1914: The Opening of World War I and the Battle That Changed the World",
+      "author": "Holger H. Herwig",
+      "year": 2009,
+      "why": "The battle that saved Paris and ended hopes of a short war."
+    }
+  ],
+  "t3-masada": [
+    {
+      "title": "Masada: Herod's Fortress and the Zealots' Last Stand",
+      "author": "Yigael Yadin",
+      "year": 1966,
+      "why": "The excavator's account of Herod's fortress and its last defenders."
+    }
+  ],
+  "t3-midway": [
+    {
+      "title": "Shattered Sword: The Untold Story of the Battle of Midway",
+      "author": "Jonathan Parshall",
+      "year": 2005,
+      "why": "Midway retold from Japanese sources."
+    }
+  ],
+  "t3-missolonghi": [
+    {
+      "title": "The Greek War of Independence: The Struggle for Freedom from Ottoman Oppression",
+      "author": "David Brewer",
+      "year": 2001,
+      "why": "The Greek war of independence, Missolonghi included."
+    }
+  ],
+  "t3-navarino": [
+    {
+      "title": "The Greek War of Independence: The Struggle for Freedom from Ottoman Oppression",
+      "author": "David Brewer",
+      "year": 2001,
+      "why": "The Greek war of independence, Navarino included."
+    }
+  ],
+  "t3-rosetta-stone": [
+    {
+      "title": "The Keys of Egypt: The Race to Read the Hieroglyphs",
+      "author": "Lesley Adkins",
+      "year": 2000,
+      "why": "How the Rosetta Stone helped Champollion decipher hieroglyphs."
+    }
+  ],
+  "t3-trenton": [
+    {
+      "title": "Washington's Crossing",
+      "author": "David Hackett Fischer",
+      "year": 2004,
+      "why": "The Pulitzer-winning history of the crossing of the Delaware."
+    }
+  ],
+  "t3-tulsa-massacre": [
+    {
+      "title": "Death in a Promised Land: The Tulsa Race Riot of 1921",
+      "author": "Scott Ellsworth",
+      "year": 1982,
+      "why": "The first full history of the Tulsa massacre."
+    }
+  ],
+  "t3-waterloo": [
+    {
+      "title": "Waterloo: The History of Four Days, Three Armies and Three Battles",
+      "author": "Bernard Cornwell",
+      "year": 2014,
+      "why": "A vivid account of the Waterloo campaign."
+    }
+  ],
+  "t3-yalta": [
+    {
+      "title": "Yalta: The Price of Peace",
+      "author": "S. M. Plokhy",
+      "year": 2010,
+      "why": "The Yalta conference and the bargains that shaped post-war Europe."
+    }
+  ],
+  "t4-black-death-messina": [
+    {
+      "title": "The Great Mortality: An Intimate History of the Black Death",
+      "author": "John Kelly",
+      "year": 2005,
+      "why": "A vivid history of the Black Death."
+    },
+    {
+      "title": "The Black Death",
+      "author": "Philip Ziegler",
+      "year": 1969,
+      "why": "The classic history of the plague."
+    }
+  ],
+  "t4-bretton-woods": [
+    {
+      "title": "The Battle of Bretton Woods: John Maynard Keynes, Harry Dexter White, and the Making of a New World Order",
+      "author": "Benn Steil",
+      "year": 2013,
+      "why": "The conference that made the post-war economic order."
+    }
+  ],
+  "t4-burning-washington": [
+    {
+      "title": "Through the Perilous Fight: Six Weeks That Saved the Nation",
+      "author": "Steve Vogel",
+      "year": 2013,
+      "why": "The burning of Washington and the defence of Baltimore."
+    }
+  ],
+  "t4-fort-mchenry": [
+    {
+      "title": "Through the Perilous Fight: Six Weeks That Saved the Nation",
+      "author": "Steve Vogel",
+      "year": 2013,
+      "why": "The burning of Washington and the defence of Baltimore."
+    }
+  ],
+  "t4-glyndwr": [
+    {
+      "title": "The Revolt of Owain Glyn Dŵr",
+      "author": "R. R. Davies",
+      "year": 1995,
+      "why": "The standard history of the Welsh revolt."
+    }
+  ],
+  "t4-golden-spike": [
+    {
+      "title": "Nothing Like It in the World: The Men Who Built the Transcontinental Railroad, 1863–1869",
+      "author": "Stephen E. Ambrose",
+      "year": 2000,
+      "why": "The building of the first transcontinental railroad."
+    }
+  ],
+  "t4-guadalcanal": [
+    {
+      "title": "Guadalcanal: The Definitive Account of the Landmark Battle",
+      "author": "Richard B. Frank",
+      "year": 1990,
+      "why": "The definitive history of the Guadalcanal campaign."
+    }
+  ],
+  "t4-ia-drang": [
+    {
+      "title": "We Were Soldiers Once... and Young",
+      "author": "Harold G. Moore",
+      "year": 1992,
+      "why": "The battle of Ia Drang, by the commander and a reporter who were there."
+    }
+  ],
+  "t4-kirina": [
+    {
+      "title": "Sundiata: An Epic of Old Mali",
+      "author": "D. T. Niane",
+      "year": 1960,
+      "why": "The griots' epic of Sundiata, founder of Mali, as told by a Guinean historian."
+    }
+  ],
+  "t4-lepanto": [
+    {
+      "title": "Victory of the West: The Great Christian-Muslim Clash at the Battle of Lepanto",
+      "author": "Niccolò Capponi",
+      "year": 2006,
+      "why": "The great galley battle of 1571, from both sides."
+    }
+  ],
+  "t4-magna-carta": [
+    {
+      "title": "Magna Carta",
+      "author": "J. C. Holt",
+      "year": 1965,
+      "why": "The classic study of the charter."
+    }
+  ],
+  "t4-market-garden": [
+    {
+      "title": "A Bridge Too Far",
+      "author": "Cornelius Ryan",
+      "year": 1974,
+      "why": "The classic account of Operation Market Garden."
+    }
+  ],
+  "t4-sedan": [
+    {
+      "title": "The Franco-Prussian War: The German Invasion of France, 1870–1871",
+      "author": "Michael Howard",
+      "year": 1961,
+      "why": "The classic history of the Franco-Prussian war and Sedan."
+    }
+  ],
+  "t4-sharpeville": [
+    {
+      "title": "Sharpeville: An Apartheid Massacre and Its Consequences",
+      "author": "Tom Lodge",
+      "year": 2011,
+      "why": "The Sharpeville massacre and how it changed the struggle against apartheid."
+    }
+  ],
+  "t4-sutters-mill": [
+    {
+      "title": "The Age of Gold: The California Gold Rush and the New American Dream",
+      "author": "H. W. Brands",
+      "year": 2002,
+      "why": "The California gold rush and the people who joined it."
+    }
+  ],
+  "t4-towton": [
+    {
+      "title": "Fatal Colours: Towton, 1461",
+      "author": "George Goodwin",
+      "year": 2011,
+      "why": "England's bloodiest battle."
+    }
+  ],
+  "t4-wannsee": [
+    {
+      "title": "The Villa, the Lake, the Meeting: Wannsee and the Final Solution",
+      "author": "Mark Roseman",
+      "year": 2002,
+      "why": "The meeting where the Final Solution was coordinated, and its minutes."
+    }
+  ],
+  "t5-beziers": [
+    {
+      "title": "The Perfect Heresy: The Revolutionary Life and Death of the Medieval Cathars",
+      "author": "Stephen O'Shea",
+      "year": 2000,
+      "why": "The Cathars and the crusade against them."
+    }
+  ],
+  "t5-bosworth": [
+    {
+      "title": "Bosworth: The Birth of the Tudors",
+      "author": "Chris Skidmore",
+      "year": 2013,
+      "why": "How Henry Tudor won his crown on Bosworth Field."
+    }
+  ],
+  "t5-bounty-mutiny": [
+    {
+      "title": "The Bounty: The True Story of the Mutiny on the Bounty",
+      "author": "Caroline Alexander",
+      "year": 2003,
+      "why": "The mutiny, Bligh and the trial."
+    }
+  ],
+  "t5-copernicus": [
+    {
+      "title": "A More Perfect Heaven: How Copernicus Revolutionized the Cosmos",
+      "author": "Dava Sobel",
+      "year": 2011,
+      "why": "Copernicus and the publication of his great book."
+    }
+  ],
+  "t5-crete": [
+    {
+      "title": "Crete: The Battle and the Resistance",
+      "author": "Antony Beevor",
+      "year": 1991,
+      "why": "The airborne invasion and the resistance after."
+    }
+  ],
+  "t5-dettingen": [
+    {
+      "title": "The War of the Austrian Succession",
+      "author": "Reed Browning",
+      "year": 1993,
+      "why": "The war in which Dettingen and Fontenoy were fought."
+    }
+  ],
+  "t5-donner": [
+    {
+      "title": "The Indifferent Stars Above: The Harrowing Saga of a Donner Party Bride",
+      "author": "Daniel James Brown",
+      "year": 2009,
+      "why": "The Donner Party through one young woman's story."
+    }
+  ],
+  "t5-fontenoy": [
+    {
+      "title": "The War of the Austrian Succession",
+      "author": "Reed Browning",
+      "year": 1993,
+      "why": "The war in which Fontenoy and Dettingen were fought."
+    }
+  ],
+  "t5-ibn-battuta": [
+    {
+      "title": "The Adventures of Ibn Battuta: A Muslim Traveler of the 14th Century",
+      "author": "Ross E. Dunn",
+      "year": 1986,
+      "why": "Ibn Battuta's travels across the medieval Islamic world."
+    }
+  ],
+  "t5-kohima": [
+    {
+      "title": "Road of Bones: The Siege of Kohima 1944",
+      "author": "Fergal Keane",
+      "year": 2010,
+      "why": "The siege of Kohima, told through those who fought there."
+    }
+  ],
+  "t5-montsegur": [
+    {
+      "title": "The Perfect Heresy: The Revolutionary Life and Death of the Medieval Cathars",
+      "author": "Stephen O'Shea",
+      "year": 2000,
+      "why": "The Cathars and the crusade against them, to the fall of Montségur."
+    }
+  ],
+  "t5-pt-109": [
+    {
+      "title": "PT 109: John F. Kennedy in World War II",
+      "author": "Robert J. Donovan",
+      "year": 1961,
+      "why": "How Kennedy's crew survived after their boat was cut in two."
+    }
+  ],
+  "t5-spartacus": [
+    {
+      "title": "The Spartacus War",
+      "author": "Barry Strauss",
+      "year": 2009,
+      "why": "The gladiators' revolt and the man who led it."
+    }
+  ],
+  "t5-sputnik": [
+    {
+      "title": "Sputnik: The Shock of the Century",
+      "author": "Paul Dickson",
+      "year": 2001,
+      "why": "Sputnik and the panic it caused in America."
+    }
+  ],
+  "t5-sutton-hoo": [
+    {
+      "title": "Sutton Hoo: Burial Ground of Kings?",
+      "author": "Martin Carver",
+      "year": 1998,
+      "why": "The excavator on the ship burial and its cemetery."
+    }
+  ],
+  "t5-teutoburg": [
+    {
+      "title": "The Battle That Stopped Rome: Emperor Augustus, Arminius, and the Slaughter of the Legions in the Teutoburg Forest",
+      "author": "Peter S. Wells",
+      "year": 2003,
+      "why": "An archaeologist on the ambush and the battlefield found at Kalkriese."
+    }
+  ],
+  "t5-thames": [
+    {
+      "title": "Tecumseh and the Prophet: The Shawnee Brothers Who Defied a Nation",
+      "author": "Peter Cozzens",
+      "year": 2020,
+      "why": "Tecumseh's life and his death at the Thames."
+    }
+  ],
+  "t6-big-hole": [
+    {
+      "title": "The Last Indian War: The Nez Perce Story",
+      "author": "Elliott West",
+      "year": 2009,
+      "why": "The Nez Perce war of 1877 and its long retreat."
+    }
+  ],
+  "t6-book-of-kells": [
+    {
+      "title": "The Book of Kells",
+      "author": "Bernard Meehan",
+      "year": 1994,
+      "why": "A guide to the manuscript by Trinity College's keeper of manuscripts."
+    }
+  ],
+  "t6-boqueron": [
+    {
+      "title": "The Chaco War: Bolivia and Paraguay, 1932–1935",
+      "author": "Bruce W. Farcau",
+      "year": 1996,
+      "why": "The war between Bolivia and Paraguay for the Chaco."
+    }
+  ],
+  "t6-burke-wills": [
+    {
+      "title": "Cooper's Creek",
+      "author": "Alan Moorehead",
+      "year": 1963,
+      "why": "The classic account of the Burke and Wills expedition."
+    }
+  ],
+  "t6-evesham": [
+    {
+      "title": "The Song of Simon de Montfort: England's First Revolutionary and the Death of Chivalry",
+      "author": "Sophie Thérèse Ambler",
+      "year": 2019,
+      "why": "Simon de Montfort, Lewes and Evesham."
+    }
+  ],
+  "t6-fashoda": [
+    {
+      "title": "The Race to Fashoda: European Colonialism and African Resistance in the Scramble for Africa",
+      "author": "David Levering Lewis",
+      "year": 1987,
+      "why": "The race to the Nile and the Fashoda crisis."
+    }
+  ],
+  "t6-gagarin-landing": [
+    {
+      "title": "Starman: The Truth Behind the Legend of Yuri Gagarin",
+      "author": "Jamie Doran",
+      "year": 1998,
+      "why": "Gagarin's life, flight and the legend built around him."
+    }
+  ],
+  "t6-koniggratz": [
+    {
+      "title": "The Austro-Prussian War: Austria's War with Prussia and Italy in 1866",
+      "author": "Geoffrey Wawro",
+      "year": 1996,
+      "why": "The war of 1866 and the battle of Königgrätz."
+    }
+  ],
+  "t6-lewes": [
+    {
+      "title": "The Song of Simon de Montfort: England's First Revolutionary and the Death of Chivalry",
+      "author": "Sophie Thérèse Ambler",
+      "year": 2019,
+      "why": "Simon de Montfort, Lewes and Evesham."
+    }
+  ],
+  "t6-takashima": [
+    {
+      "title": "Khubilai Khan's Lost Fleet: In Search of a Legendary Armada",
+      "author": "James P. Delgado",
+      "year": 2008,
+      "why": "The archaeology of the lost Mongol invasion fleet."
+    }
+  ],
+  "t6-tippecanoe": [
+    {
+      "title": "Tecumseh and the Prophet: The Shawnee Brothers Who Defied a Nation",
+      "author": "Peter Cozzens",
+      "year": 2020,
+      "why": "Tecumseh, his brother and Tippecanoe."
+    }
+  ],
+  "t6-tulip-mania": [
+    {
+      "title": "Tulipomania: The Story of the World's Most Coveted Flower and the Extraordinary Passions It Aroused",
+      "author": "Mike Dash",
+      "year": 1999,
+      "why": "The tulip craze and its collapse."
+    }
+  ],
+  "t7-antikythera": [
+    {
+      "title": "Decoding the Heavens: Solving the Mystery of the World's First Computer",
+      "author": "Jo Marchant",
+      "year": 2008,
+      "why": "The century-long quest to understand the Antikythera mechanism."
+    }
+  ],
+  "t7-bear-paw": [
+    {
+      "title": "The Last Indian War: The Nez Perce Story",
+      "author": "Elliott West",
+      "year": 2009,
+      "why": "The Nez Perce war of 1877 and Chief Joseph's surrender."
+    }
+  ],
+  "t7-nag-hammadi": [
+    {
+      "title": "The Gnostic Gospels",
+      "author": "Elaine Pagels",
+      "year": 1979,
+      "why": "What the Nag Hammadi texts reveal about early Christianity."
+    }
+  ],
+  "t7-sand-creek": [
+    {
+      "title": "A Misplaced Massacre: Struggling over the Memory of Sand Creek",
+      "author": "Ari Kelman",
+      "year": 2013,
+      "why": "The massacre and the long fight over how to remember it."
+    }
+  ],
+  "t7-uraniborg": [
+    {
+      "title": "Tycho & Kepler: The Unlikely Partnership That Forever Changed Our Understanding of the Heavens",
+      "author": "Kitty Ferguson",
+      "year": 2002,
+      "why": "Tycho Brahe, his observatory and his heir."
+    }
+  ]
+}
