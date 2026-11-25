@@ -224,6 +224,14 @@ export class LocalStore implements Persistence {
     return this.data.playerId;
   }
 
+  setPlayerId(id: string): boolean {
+    if (!this.storage || !UUID.test(id)) return false;
+    this.data = this.read();
+    this.data.playerId = id;
+    this.write();
+    return this.read().playerId === id;
+  }
+
   submission(dateKey: string): SubmissionState {
     this.data = this.read();
     return { ...(this.data.submissions[dateKey] ?? { done: false, tries: 0 }) };

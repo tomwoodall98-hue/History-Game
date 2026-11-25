@@ -29,6 +29,7 @@
     "topojson-client": "3.1.0"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.16",
     "@happy-dom/global-registrator": "21.0.4",
     "@types/d3-geo": "3.1.1",
     "@types/d3-selection": "3.0.12",

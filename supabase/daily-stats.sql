@@ -131,19 +131,10 @@ $$;
 revoke all on function public.daily_stats(date, integer) from public, anon, authenticated;
 grant execute on function public.daily_stats(date, integer) to anon, authenticated;
 
--- ------------------------------------------------- later: optional profiles ---
+-- ------------------------------------------------------------ profiles ---
 --
--- Not created now; this is how profiles can be added without changing the
--- table above. A signed-in user claims the anonymous ids from their devices:
---
---   create table public.player_claims (
---     player_id uuid primary key,
---     user_id uuid not null references auth.users (id) on delete cascade,
---     claimed_at timestamptz not null default now()
---   );
---
--- plus a SECURITY DEFINER function claim_player(p_player_id uuid) that inserts
--- (p_player_id, auth.uid()) if nobody has claimed it yet. A player's past
--- results are then daily_results joined through player_claims. Because raw
--- rows (and so player ids) are never readable, holding an id in your own
+-- Optional usernames and leaderboards are set up by
+-- profiles-leaderboards.sql (run it after this file). They link a name to
+-- the anonymous player_id without changing the table above: because raw rows
+-- (and so player ids) are never readable, holding an id in your own
 -- browser's storage is the proof that it is yours.

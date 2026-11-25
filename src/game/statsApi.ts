@@ -1,15 +1,18 @@
 /**
- * Talks to Supabase for the anonymous daily stats, with plain fetch.
+ * Talks to Supabase for the anonymous daily stats and the Roll of Honour,
+ * with plain fetch.
  *
- * Only two calls are needed (insert a result, call daily_stats), so this
+ * Only a handful of calls are needed (insert a result, and a few RPCs), so this
  * avoids @supabase/supabase-js, which would add ~59 KB gzipped to a game
  * whose own code is ~95 KB. Every call has a short timeout and never throws:
  * the game must play exactly the same when Supabase is down or slow.
  *
- * The SQL that sets up the table, policy and function is in
- * supabase/daily-stats.sql.
+ * The SQL is in supabase/daily-stats.sql (results and stats) and
+ * supabase/profiles-leaderboards.sql (usernames and leaderboards).
  */
 import { parseStats, type DayStats } from './stats';
+import { parseLeaderboard, type Board, type Leaderboard } from './leaderboard';
+import { isClaimProblem, type ClaimProblem } from './username';
 
 export interface StatsConfig {
   /** https://<project>.supabase.co */
@@ -26,11 +29,41 @@ export interface Submission {
   rounds: number[];
 }
 
+/** A player's entry on the roll, as my_profile() returns it. */
+export interface Profile {
+  username: string | null;
+  /** Daily games recorded for the player id. */
+  games: number;
+}
+
+export type ClaimResult = { ok: true; username: string } | { ok: false; reason: ClaimProblem | 'unavailable' };
+
 export interface StatsService {
   /** True once the result is stored (or was stored before); false on any failure. */
   submit(s: Submission): Promise<boolean>;
   /** A day's aggregates, with the percentile for `score`; null on any failure. */
   stats(date: string, score: number | null): Promise<DayStats | null>;
+  /** The name (if any) on a player id; null on any failure. */
+  profile(playerId: string): Promise<Profile | null>;
+  /** Claims or changes the player's name. */
+  claim(playerId: string, username: string): Promise<ClaimResult>;
+  /** One leaderboard, with the player's own row; null on any failure. */
+  leaderboard(board: Board, playerId: string | null): Promise<Leaderboard | null>;
+}
+
+export function parseProfile(raw: unknown): Profile | null {
+  const r = raw as Record<string, unknown> | null;
+  if (!r || typeof r !== 'object') return null;
+  if (!(r.username === null || (typeof r.username === 'string' && /^[A-Za-z0-9_]{1,20}$/.test(r.username)))) return null;
+  if (typeof r.games !== 'number' || !Number.isInteger(r.games) || r.games < 0) return null;
+  return { username: r.username, games: r.games };
+}
+
+export function parseClaim(raw: unknown): ClaimResult {
+  const r = raw as Record<string, unknown> | null;
+  if (r?.ok === true && typeof r.username === 'string' && /^[A-Za-z0-9_]{3,20}$/.test(r.username)) return { ok: true, username: r.username };
+  if (r?.ok === false && isClaimProblem(r.reason)) return { ok: false, reason: r.reason };
+  return { ok: false, reason: 'unavailable' };
 }
 
 export const TIMEOUT_MS = 3000;
@@ -94,5 +127,24 @@ export function createStatsService(config: StatsConfig, fetchImpl: typeof fetch 
       ),
     stats: (date, score) =>
       call('rpc/daily_stats', { p_date: date, p_score: score }, async (res) => (res.ok ? parseStats(await res.json()) : null), null),
+    profile: (playerId) =>
+      call('rpc/my_profile', { p_player_id: playerId }, async (res) => (res.ok ? parseProfile(await res.json()) : null), null),
+    claim: (playerId, username) =>
+      call(
+        'rpc/claim_username',
+        { p_player_id: playerId, p_username: username },
+        async (res): Promise<ClaimResult> => (res.ok ? parseClaim(await res.json()) : { ok: false, reason: 'unavailable' }),
+        { ok: false, reason: 'unavailable' } as ClaimResult,
+      ),
+    leaderboard: (board, playerId) =>
+      call(
+        'rpc/leaderboard',
+        { p_board: board, p_player_id: playerId },
+        async (res) => {
+          const lb = res.ok ? parseLeaderboard(await res.json()) : null;
+          return lb && lb.board === board ? lb : null;
+        },
+        null,
+      ),
   };
 }
