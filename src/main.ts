@@ -6,8 +6,10 @@ import globeUrl from './data/globe.topo.json?url';
 import countriesUrl from './data/countries.topo.json?url';
 import questionsUrl from './data/questions.json?url';
 import readingUrl from './data/reading.json?url';
+import decorationsUrl from './data/decorations.json?url';
 import scheduleData from './data/schedule.json';
 import { GlobeView } from './map/GlobeView';
+import { decodeDecorations, type DecorationFile } from './map/decorations';
 import type { GlobeBase } from './map/globeData';
 import { applyPaperTexture } from './map/texture';
 import { App } from './ui/App';
@@ -46,6 +48,9 @@ zoomControls.innerHTML = `
   </button>
   <button class="ink-button" data-zoom="reset" aria-label="Show whole map" title="Show whole map">
     <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 1.5v4M10 14.5v4M1.5 10h4M14.5 10h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+  </button>
+  <button class="ink-button decor-toggle" data-toggle="decorations" aria-pressed="true" aria-label="Map decorations" title="Map decorations">
+    <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M1.5 16 6.8 6.5l3.4 5.6 2.3-3.4 6 7.3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/><path d="M7.6 9.4 9 13.2M13.4 11l1.4 3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/><path class="off" d="M3 3l14 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
   </button>`;
 root.appendChild(zoomControls);
 
@@ -67,6 +72,30 @@ zoomControls.addEventListener('click', (e) => {
 const todayKey = londonDateKey();
 const store = new LocalStore(() => londonDateKey());
 const route = resolveRoute(location.search, todayKey, (day) => store.playedGame(day) != null);
+
+// Map decorations (mountains, deserts, forests, ripples, ships): on unless
+// the player turned them off. Their placements are a file of their own,
+// fetched once the globe is up, and only while they are wanted.
+const decorButton = zoomControls.querySelector<HTMLButtonElement>('[data-toggle="decorations"]')!;
+let decorations: Promise<void> | null = null;
+function showDecorations(on: boolean): void {
+  decorButton.setAttribute('aria-pressed', String(on));
+  map.setDecorationsVisible(on);
+  if (on && !decorations) {
+    decorations = getJson<DecorationFile>(decorationsUrl, 'Map decorations')
+      .then((file) => map.setDecorations(decodeDecorations(file)))
+      .catch((err) => {
+        console.warn(err);
+        decorations = null;
+      });
+  }
+}
+decorButton.setAttribute('aria-pressed', String(store.getDecorations()));
+decorButton.addEventListener('click', () => {
+  const on = !store.getDecorations();
+  store.setDecorations(on);
+  showDecorations(on);
+});
 const query = canonicalQuery(route, todayKey);
 const asked = new URLSearchParams(location.search);
 if ((asked.has('day') || asked.has('mode')) && location.search !== query) history.replaceState(null, '', location.pathname + query + location.hash);
@@ -130,6 +159,7 @@ Promise.all([basePromise, questionsPromise])
   .then(([base, questions]) => {
     const puzzle = makePuzzle(questions);
     map.render(base);
+    showDecorations(store.getDecorations());
     requestAnimationFrame(() => map.element.classList.add('ready'));
     document.getElementById('loading')?.classList.add('done');
     const app = new App(root, map, puzzle, store, clock, loadCountries, statsService, summaries, reading);

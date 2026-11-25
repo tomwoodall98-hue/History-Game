@@ -56,6 +56,19 @@ class MemoryStorage {
   }
 }
 
+test('map decorations are on until turned off, and the choice is kept', () => {
+  assert.equal(parseStored(null).decorations, true);
+  assert.equal(parseStored('{"decorations":"no"}').decorations, true);
+  assert.equal(parseStored('{"decorations":false}').decorations, false);
+  const mem = new MemoryStorage();
+  const s = new LocalStore(() => '2026-11-25', mem as unknown as Storage);
+  assert.equal(s.getDecorations(), true);
+  s.setDecorations(false);
+  assert.equal(new LocalStore(() => '2026-11-25', mem as unknown as Storage).getDecorations(), false);
+  s.setDecorations(true);
+  assert.equal(new LocalStore(() => '2026-11-25', mem as unknown as Storage).getDecorations(), true);
+});
+
 const game = (dateKey: string, finished: boolean, scores: number[]): SavedGame => ({
   dateKey,
   puzzle: 3,
