@@ -1,0 +1,140 @@
+/* The glyph specimen page (glyphs.html). Self-contained: the game's main.css is not loaded. */
+:root {
+  --paper: #eadcb9;
+  --paper-light: #f7f0dd;
+  --ink: #33220f;
+  --ink-soft: #5c4329;
+  --ink-faint: #8a7253;
+  --font-body: 'IM Fell English', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  --font-caps: 'IM Fell English SC', var(--font-body);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--paper);
+  background-image: var(--paper-mottle), var(--paper-fibres), var(--paper-grain);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.4;
+}
+
+.specimen {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px 16px 60px;
+}
+
+h1,
+h2 {
+  font-family: var(--font-caps);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+h1 {
+  font-size: 2.2rem;
+  text-align: center;
+}
+
+h2 {
+  font-size: 1.45rem;
+  border-bottom: 1px solid var(--ink-faint);
+  padding-bottom: 4px;
+}
+
+.lede {
+  max-width: 44em;
+  margin: 8px auto 20px;
+  text-align: center;
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
+.plate {
+  margin-top: 30px;
+}
+
+.note {
+  margin: 6px 0 14px;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.card {
+  margin: 0;
+  padding: 10px;
+  background: rgba(247, 240, 221, 0.55);
+  border: 1px solid rgba(92, 67, 41, 0.35);
+  max-width: 100%;
+}
+
+.card .enlarged {
+  display: block;
+  max-width: 100%;
+  height: auto !important;
+  background: rgba(239, 223, 180, 0.35);
+}
+
+.actual {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.swatch {
+  display: block;
+  border: 1px solid rgba(51, 34, 15, 0.3);
+}
+
+figcaption {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 6px;
+  font-size: 0.9rem;
+}
+
+figcaption .id {
+  font-family: var(--font-caps);
+}
+
+figcaption .dims {
+  color: var(--ink-faint);
+}
+
+.vignettes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.vignettes figure {
+  margin: 0;
+  max-width: 100%;
+}
+
+.vignette,
+.atlas {
+  display: block;
+  max-width: 100%;
+  height: auto !important;
+  border: 1px solid rgba(51, 34, 15, 0.45);
+}
+
+.atlas {
+  background: var(--paper-light);
+}
