@@ -578,7 +578,6 @@ src/map/fastOrtho.ts          the fast orthographic projector used for drawing
 src/map/globeMath.ts          tap vs drag, screen → lng/lat, rotation, view fitting
 src/map/ornaments.ts          compass rose, cartouche, guess mark, wax seal
 src/map/texture.ts            parchment grain, fibres, foxing and stains (SVG filters)
-src/map/glyphs.ts             hand-sketched decoration glyphs and their sprite atlas
 ```
 
 - **Projection.** `d3.geoOrthographic`, showing only the near hemisphere. North
@@ -615,12 +614,6 @@ src/map/glyphs.ts             hand-sketched decoration glyphs and their sprite a
   yellowed varnish, tea-stained toning towards the rim and the light on a ball
   (highlight top-left, darkening to the edge). The brass meridian ring and the
   wooden horizon ring and stand scale with zoom but don't rotate.
-- **Decoration glyphs.** Mountains, deserts, forests, sea ripples, ships and a
-  couple of sea monsters, sketched procedurally in sepia ink by `glyphs.ts`
-  with a seeded wobbling, tapering pen, then baked once into a sprite atlas.
-  `glyphs.html` (built, but never linked from the game) is a specimen sheet of
-  every glyph: `npm run dev` and open `/glyphs.html`, or add `/glyphs.html` to
-  a deploy preview's address.
 - **No text on the globe.** The only lettering is the title in the cartouche.
 
 ## Accessibility
