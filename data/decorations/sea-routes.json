@@ -1,0 +1,18 @@
+{
+  "type": "FeatureCollection",
+  "about": "Plausible sailing-ship routes for placing ship glyphs on the globe (scripts/build-decorations.ts). Drawn by hand as waypoints ([longitude, latitude]) along the great 19th-century sea lanes: the North Atlantic packet route, the outward Cape route and the Roaring Forties to Australia, the clipper route home round Cape Horn, the monsoon crossings of the Indian Ocean, the China Sea tea route, the Manila galleons' routes across the Pacific, and the Sydney to San Francisco run. Ships are placed along the great circles between waypoints, never within 200 km of a coast, and face east or west the way the route runs.",
+  "features": [
+    {"type": "Feature", "properties": {"name": "North Atlantic packets: Liverpool to New York"}, "geometry": {"type": "LineString", "coordinates": [[-12, 50.5], [-25, 49], [-40, 45.5], [-55, 42], [-66, 40.5]]}},
+    {"type": "Feature", "properties": {"name": "Lisbon to the West Indies"}, "geometry": {"type": "LineString", "coordinates": [[-12, 37], [-22, 30], [-35, 22], [-50, 17], [-58, 15]]}},
+    {"type": "Feature", "properties": {"name": "Outward Cape route: Europe to the Cape of Good Hope"}, "geometry": {"type": "LineString", "coordinates": [[-14, 42], [-22, 30], [-27, 15], [-28, 0], [-26, -15], [-20, -28], [-5, -37], [12, -38.5], [20, -39]]}},
+    {"type": "Feature", "properties": {"name": "Cape of Good Hope to Bombay"}, "geometry": {"type": "LineString", "coordinates": [[24, -39], [38, -36], [52, -30], [62, -20], [67, -8], [69, 4], [68.5, 14]]}},
+    {"type": "Feature", "properties": {"name": "Roaring Forties to Australia"}, "geometry": {"type": "LineString", "coordinates": [[30, -40], [50, -42], [70, -42], [90, -40], [105, -38], [112, -37]]}},
+    {"type": "Feature", "properties": {"name": "Clipper route home round Cape Horn"}, "geometry": {"type": "LineString", "coordinates": [[150, -46], [170, -50], [-170, -53], [-150, -55], [-130, -56], [-100, -57], [-82, -57.5], [-67, -58], [-55, -52], [-45, -48], [-35, -38], [-30, -25], [-28, -5]]}},
+    {"type": "Feature", "properties": {"name": "Aden to Bombay"}, "geometry": {"type": "LineString", "coordinates": [[52, 13], [60, 15], [67, 17]]}},
+    {"type": "Feature", "properties": {"name": "Ceylon to the Strait of Malacca"}, "geometry": {"type": "LineString", "coordinates": [[80, 5], [88, 5.5], [94, 6.5]]}},
+    {"type": "Feature", "properties": {"name": "China Sea tea route: Singapore to Canton"}, "geometry": {"type": "LineString", "coordinates": [[106, 4], [110, 9], [114, 15], [116, 20]]}},
+    {"type": "Feature", "properties": {"name": "Manila galleon, westbound"}, "geometry": {"type": "LineString", "coordinates": [[-105, 15], [-120, 13.5], [-140, 13], [-160, 13], [180, 13], [160, 13], [145, 13.5], [130, 14]]}},
+    {"type": "Feature", "properties": {"name": "Manila galleon, eastbound"}, "geometry": {"type": "LineString", "coordinates": [[125, 17], [140, 28], [160, 36], [180, 39], [-160, 39], [-140, 37], [-125, 33], [-113, 23]]}},
+    {"type": "Feature", "properties": {"name": "Sydney to San Francisco"}, "geometry": {"type": "LineString", "coordinates": [[155, -32], [170, -25], [-175, -15], [-160, 0], [-145, 15], [-132, 30], [-125, 36]]}}
+  ]
+}
