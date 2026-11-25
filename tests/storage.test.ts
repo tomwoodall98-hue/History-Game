@@ -166,3 +166,17 @@ test('submission attempts are recorded per day, and old ones forgotten', () => {
   s.recordSubmission('2026-11-30', true);
   assert.deepEqual(s.submission('2026-11-10'), { done: false, tries: 0 }, 'pruned after a week');
 });
+
+test('a restored player id replaces the old one and is kept', () => {
+  const storage = new MemoryStorage();
+  const store = new LocalStore(() => '2026-11-06', storage as unknown as Storage);
+  const first = store.playerId();
+  const restored = '3f2b8c1e-9d4a-4b7e-a1c2-5e6f7a8b9c0d';
+  assert.ok(first && first !== restored);
+  assert.equal(store.setPlayerId(restored), true);
+  assert.equal(store.playerId(), restored);
+  assert.equal(new LocalStore(() => '2026-11-06', storage as unknown as Storage).playerId(), restored, 'kept across visits');
+  assert.equal(store.setPlayerId('not-an-id'), false);
+  assert.equal(store.playerId(), restored);
+  assert.equal(new LocalStore(() => '2026-11-06', null).setPlayerId(restored), false, 'no storage, nothing to keep it in');
+});

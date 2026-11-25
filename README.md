@@ -249,7 +249,8 @@ compared with that day's players but never counted.
 - the seven round scores;
 - a random player ID made once and kept in `localStorage`.
 
-Nothing else is sent or stored: no names, accounts or cookies. Like any web
+Nothing else is sent or stored: no accounts or cookies, and no names unless
+the player chooses one for the [Roll of Honour](#roll-of-honour). Like any web
 request, Supabase's request logs see the visitor's IP address, but the table
 doesn't store it. Archive games never submit.
 
@@ -266,8 +267,8 @@ Supabase SQL Editor; it is safe to re-run.
   `SECURITY DEFINER` function with a fixed `search_path`. It returns only
   aggregates: count, average, a histogram in 14 bands of 500, per-question
   averages and a percentile. It refuses future dates.
-- **Profiles later:** the script's closing comment shows how a future profile
-  could claim an anonymous player ID's past results without changing the table.
+- **Usernames and leaderboards:** a second script; see
+  [Roll of Honour](#roll-of-honour).
 
 **Configuration.** The build reads two Vite env vars:
 
@@ -290,6 +291,79 @@ and never throws. If Supabase is down or slow:
 - the game plays exactly as before;
 - the panel says "Stats unavailable";
 - a failed submission is retried once on the next visit that day, then dropped.
+
+## Roll of Honour
+
+With stats switched on, "Roll of Honour" (on the start and results screens)
+opens the leaderboards: four ledger index tabs.
+
+| Tab     | Ranks                                                                 |
+| ------- | --------------------------------------------------------------------- |
+| Today   | today's daily scores                                                  |
+| Total   | points across every daily game, with games played                     |
+| Best    | each player's single best day, with its date; ties go to whoever made it first |
+| Average | average daily score, with games played; needs at least 10 games      |
+
+Each shows the top 25, plus the player's own row if they are further down.
+Equal values share a rank ("=2nd"), except on Best, where the earlier day
+(then the earlier submission that day) ranks higher. Only daily results feed
+the boards, and the database only takes those on their own day, so archive
+games never count.
+
+**Optional names.** A player appears only once they claim a username. There is
+no email and no password: the name is linked to the random player ID their
+browser already sends with its results, so every past daily game counts
+straight away. Players without a name play and count in the daily stats
+exactly as before.
+- 3–20 letters, numbers or underscores, with at least one letter; unique
+  ignoring case.
+- Reserved names (admin, moderator, chronomap, support, you, …) and a short
+  profanity blocklist are refused, including digit-for-letter spellings
+  (`4dm1n`, `sh1t`). Short words that hide inside innocent ones (Dickens,
+  Sussex) only count as whole words.
+- The rules live in [`src/game/username.ts`](src/game/username.ts) (instant
+  feedback) and `username_problem()` in the SQL (the authority); a test runs
+  both on the same names.
+
+**The player ID is the secret.** Holding it is what proves a profile is
+yours, so no function ever returns it. Under "Your recovery code" the player
+sees it as a 28-character code (Crockford base32 with two check characters,
+so typos are caught) to copy to another device, where "Restore from a code"
+switches that browser to the same player. The panel warns that anyone with
+the code can use the name.
+
+**Setting it up.** After `daily-stats.sql`, run
+[`supabase/profiles-leaderboards.sql`](supabase/profiles-leaderboards.sql)
+once in the Supabase SQL Editor; it is safe to re-run. It adds a `profiles`
+table (Row Level Security on, no grants: unreadable through the API) and
+`SECURITY DEFINER` functions with an empty `search_path`:
+- `claim_username(player_id, name)`: claim or change a name;
+- `my_profile(player_id)`: the name (if any) and number of daily games;
+- `leaderboard(board, player_id)`: the top 25 and the player's own row, with
+  only rank, username, value, games played and date.
+
+The minimum games for Best average is set once, in
+`leaderboard_min_average_games()` at the top of the script; the game reads it
+from the server. `tests/leaderboardSql.test.ts` runs both scripts in PGlite
+(Postgres in WebAssembly) to check the rankings, the tie-breaking, the name
+rules, and that no player ID ever comes back.
+
+**Admin.** In the SQL Editor:
+
+```sql
+-- Rename (the new name must fit the format and be free):
+update public.profiles set username = 'NewName', updated_at = now()
+where lower(username) = lower('OldName');
+
+-- Delete a name (their results stay, anonymous again):
+delete from public.profiles where lower(username) = lower('BadName');
+
+-- Check a name against the rules (null means fine):
+select public.username_problem('SomeName');
+```
+
+To change the blocklists, edit `username_problem()` in the script and in
+`src/game/username.ts`, then re-run the script.
 
 ## Adding questions
 

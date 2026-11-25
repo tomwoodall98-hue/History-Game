@@ -394,7 +394,8 @@ button {
 
 [data-phase='start'] .masthead,
 [data-phase='results'] .masthead,
-[data-phase='ledger'] .masthead {
+[data-phase='ledger'] .masthead,
+[data-phase='honours'] .masthead {
   visibility: hidden;
 }
 
@@ -1291,6 +1292,428 @@ a.ledger-row:focus-visible {
   }
   .ledger-squares {
     display: none;
+  }
+}
+
+/* ----------------------------------------------------- roll of honour --- */
+
+/*
+ * A Victorian ledger: a ruled page with red double money lines, and the four
+ * boards as index tabs standing up from its top edge. The chosen tab is
+ * drawn over the page's border so it reads as part of the page; the others
+ * sit a little lower, tucked behind it.
+ */
+.honours {
+  text-align: left;
+}
+
+.honours-book {
+  position: relative;
+  margin: 4px 0 14px;
+}
+
+.honours-tabs {
+  display: flex;
+  gap: 3px;
+  padding: 0 8px;
+  margin-bottom: -1.5px;
+}
+
+.honours-tab {
+  position: relative;
+  z-index: 0;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 42px;
+  margin-top: 4px;
+  padding: 7px 2px 6px;
+  font: inherit;
+  font-family: var(--font-caps);
+  font-size: 16px;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft);
+  background: linear-gradient(to bottom, rgba(255, 250, 235, 0.35), rgba(255, 250, 235, 0) 60%), var(--tab-tint, var(--paper-dark));
+  border: 1.5px solid var(--ink);
+  border-bottom: none;
+  border-radius: 10px 10px 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+/* Index tabs in faded binder's colours. */
+.honours-tab:nth-child(1) {
+  --tab-tint: #d8c38c;
+}
+.honours-tab:nth-child(2) {
+  --tab-tint: #cdb89a;
+}
+.honours-tab:nth-child(3) {
+  --tab-tint: #d4b29c;
+}
+.honours-tab:nth-child(4) {
+  --tab-tint: #bfc2a4;
+}
+
+.honours-tab:hover {
+  color: var(--ink);
+}
+
+.honours-tab.on {
+  z-index: 2;
+  margin-top: 0;
+  padding-top: 9px;
+  color: var(--red);
+  background: var(--paper-light);
+}
+
+.honours-tab:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: -5px;
+}
+
+.honours-sheet {
+  position: relative;
+  z-index: 1;
+  min-height: 13em;
+  padding: 10px 10px 12px;
+  background-color: var(--paper-light);
+  background-image: var(--paper-grain);
+  border: 1.5px solid var(--ink);
+  box-shadow:
+    inset 0 0 0 3px var(--paper-light),
+    inset 0 0 0 4px rgba(51, 34, 15, 0.45),
+    0 2px 5px rgba(60, 35, 10, 0.18);
+}
+
+.honours-title {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-caps);
+  font-weight: normal;
+  font-size: 20px;
+  letter-spacing: 0.06em;
+  color: var(--red);
+}
+
+.honours-sub {
+  margin: 0 0 4px;
+  text-align: center;
+  font-size: 14px;
+  font-style: italic;
+  color: var(--ink-faint);
+}
+
+/* The ruled page: blue-grey lines, a double red line after the rank and
+   before the money column, as in a counting-house ledger. */
+.roll {
+  width: 100%;
+  margin-top: 6px;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 17px;
+  font-variant-numeric: tabular-nums;
+}
+
+.roll th,
+.roll td {
+  padding: 5px 6px 4px;
+  vertical-align: baseline;
+  border-bottom: 1px solid rgba(70, 92, 118, 0.3);
+}
+
+.roll thead th {
+  padding-top: 2px;
+  font-family: var(--font-caps);
+  font-weight: normal;
+  font-size: 13.5px;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+  border-bottom: 3px double rgba(51, 34, 15, 0.55);
+}
+
+.roll .roll-rank {
+  width: 3.5em;
+  text-align: right;
+  white-space: nowrap;
+  border-right: 3px double rgba(138, 42, 27, 0.55);
+  font-family: var(--font-caps);
+  font-size: 0.9em;
+}
+
+.roll .roll-name {
+  text-align: left;
+  font-weight: normal;
+  overflow-wrap: anywhere;
+}
+
+.roll .roll-games {
+  width: 4.2em;
+  white-space: nowrap;
+  text-align: right;
+  color: var(--ink-soft);
+}
+
+.roll .roll-value {
+  width: 4.6em;
+  text-align: right;
+  white-space: nowrap;
+  border-left: 3px double rgba(138, 42, 27, 0.55);
+}
+
+.roll-total .roll-value {
+  width: 5.6em;
+}
+
+.roll-date {
+  display: block;
+  font-size: 13.5px;
+  font-style: italic;
+  color: var(--ink-faint);
+}
+
+.roll-row.you {
+  color: var(--red);
+  background: rgba(138, 42, 27, 0.07);
+}
+
+.roll-row.you .roll-date {
+  color: var(--red);
+}
+
+/* A printer's hand pointing to the player's own line. */
+.roll-hand {
+  margin-right: 0.3em;
+  font-variant-emoji: text;
+}
+
+.roll .roll-gap td {
+  padding: 0 0 2px;
+  text-align: center;
+  font-size: 19px;
+  letter-spacing: 0.3em;
+  color: var(--ink-faint);
+}
+
+.honours-you,
+.honours-note {
+  margin: 10px 0 0;
+  text-align: center;
+  font-size: 15px;
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
+.honours-note {
+  margin: 14px 0;
+}
+
+.honours-profile,
+.honours-details {
+  text-align: center;
+}
+
+.honours-profile {
+  margin: 0 0 6px;
+}
+
+.honours-entered {
+  margin: 4px 0 6px;
+  font-size: 18px;
+}
+
+.honours-heading {
+  margin: 2px 0 2px;
+  font-family: var(--font-caps);
+  font-weight: normal;
+  font-size: 20px;
+  letter-spacing: 0.06em;
+}
+
+.honours-blurb {
+  max-width: 44ch;
+  margin: 0 auto 6px;
+  font-size: 15px;
+  color: var(--ink-soft);
+}
+
+.honours-form {
+  max-width: 360px;
+  margin: 6px auto 0;
+  text-align: left;
+}
+
+.honours-label {
+  display: block;
+  margin-bottom: 2px;
+  font-family: var(--font-caps);
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+}
+
+.honours-field {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.honours-field.center {
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  margin: 8px 0;
+}
+
+.ink-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 44px;
+  padding: 6px 10px;
+  font: inherit;
+  font-size: 18px;
+  color: var(--ink);
+  background: var(--paper-light);
+  border: 1.5px solid var(--ink);
+  border-radius: 2px;
+  box-shadow: inset 0 1px 3px rgba(51, 34, 15, 0.15);
+}
+
+.ink-input:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 1px;
+}
+
+.ink-input[aria-invalid='true'] {
+  border-color: var(--red);
+}
+
+.ink-input.code {
+  font-family: 'Courier New', Courier, ui-monospace, monospace;
+  font-size: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ink-input.code::placeholder {
+  text-transform: none;
+}
+
+.honours-form .ink-button.primary {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.honours-hint {
+  min-height: 1.3em;
+  margin: 4px 0 0;
+  font-size: 14px;
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
+.honours-hint.bad {
+  font-style: normal;
+  color: var(--red);
+}
+
+.honours-hint p {
+  margin: 6px 0;
+  font-style: normal;
+  font-size: 15px;
+  color: var(--ink);
+  text-align: center;
+}
+
+.honours-form > .ink-button.small {
+  display: block;
+  margin: 8px auto 0;
+}
+
+.ink-button.subtle.small {
+  min-height: 36px;
+  padding: 4px 14px 5px;
+  font-size: 15px;
+}
+
+.honours-details {
+  margin: 6px 0;
+  padding-top: 4px;
+  border-top: 1px solid rgba(51, 34, 15, 0.3);
+}
+
+.honours-details summary {
+  padding: 8px 0;
+  cursor: pointer;
+  font-family: var(--font-caps);
+  font-size: 17px;
+  letter-spacing: 0.06em;
+}
+
+.honours-details summary:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
+
+.honours-details[open] {
+  padding-bottom: 8px;
+}
+
+/* A plain typewriter face: old-style figures are too easy to misread in a code copied by hand. */
+.recovery-code {
+  max-width: 24em;
+  margin: 4px auto 6px;
+  padding: 8px 10px;
+  font-family: 'Courier New', Courier, ui-monospace, monospace;
+  font-size: 17px;
+  font-weight: bold;
+  letter-spacing: 0.02em;
+  user-select: all;
+  background: var(--paper-light);
+  border: 1px dashed var(--ink-faint);
+}
+
+.honours-warning {
+  max-width: 44ch;
+  margin: 6px auto;
+  font-size: 15px;
+  color: var(--red);
+}
+
+@media (max-width: 640px) {
+  .honours-tabs {
+    gap: 2px;
+    padding: 0 4px;
+  }
+  .honours-tab {
+    font-size: 15px;
+    letter-spacing: 0.02em;
+  }
+  .honours-sheet {
+    padding: 8px 6px 10px;
+  }
+  .roll {
+    font-size: 15.5px;
+  }
+  .roll th,
+  .roll td {
+    padding: 5px 4px 4px;
+  }
+  .roll .roll-rank {
+    width: 3.2em;
+  }
+  .roll .roll-games {
+    width: 3.9em;
+  }
+  .roll .roll-value {
+    width: 4.3em;
+  }
+  .roll-total .roll-value {
+    width: 5.2em;
+  }
+  .recovery-code {
+    font-size: 15px;
   }
 }
 

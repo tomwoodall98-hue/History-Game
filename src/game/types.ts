@@ -105,6 +105,8 @@ export interface Persistence {
   pastDays(todayKey: string): Record<string, PastDay>;
   /** The anonymous player id for daily stats, made on first use; null when storage can't keep it. */
   playerId(): string | null;
+  /** Replaces the player id (restoring from a recovery code); false if storage can't keep it. */
+  setPlayerId(id: string): boolean;
   /** How submitting a day's result to the daily stats stands. */
   submission(dateKey: string): SubmissionState;
   /** Records one attempt to submit a day's result, and whether it got through. */

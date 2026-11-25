@@ -20,9 +20,10 @@ import { statsPlateSVG } from './statsPlate';
 import { ReadMore } from '../game/readMore';
 import type { SummaryCache } from '../game/wikipedia';
 import { Gazetteer, type EntryOptions } from './gazetteer';
+import { RollOfHonour } from './honours';
 import { h, roman, countUp, copyText } from './dom';
 
-type Phase = 'start' | 'guess' | 'reveal' | 'results' | 'review' | 'ledger';
+type Phase = 'start' | 'guess' | 'reveal' | 'results' | 'review' | 'ledger' | 'honours';
 
 const PIPS = 7;
 /** Longest wait for the country outlines before scoring on distance alone. */
@@ -71,6 +72,8 @@ export class App {
   /** Wikipedia, reachable only for questions already answered. */
   private readonly readMore: ReadMore;
   private readonly gazetteer: Gazetteer;
+  /** The leaderboards, made the first time they are opened. */
+  private honours: RollOfHonour | null = null;
 
   constructor(
     private readonly root: HTMLElement,
@@ -226,12 +229,15 @@ export class App {
     requestAnimationFrame(() => begin.focus());
   }
 
-  /** "Past puzzles", and in an archive game "Today's puzzle". */
+  /** "Past puzzles", the Roll of Honour (with stats on), and in an archive game "Today's puzzle". */
   private archiveLinks(back: () => void): HTMLElement {
     return h(
       'p',
       { class: 'archive-links' },
       h('button', { class: 'ink-button subtle', type: 'button', onclick: () => this.showLedger(back) }, 'Past puzzles'),
+      this.statsService
+        ? h('button', { class: 'ink-button subtle', type: 'button', onclick: () => this.showHonours(back) }, 'Roll of Honour')
+        : null,
       this.puzzle.archive ? h('a', { class: 'ink-button subtle', href: dayHref() }, 'Today’s puzzle') : null,
     );
   }
@@ -739,6 +745,34 @@ export class App {
 
   private closeLedger: (() => void) | null = null;
 
+  // ------------------------------------------------------ roll of honour ---
+
+  /** The leaderboards and the player's name, on a ledger page. */
+  private showHonours(back: () => void): void {
+    if (!this.statsService) return;
+    this.setPhase('honours');
+    window.clearInterval(this.countdownTimer);
+    this.slip.hidden = true;
+    this.map.setPickEnabled(false);
+    const honours = (this.honours ??= new RollOfHonour(this.statsService, this.store));
+    const close = h('button', { class: 'ink-button primary', type: 'button', onclick: () => back() }, 'Close');
+    this.primary = close;
+    this.closeLedger = back;
+    this.panel.className = 'panel panel-honours';
+    this.panel.setAttribute('aria-label', 'Roll of Honour');
+    this.panel.replaceChildren(
+      h('p', { class: 'results-kicker' }, 'Daily games, played on the day'),
+      h('h2', { class: 'results-title' }, 'Roll of Honour'),
+      h('div', { class: 'rule', 'aria-hidden': 'true' }),
+      honours.element,
+      close,
+    );
+    honours.open();
+    this.panelVeil.hidden = false;
+    this.panelVeil.scrollTop = 0;
+    requestAnimationFrame(() => honours.focusTarget.focus({ preventScroll: true }));
+  }
+
   private ledgerRow(dateKey: string, day: PastDay | undefined): HTMLElement {
     const total = day ? day.scores.reduce((a, b) => a + b, 0) : 0;
     const label = `No. ${puzzleNumber(dateKey)}`;
@@ -813,7 +847,7 @@ export class App {
       this.primary?.click();
     } else if (e.key === 'Escape' && this.phase === 'review') {
       this.closeReview();
-    } else if (e.key === 'Escape' && this.phase === 'ledger') {
+    } else if (e.key === 'Escape' && (this.phase === 'ledger' || this.phase === 'honours')) {
       this.closeLedger?.();
     }
   }
