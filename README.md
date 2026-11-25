@@ -323,7 +323,20 @@ Questions live in [`src/data/questions.json`](src/data/questions.json):
 | `atSea`       | `true` for events at sea (naval battles, wrecks): no country floor and a longer default k. Leave out otherwise. |
 | `country`     | Rarely needed: the ADM0_A3 code (e.g. `"JPN"`) of the answer's country when it is on an island too small for the outlines. `npm run validate` says when. |
 | `note`        | One or two sentences. If the location is disputed, use the scholarly consensus and say so here.     |
-| `source`      | The Wikipedia article for the event, where the coordinates can be checked. **Read more** shows its summary. |
+| `source`      | The Wikipedia article about the event itself, never the place it happened (see below). **Read more** shows its summary. |
+
+**Choosing the source.** Always link the article about the historical event,
+not the place: *Treaty of Versailles*, not *Hall of Mirrors*; *Assassination of
+Mahatma Gandhi*, not *Gandhi Smriti*; *Sinking of the Titanic*, not *Wreck of
+the Titanic*. If the event has no article of its own, use the closest
+historical one: the expedition, the war or the person at its centre (*First
+voyage of James Cook* for Botany Bay, *Second Opium War* for the burning of the
+Old Summer Palace, *History of Alexandria* for its founding). The one exception
+is a question about building something (a pyramid, a cathedral, a canal),
+where the monument's own article is the history of the event; even then, use
+an event article if there is one (*Inaugural games of the Colosseum*). The
+coordinates still come from the place itself (step 1 below), whatever the
+article's own map pin says.
 
 **Choosing a tier.** Difficulty is how obscure the event is *and* how hard its
 place is to pin down. Tiers 1–2 are world-famous events in famous places (the
@@ -335,8 +348,8 @@ obvious from the name (Talas, Tordesillas). Tier 7 is for deep cuts. From tier
 
 **Checking accuracy.**
 
-1. Take coordinates from the source's infobox or a primary gazetteer, to four
-   decimal places for precise sites.
+1. Take coordinates from the site's own Wikipedia article or a primary
+   gazetteer, to four decimal places for precise sites.
 2. Run `npm run check:places -- <id>` to see the nearest towns (GeoNames) and,
    for ancient events, Pleiades sites. A battle that sits 2 km from its
    namesake village is right; one 3,000 km away has a swapped sign. (The first

@@ -31,7 +31,10 @@ export interface Question {
   country?: string;
   /** One or two sentences shown after the guess. */
   note: string;
-  /** Where the coordinates can be checked (usually Wikipedia). */
+  /**
+   * The Wikipedia article about the event itself, never the place it
+   * happened; "Read more" shows its summary.
+   */
   source: string;
 }
 
