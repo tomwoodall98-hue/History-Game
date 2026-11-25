@@ -4,14 +4,14 @@ import { readFileSync } from 'node:fs';
 import { geoBounds, geoContains, geoDistance, geoInterpolate } from 'd3-geo';
 import { feature } from 'topojson-client';
 import type { Topology } from 'topojson-specification';
-import type { FeatureCollection, MultiLineString, MultiPolygon, Polygon } from 'geojson';
+import type { FeatureCollection, Geometry, MultiLineString, MultiPolygon, Polygon } from 'geojson';
 import { GLYPHS } from '../src/map/glyphs.ts';
 import { DECORATION_KINDS, LAND_KINDS, LEVEL_DEG, SHIP_COAST_KM, decodeDecorations, minSeparationDeg, type DecorationFile } from '../src/map/decorations.ts';
 
 const file = JSON.parse(readFileSync(new URL('../src/data/decorations.json', import.meta.url), 'utf8')) as DecorationFile;
 const glyphs = decodeDecorations(file);
 const topo = JSON.parse(readFileSync(new URL('../src/data/globe.topo.json', import.meta.url), 'utf8')) as Topology;
-const fc = <T,>(name: string) => feature(topo as never, topo.objects[name] as never) as unknown as FeatureCollection<T>;
+const fc = <T extends Geometry>(name: string) => feature(topo as never, topo.objects[name] as never) as unknown as FeatureCollection<T>;
 
 /**
  * The globe's polygons one by one, each with its bounds, tested on the

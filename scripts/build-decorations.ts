@@ -277,7 +277,7 @@ class Placed {
   rebucket(maxDeg: number): void {
     this.size = 2 * Math.sin((Math.min(180, maxDeg) * Math.PI) / 360) || 1;
     this.cells = new Map();
-    this.all.forEach((d, i) => this.bucket(i));
+    for (let i = 0; i < this.all.length; i++) this.bucket(i);
   }
 
   private keyOf(v: [number, number, number], dx = 0, dy = 0, dz = 0): string {
