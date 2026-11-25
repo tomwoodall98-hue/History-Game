@@ -25,7 +25,7 @@ export interface GlyphSpec {
   /** The point (in the box) that sits on the glyph's latitude/longitude. */
   ax: number;
   ay: number;
-  /** Watercolour wash colour, for glyphs that can carry one. */
+  /** Watercolour wash laid under the ink (forests and deserts). */
   wash?: string;
   draw(pen: Pen): void;
 }
@@ -416,7 +416,6 @@ function dune(p: Pen, x: number, y: number, w: number, h: number, dots = 10): vo
   const crestX = x + w * 0.06;
   const mound: Pt[] = [[x - w / 2, y], [x - w * 0.3, y - h * 0.62], [crestX, y - h], [x + w * 0.3, y - h * 0.6], [x + w / 2, y]];
   const curve = catmull(mound, 6);
-  p.fill([...curve, [x + w / 2, y + 0.2], [x - w / 2, y + 0.2]], SKETCH.fill);
   // Stipple, densest just under the crest on the lee side, thinning to the foot.
   for (let i = 0; i < dots; i++) {
     const u = Math.pow(p.rnd(), 0.8);
@@ -810,11 +809,11 @@ function seedOf(g: GlyphSpec): number {
  * Draws a glyph with its top-left corner at the current origin of `ctx`,
  * at `scale` device pixels per nominal pixel.
  */
-export function drawGlyph(ctx: CanvasRenderingContext2D, g: GlyphSpec, scale: number, opts: { wash?: boolean } = {}): void {
+export function drawGlyph(ctx: CanvasRenderingContext2D, g: GlyphSpec, scale: number): void {
   ctx.save();
   ctx.scale(scale, scale);
   const pen = new Pen(ctx, seedOf(g));
-  if (opts.wash && g.wash) {
+  if (g.wash) {
     const washPen = new Pen(ctx, seedOf(g) ^ 0x5eed);
     washPen.wash(g.w / 2, g.h * 0.6, g.w * 0.5, g.h * 0.42, g.wash);
   }
@@ -834,7 +833,7 @@ export interface GlyphAtlas {
   canvas: HTMLCanvasElement;
   /** Device px per nominal px. */
   scale: number;
-  /** Cells by glyph id, plus `<id>+wash` for washed versions. */
+  /** Cells by glyph id. */
   cells: Map<string, AtlasCell>;
 }
 
@@ -842,16 +841,12 @@ export interface GlyphAtlas {
 const PAD = 1.5;
 
 /**
- * Bakes every glyph (and a washed copy of those that take one) into one
+ * Bakes every glyph into one
  * canvas, packed in shelves. Drawing a glyph on the globe is then a single
  * drawImage from this sheet.
  */
 export function buildGlyphAtlas(scale: number, doc: Document = document): GlyphAtlas {
-  const entries: { id: string; g: GlyphSpec; wash: boolean }[] = [];
-  for (const g of GLYPHS) {
-    entries.push({ id: glyphId(g), g, wash: false });
-    if (g.wash) entries.push({ id: `${glyphId(g)}+wash`, g, wash: true });
-  }
+  const entries = GLYPHS.map((g) => ({ id: glyphId(g), g }));
   const maxW = 160; // shelf width, nominal px
   const cells = new Map<string, AtlasCell>();
   let x = 0;
@@ -881,7 +876,7 @@ export function buildGlyphAtlas(scale: number, doc: Document = document): GlyphA
   for (const { e, x: px, y: py } of placed) {
     ctx.save();
     ctx.translate(Math.round((px + PAD) * scale), Math.round((py + PAD) * scale));
-    drawGlyph(ctx, e.g, scale, { wash: e.wash });
+    drawGlyph(ctx, e.g, scale);
     ctx.restore();
     cells.set(e.id, {
       sx: Math.round(px * scale),

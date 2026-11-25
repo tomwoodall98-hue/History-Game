@@ -14,8 +14,8 @@ import { mulberry32 } from './game/schedule';
 
 const FAMILIES: { kinds: GlyphKind[]; title: string; note: string; medium: 'land' | 'sea' }[] = [
   { kinds: ['mountain'], title: 'Mountains', medium: 'land', note: 'Profile peaks lit from the upper left, the shadow flank hatched. Placed along Natural Earth mountain ranges.' },
-  { kinds: ['desert'], title: 'Deserts', medium: 'land', note: 'Stipple and dune arcs, with an optional ochre wash. Placed in Natural Earth desert regions.' },
-  { kinds: ['conifer'], title: 'Northern forests', medium: 'land', note: 'Conifers for the boreal forests of Canada, Scandinavia and Siberia.' },
+  { kinds: ['desert'], title: 'Deserts', medium: 'land', note: 'Stipple and dune mounds over an ochre wash. Placed in Natural Earth desert regions.' },
+  { kinds: ['conifer'], title: 'Northern forests', medium: 'land', note: 'Conifers over a muted green wash, for the boreal forests of Canada, Scandinavia and Siberia.' },
   { kinds: ['broadleaf'], title: 'Broadleaf forests', medium: 'land', note: 'Rounded crowns for the temperate and tropical rainforests: Amazon, Congo, South-East Asia.' },
   { kinds: ['palm'], title: 'Palms', medium: 'land', note: 'For the tropical fringes, used sparingly among the broadleaf stands.' },
   { kinds: ['ripple'], title: 'Sea ripples', medium: 'sea', note: 'Short strokes scattered over the open ocean, well clear of the existing water-lining at the coasts.' },
@@ -46,8 +46,8 @@ function h(tag: string, cls?: string, text?: string): HTMLElement {
 }
 
 /** Draws an atlas cell with the glyph's anchor at (x, y), CSS px. */
-function stamp(ctx: CanvasRenderingContext2D, atlas: GlyphAtlas, g: GlyphSpec, x: number, y: number, k = 1, wash = false): void {
-  const cell = (wash && atlas.cells.get(`${glyphId(g)}+wash`)) || atlas.cells.get(glyphId(g));
+function stamp(ctx: CanvasRenderingContext2D, atlas: GlyphAtlas, g: GlyphSpec, x: number, y: number, k = 1): void {
+  const cell = atlas.cells.get(glyphId(g));
   if (!cell) return;
   const s = k / atlas.scale;
   ctx.drawImage(atlas.canvas, cell.sx, cell.sy, cell.sw, cell.sh, x - (g.ax + ATLAS_PAD) * k, y - (g.ay + ATLAS_PAD) * k, cell.sw * s, cell.sh * s);
@@ -63,26 +63,24 @@ function card(g: GlyphSpec, atlas: GlyphAtlas, medium: 'land' | 'sea'): HTMLElem
   // At globe size, on the globe's paper colour, from the atlas.
   const strip = h('div', 'actual');
   const sw = Math.max(64, g.w * 2 + 24);
-  const swatch = (wash: boolean, scale: number) => {
+  const swatch = (scale: number) => {
     const c = canvasOf(sw, g.h + 14, `swatch ${medium}`);
     c.ctx.scale(dpr, dpr);
     c.ctx.fillStyle = medium === 'land' ? PALETTE.land : PALETTE.sea;
     c.ctx.fillRect(0, 0, sw, g.h + 14);
-    stamp(c.ctx, atlas, g, sw / 2 - (g.w * (1 - scale)) / 2 + (g.ax - g.w / 2) * scale, 7 + g.ay * scale + (g.h * (1 - scale)) / 2, scale, wash);
+    stamp(c.ctx, atlas, g, sw / 2 - (g.w * (1 - scale)) / 2 + (g.ax - g.w / 2) * scale, 7 + g.ay * scale + (g.h * (1 - scale)) / 2, scale);
     return c.canvas;
   };
-  strip.append(swatch(false, 1));
-  if (g.wash) strip.append(swatch(true, 1));
-  strip.append(swatch(false, 0.7));
+  strip.append(swatch(1), swatch(0.7));
   fig.append(strip);
   const cap = h('figcaption');
-  cap.append(h('span', 'id', `${g.kind} ${g.variant + 1}`), h('span', 'dims', `${g.w}×${g.h} px${g.wash ? ' · with wash' : ''} · 70%`));
+  cap.append(h('span', 'id', `${g.kind} ${g.variant + 1}`), h('span', 'dims', `${g.w}×${g.h} px · 70%`));
   fig.append(cap);
   return fig;
 }
 
 /** A patch of "globe": a blob of land in the sea with glyphs scattered as they might be placed. */
-function vignette(atlas: GlyphAtlas, wash: boolean): HTMLCanvasElement {
+function vignette(atlas: GlyphAtlas): HTMLCanvasElement {
   const W = 520;
   const H = 300;
   const { canvas, ctx } = canvasOf(W, H, 'vignette');
@@ -123,7 +121,7 @@ function vignette(atlas: GlyphAtlas, wash: boolean): HTMLCanvasElement {
 
   const by = (kind: GlyphKind) => GLYPHS.filter((g) => g.kind === kind);
   const pick = <T,>(xs: T[]) => xs[Math.floor(rnd() * xs.length)];
-  const put = (kind: GlyphKind, x: number, y: number, k = 1) => stamp(ctx, atlas, pick(by(kind)), x, y, k, wash);
+  const put = (kind: GlyphKind, x: number, y: number, k = 1) => stamp(ctx, atlas, pick(by(kind)), x, y, k);
   // Mountains along a diagonal range, conifers to the north, desert south-east, tropics south-west.
   [[220, 120], [248, 108], [276, 116], [304, 98], [332, 108], [360, 94], [390, 104]].forEach(([x, y]) => put('mountain', x, y, 0.95));
   [[200, 70], [232, 62], [270, 58], [310, 54], [350, 58], [388, 66], [252, 80], [330, 76]].forEach(([x, y]) => put('conifer', x, y));
@@ -149,11 +147,9 @@ function build(): void {
     h('p', 'note', 'A patch of map with glyphs placed as the globe will place them, at their natural size. Water-lining and coast as drawn by the globe today.'),
   );
   const pair = h('div', 'vignettes');
-  const plain = h('figure');
-  plain.append(vignette(atlas, false), h('figcaption', undefined, 'Ink only'));
-  const washed = h('figure');
-  washed.append(vignette(atlas, true), h('figcaption', undefined, 'With watercolour washes on forests and deserts'));
-  pair.append(plain, washed);
+  const fig = h('figure');
+  fig.append(vignette(atlas), h('figcaption', undefined, 'Sepia ink, with watercolour washes on forests and deserts'));
+  pair.append(fig);
   intro.append(pair);
   root.append(intro);
 
@@ -169,7 +165,7 @@ function build(): void {
   const sheet = h('section', 'plate');
   sheet.append(
     h('h2', undefined, 'Sprite atlas'),
-    h('p', 'note', `Every glyph baked once into a single ${atlas.canvas.width}×${atlas.canvas.height} canvas at ${atlas.scale.toFixed(1)}× (washed copies included). The globe draws each decoration as one copy from this sheet.`),
+    h('p', 'note', `Every glyph baked once into a single ${atlas.canvas.width}×${atlas.canvas.height} canvas at ${atlas.scale.toFixed(1)}×, washes included. The globe draws each decoration as one copy from this sheet.`),
   );
   const shown = atlas.canvas;
   shown.className = 'atlas';

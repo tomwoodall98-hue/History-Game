@@ -56,18 +56,16 @@ function recorder() {
 
 test('every glyph is drawn inside its padded atlas cell, the same way each time', () => {
   for (const g of GLYPHS) {
-    for (const wash of [false, true]) {
-      const a = recorder();
-      drawGlyph(a.ctx, g, 1, { wash });
-      assert.ok(a.pts.length > 10, `${glyphId(g)} draws something`);
-      // Strokes have width, so allow half a line beyond the points themselves.
-      const slack = ATLAS_PAD - 0.5;
-      for (const [x, y] of a.pts) {
-        assert.ok(x >= -slack && x <= g.w + slack && y >= -slack && y <= g.h + slack, `${glyphId(g)}${wash ? '+wash' : ''} spills out at ${x.toFixed(2)},${y.toFixed(2)}`);
-      }
-      const b = recorder();
-      drawGlyph(b.ctx, g, 1, { wash });
-      assert.deepEqual(b.pts, a.pts, `${glyphId(g)} is deterministic`);
+    const a = recorder();
+    drawGlyph(a.ctx, g, 1);
+    assert.ok(a.pts.length > 10, `${glyphId(g)} draws something`);
+    // Strokes have width, so allow half a line beyond the points themselves.
+    const slack = ATLAS_PAD - 0.5;
+    for (const [x, y] of a.pts) {
+      assert.ok(x >= -slack && x <= g.w + slack && y >= -slack && y <= g.h + slack, `${glyphId(g)} spills out at ${x.toFixed(2)},${y.toFixed(2)}`);
     }
+    const b = recorder();
+    drawGlyph(b.ctx, g, 1);
+    assert.deepEqual(b.pts, a.pts, `${glyphId(g)} is deterministic`);
   }
 });
