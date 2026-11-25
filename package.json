@@ -16,6 +16,8 @@
     "schedule:extend": "tsx scripts/extend-schedule.ts",
     "check:places": "tsx scripts/check-places.ts",
     "check:sources": "tsx scripts/check-sources.ts",
+    "reading:verify": "tsx scripts/verify-reading.ts",
+    "reading:build": "tsx scripts/verify-reading.ts --offline",
     "check": "npm run typecheck && npm test && npm run validate",
     "simulate:scoring": "tsx scripts/simulate-scoring.ts"
   },

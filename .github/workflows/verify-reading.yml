@@ -1,0 +1,63 @@
+name: Verify further reading
+
+# Checks the "Further reading" books against Open Library and commits the
+# results (data/reading/openlibrary.json, data/reading/REPORT.md and the
+# game's src/data/reading.json) to the branch it was run on. Run it from the
+# Actions tab after editing data/reading/topics.json or events.json, or the
+# questions' topics.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tiers:
+        description: 'Only books for these tiers, e.g. "1" or "1,2" (blank for all)'
+        required: false
+        default: ''
+      recheck:
+        description: 'Ask again about books already checked'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: verify-reading-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Check books against Open Library
+        env:
+          TIERS: ${{ inputs.tiers }}
+          RECHECK: ${{ inputs.recheck }}
+          OPENLIBRARY_USER_AGENT: chronomap-further-reading-check/1.0 (+https://github.com/${{ github.repository }})
+        run: |
+          args=()
+          if [ -n "$TIERS" ]; then args+=(--tier "$TIERS"); fi
+          if [ "$RECHECK" = "true" ]; then args+=(--recheck); fi
+          npm run reading:verify -- "${args[@]}"
+      - name: Report
+        run: cat data/reading/REPORT.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Commit the results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/reading/openlibrary.json data/reading/REPORT.md src/data/reading.json
+          if git diff --cached --quiet; then
+            echo "Nothing changed."
+          else
+            git commit -m "Verify further reading against Open Library"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+      - name: Check the game still passes
+        run: npm run check

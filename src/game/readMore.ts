@@ -8,6 +8,7 @@
  * its round is recorded (and, for an article two questions share, once both
  * are). Everything else is refused before any URL is made.
  */
+import type { Book, ReadingList } from './reading';
 import type { Question, RoundResult } from './types';
 import { summaryUrl, type SummaryCache, type WikiSummary } from './wikipedia';
 
@@ -21,6 +22,8 @@ export class ReadMore {
     private readonly rounds: () => readonly RoundResult[],
     /** Null when there is no network to ask (the panel then shows the note and link alone). */
     private readonly summaries: SummaryCache | null,
+    /** "Further reading"; null to leave it out. */
+    private readonly reading: ReadingList | null = null,
   ) {}
 
   /**
@@ -49,6 +52,15 @@ export class ReadMore {
   summary(i: number): Promise<WikiSummary | null> {
     if (!this.unlocked(i)) return Promise.reject(new Error(`Question ${i + 1} has no confirmed guess yet`));
     return this.summaries ? this.summaries.get(this.questions[i].source) : Promise.resolve(null);
+  }
+
+  /**
+   * A confirmed question's books. The reading list is downloaded on the
+   * first call, so call this only when an entry opens.
+   */
+  books(i: number): Promise<Book[]> {
+    if (!this.unlocked(i)) return Promise.reject(new Error(`Question ${i + 1} has no confirmed guess yet`));
+    return this.reading ? this.reading.books(this.questions[i]) : Promise.resolve([]);
   }
 
   /** The article link for a confirmed question; null before then. */

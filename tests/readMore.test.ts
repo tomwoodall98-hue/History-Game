@@ -31,16 +31,18 @@ let mod: {
   articleTitle: typeof import('../src/game/wikipedia.ts').articleTitle;
   dailyPuzzle: typeof import('../src/game/schedule.ts').dailyPuzzle;
   LocalStore: typeof import('../src/game/storage.ts').LocalStore;
+  ReadingList: typeof import('../src/game/reading.ts').ReadingList;
 };
 
 before(async () => {
   GlobalRegistrator.register({ url: 'https://chronomap.test/', width: 390, height: 844 });
-  const [ui, rm, wiki, sched, storage] = await Promise.all([
+  const [ui, rm, wiki, sched, storage, reading] = await Promise.all([
     import('../src/ui/App.ts'),
     import('../src/game/readMore.ts'),
     import('../src/game/wikipedia.ts'),
     import('../src/game/schedule.ts'),
     import('../src/game/storage.ts'),
+    import('../src/game/reading.ts'),
   ]);
   mod = {
     App: ui.App,
@@ -50,6 +52,7 @@ before(async () => {
     articleTitle: wiki.articleTitle,
     dailyPuzzle: sched.dailyPuzzle,
     LocalStore: storage.LocalStore,
+    ReadingList: reading.ReadingList,
   };
 });
 
@@ -75,11 +78,24 @@ function fakeSummary(title: string) {
   };
 }
 
+/** "Further reading": one book per question, its title and cover marked with the question. */
+const READING_URL = 'https://chronomap.test/assets/reading.json';
+const coverOf = (q: Question) => 1000 + bank.indexOf(q);
+const fakeReading = {
+  topics: {},
+  events: Object.fromEntries(
+    bank.map((q) => [q.id, [{ title: `BOOK-${q.id}`, author: 'A. Writer', year: 2000, why: 'Why.', work: `OL${coverOf(q)}W`, cover: coverOf(q) }]]),
+  ),
+};
+const newReading = () => new mod.ReadingList(() => fetch(READING_URL).then((r) => r.json()));
+const readingRequests = () => requests.filter((u) => u === READING_URL).length;
+
 function installFetch(): void {
   const fake = async (input: unknown) => {
     const url = String(input instanceof Request ? input.url : input);
     requests.push(url);
     if (offline) throw new TypeError('Failed to fetch');
+    if (url === READING_URL) return new Response(JSON.stringify(fakeReading), { headers: { 'content-type': 'application/json' } });
     const m = /\/api\/rest_v1\/page\/summary\/(.+)$/.exec(url);
     if (!m) return new Response('not found', { status: 404 });
     return new Response(JSON.stringify(fakeSummary(decodeURIComponent(m[1]))), { headers: { 'content-type': 'application/json' } });
@@ -135,7 +151,16 @@ const clock = (today: string): Clock => ({ todayKey: () => today, msUntilNext: (
 /** Everything that would give question `q` away, if it showed up early. */
 function traces(q: Question): string[] {
   const title = mod.articleTitle(q.source)!;
-  return [q.source, mod.summaryUrl(q.source)!, `/summary/${encodeURIComponent(title)}`, `SUMMARY-${title}`, `ARTICLE ${title}`, `${title}.jpg`];
+  return [
+    q.source,
+    mod.summaryUrl(q.source)!,
+    `/summary/${encodeURIComponent(title)}`,
+    `SUMMARY-${title}`,
+    `ARTICLE ${title}`,
+    `${title}.jpg`,
+    `BOOK-${q.id}`,
+    `/b/id/${coverOf(q)}-`,
+  ];
 }
 
 function assertNothingAbout(q: Question, when: string): void {
@@ -165,7 +190,7 @@ function newGame(dateKey: string, archive: boolean): Game {
   const today = archive ? '2030-01-01' : dateKey;
   const store = new mod.LocalStore(() => today, null);
   const summaries = new mod.SummaryCache((url, init) => fetch(url, init));
-  const app = new mod.App(root, map as unknown as GlobeView, puzzle, store, clock(today), () => Promise.resolve(null), null, summaries);
+  const app = new mod.App(root, map as unknown as GlobeView, puzzle, store, clock(today), () => Promise.resolve(null), null, summaries, newReading());
   return { app, map, root, puzzle };
 }
 
@@ -186,6 +211,7 @@ async function playThrough({ app, map, root, puzzle }: Game, label: string): Pro
   for (let i = 0; i < puzzle.questions.length; i++) {
     const q = puzzle.questions[i];
     const later = puzzle.questions.slice(i);
+    if (i === 0) assert.equal(readingRequests(), 0, 'the reading list waits for a Read more entry');
     for (const l of later) assertNothingAbout(l, `${label}, round ${i + 1} before marking (${l.id})`);
     assert.equal(root.querySelector('.read-more'), null, 'no Read more while guessing');
 
@@ -203,6 +229,7 @@ async function playThrough({ app, map, root, puzzle }: Game, label: string): Pro
       assert.equal(root.querySelector('.read-more'), null, 'an article shared with a later question waits for it');
     } else {
       assert.equal(requests.filter((u) => u === ownUrl).length, 1, `${label}, round ${i + 1}: prefetched once`);
+      assert.equal(readingRequests() <= 1, true);
       // …but still nothing about the questions to come.
       for (const l of puzzle.questions.slice(i + 1)) if (mod.summaryUrl(l.source) !== ownUrl) assertNothingAbout(l, `${label}, round ${i + 1} revealed (${l.id})`);
 
@@ -229,6 +256,12 @@ async function playThrough({ app, map, root, puzzle }: Game, label: string): Pro
       assert.equal(more.target, '_blank');
       assert.equal(dialog.querySelector('.gz-credit')?.textContent, 'From Wikipedia, CC BY-SA');
       assert.equal(requests.filter((u) => u === ownUrl).length, 1, 'opening uses the cached summary');
+      // Further reading: this question's book, and only after its guess.
+      assert.equal(readingRequests(), 1, 'the reading list is fetched once, when an entry first opens');
+      const books = Array.from(dialog.querySelectorAll('.gz-book-title')).map((b) => b.textContent);
+      assert.deepEqual(books, [`BOOK-${q.id}`]);
+      assert.ok(dialog.querySelector<HTMLImageElement>('.gz-cover img')!.getAttribute('src')!.includes(`/b/id/${coverOf(q)}-M.jpg`));
+      for (const l of puzzle.questions.slice(i + 1)) if (mod.summaryUrl(l.source) !== ownUrl) assertNothingAbout(l, `${label}, round ${i + 1} entry open (${l.id})`);
 
       // Next question is one tap away from inside the entry; or close it first.
       if (i % 2 === 0) {
@@ -256,6 +289,11 @@ async function playThrough({ app, map, root, puzzle }: Game, label: string): Pro
     assert.equal(dialog.open, true);
     assert.equal(dialog.querySelector('.gz-title')?.textContent, puzzle.questions[i].event);
     assert.equal(button(dialog, 'Next question'), null, 'no next question from the results');
+    assert.deepEqual(
+      Array.from(dialog.querySelectorAll('.gz-book-title')).map((b) => b.textContent),
+      [`BOOK-${puzzle.questions[i].id}`],
+      'further reading in the results too',
+    );
     button(dialog, 'Close')!.click();
   }
   // Summaries already fetched in the reveals came from the cache.
@@ -352,6 +390,7 @@ test('a day with Hiroshima before Nagasaki holds back the shared article', async
     () => Promise.resolve(null),
     null,
     new mod.SummaryCache((url, init) => fetch(url, init)),
+    newReading(),
   );
   await playThrough({ app, map, root, puzzle: game.puzzle }, 'shared article');
 });
