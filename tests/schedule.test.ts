@@ -95,8 +95,9 @@ test('refreshing redraws only future days, and brings new questions in', () => {
   assert.deepEqual(s.days.slice(0, keep), schedule.days.slice(0, keep), 'launch to tomorrow untouched');
   assert.deepEqual(scheduledIds(s, tomorrow), scheduledIds(schedule, tomorrow));
   assert.equal(scheduleEnd(s), scheduleEnd(schedule));
-  // The new questions turn up within one 45-question cycle.
+  // The new questions turn up within one cycle: as many days as the largest tier has questions.
+  const cycle = Math.max(...TIERS.map((t) => grown.filter((q) => q.tier === t).length));
   const fresh = new Set(newQuestions(5).map((q) => q.id));
-  const soon = new Set(s.days.slice(keep, keep + 45).flat().filter((id) => fresh.has(id)));
+  const soon = new Set(s.days.slice(keep, keep + cycle).flat().filter((id) => fresh.has(id)));
   assert.equal(soon.size, fresh.size);
 });
