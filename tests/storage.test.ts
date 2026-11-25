@@ -180,3 +180,143 @@ test('a restored player id replaces the old one and is kept', () => {
   assert.equal(store.playerId(), restored);
   assert.equal(new LocalStore(() => '2026-11-06', null).setPlayerId(restored), false, 'no storage, nothing to keep it in');
 });
+
+// ------------------------------------------------- version 2: full rounds ---
+
+/** A finished daily game with real-looking marks. */
+const played = (dateKey: string, scores: number[]): SavedGame => ({
+  dateKey,
+  puzzle: 7,
+  questionIds: scores.map((_, i) => `${dateKey}-q${i}`),
+  rounds: scores.map((score, i) => ({ questionId: `${dateKey}-q${i}`, guess: [2.123456789 + i, 48.987654321 - i], distanceKm: 12.3456 * (i + 1), score })),
+  pendingGuess: null,
+  finished: true,
+});
+
+test('finished daily games keep every guess from now on', () => {
+  const mem = new MemoryStorage() as unknown as Storage;
+  const s = new LocalStore(() => '2026-11-25', mem);
+  s.saveGame(played('2026-11-24', [900, 800, 700, 600, 500, 400, 300]));
+  s.saveGame(played('2026-11-25', [100, 200, 300, 400, 500, 600, 700])); // `current` moves on to today
+  const raw = parseStored(mem.getItem('chronomap:v1'));
+  assert.equal(raw.version, 2);
+  const yesterday = new LocalStore(() => '2026-11-25', mem).playedGame('2026-11-24')!;
+  assert.equal(yesterday.via, 'daily');
+  assert.deepEqual(yesterday.scores, [900, 800, 700, 600, 500, 400, 300]);
+  assert.equal(yesterday.rounds?.length, 7, 'yesterday’s guesses kept although it is no longer the current game');
+  assert.deepEqual(yesterday.rounds![0].guess, [2.12346, 48.98765], 'to about a metre');
+  assert.equal(yesterday.rounds![1].distanceKm, 24.7, 'to 100 m');
+  assert.equal(yesterday.rounds![3].questionId, '2026-11-24-q3');
+});
+
+test('version 1 data migrates without losing a thing', () => {
+  // Exactly what the game stored before guesses were kept.
+  const current = played('2026-11-20', [1000, 900, 800, 700, 600, 500, 400]);
+  const v1 = {
+    version: 1,
+    current,
+    history: {
+      '2026-11-18': { p: 13, s: [10, 20, 30, 40, 50, 60, 70] },
+      '2026-11-19': { p: 14, s: [500, 500, 500, 500, 500, 500, 500] },
+      '2026-11-20': { p: 15, s: [1000, 900, 800, 700, 600, 500, 400] },
+    },
+    archive: { '2026-11-10': game('2026-11-10', true, [300, 300, 300, 300, 300, 300, 300]) },
+    units: 'mi',
+    seenIntro: true,
+    playerId: '3f2b8c1e-9d4a-4b7e-a1c2-5e6f7a8b9c0d',
+    submissions: { '2026-11-20': { done: true, tries: 1 } },
+  };
+  const mem = new MemoryStorage();
+  mem.setItem('chronomap:v1', JSON.stringify(v1));
+  const today = () => '2026-11-21';
+  const before = computeStats(
+    Object.fromEntries(Object.entries(v1.history).map(([k, e]) => [k, { p: e.p, s: e.s }])),
+    '2026-11-21',
+  );
+
+  const s = new LocalStore(today, mem as unknown as Storage);
+  // Everything the player had is still there…
+  assert.deepEqual(s.stats(), before);
+  assert.equal(s.stats().played, 3);
+  assert.equal(s.getUnits(), 'mi');
+  assert.equal(s.hasSeenIntro(), true);
+  assert.equal(s.playerId(), v1.playerId);
+  assert.deepEqual(s.submission('2026-11-20'), { done: true, tries: 1 });
+  assert.equal(s.loadArchiveGame('2026-11-10')?.finished, true);
+  assert.deepEqual(Object.keys(s.pastDays('2026-11-21')).sort(), ['2026-11-10', '2026-11-18', '2026-11-19', '2026-11-20']);
+  // …older days have their scores but no guesses to show…
+  const old = s.playedGame('2026-11-18')!;
+  assert.deepEqual(old.scores, [10, 20, 30, 40, 50, 60, 70]);
+  assert.equal(old.rounds, null);
+  assert.equal(old.puzzle, 13);
+  // …and the latest game, kept in full, fills in its own day's guesses.
+  assert.deepEqual(s.playedGame('2026-11-20')!.rounds!.map((r) => r.questionId), current.questionIds);
+
+  // Written back (any save), the data is version 2 and still complete.
+  s.setUnits('km');
+  const after = parseStored(mem.getItem('chronomap:v1'));
+  assert.equal(after.version, 2);
+  assert.deepEqual(
+    Object.fromEntries(Object.entries(after.history).map(([k, e]) => [k, e.s])),
+    Object.fromEntries(Object.entries(v1.history).map(([k, e]) => [k, e.s])),
+  );
+  assert.equal(after.history['2026-11-20'].r?.length, 7, 'the migrated guesses are stored now');
+  assert.equal(after.history['2026-11-19'].r, undefined);
+  assert.deepEqual(after.archive['2026-11-10'], v1.archive['2026-11-10']);
+  assert.equal(after.playerId, v1.playerId);
+  assert.deepEqual(after.current, current);
+  assert.deepEqual(new LocalStore(today, mem as unknown as Storage).stats(), before);
+});
+
+test('migration only borrows guesses that match the day’s scores', () => {
+  const current = played('2026-11-20', [1, 2, 3, 4, 5, 6, 7]);
+  const data = parseStored(JSON.stringify({ version: 1, current, history: { '2026-11-20': { p: 15, s: [7, 6, 5, 4, 3, 2, 1] } } }));
+  assert.equal(data.history['2026-11-20'].r, undefined);
+  assert.deepEqual(data.history['2026-11-20'].s, [7, 6, 5, 4, 3, 2, 1]);
+});
+
+test('malformed stored rounds are dropped, the scores kept', () => {
+  const bad = [{ questionId: 'a', guess: [999, 0], distanceKm: 1, score: 1 }];
+  const mismatched = [{ questionId: 'a', guess: [1, 1], distanceKm: 1, score: 2 }];
+  const data = parseStored(JSON.stringify({ history: { '2026-11-20': { p: 1, s: [1], r: bad }, '2026-11-21': { p: 1, s: [1], r: mismatched } } }));
+  assert.deepEqual(data.history['2026-11-20'], { p: 1, s: [1] });
+  assert.deepEqual(data.history['2026-11-21'], { p: 1, s: [1] });
+});
+
+test('a practice replay never overwrites the original result', () => {
+  const mem = new MemoryStorage() as unknown as Storage;
+  const s = new LocalStore(() => '2026-11-25', mem);
+  s.saveGame(played('2026-11-20', [500, 500, 500, 500, 500, 500, 500])); // played on the day
+  s.saveArchiveGame(played('2026-11-12', [300, 300, 300, 300, 300, 300, 300])); // from the archive
+  s.saveGame(played('2026-11-25', [100, 100, 100, 100, 100, 100, 100])); // today
+  const snapshot = () => ({
+    stats: s.stats(),
+    past: s.pastDays('2026-11-25'),
+    daily: s.playedGame('2026-11-20'),
+    archived: s.playedGame('2026-11-12'),
+    today: s.loadGame('2026-11-25'),
+    archiveSlot: s.loadArchiveGame('2026-11-12'),
+    submission: s.submission('2026-11-20'),
+  });
+  const before = snapshot();
+
+  for (const day of ['2026-11-20', '2026-11-12']) {
+    const practice = played(day, [1000, 1000, 1000, 1000, 1000, 1000, 1000]);
+    s.savePracticeGame({ ...practice, rounds: practice.rounds.slice(0, 3), finished: false });
+    s.savePracticeGame(practice);
+    assert.equal(new LocalStore(() => '2026-11-25', mem).loadPracticeGame(day)?.finished, true);
+  }
+  assert.deepEqual(snapshot(), before, 'results, streak, averages and the archive are untouched');
+  assert.deepEqual(new LocalStore(() => '2026-11-25', mem).stats(), before.stats);
+  assert.equal(s.loadPracticeGame('2026-11-20'), null, 'only the latest practice is kept');
+  assert.equal(s.loadGame('2026-11-12'), null);
+});
+
+test('the claim prompt’s snoozes are kept between visits', () => {
+  const mem = new MemoryStorage() as unknown as Storage;
+  const s = new LocalStore(() => '2026-11-25', mem);
+  assert.deepEqual(s.claimPrompt(), { snoozes: 0, until: null });
+  s.snoozeClaimPrompt('2026-11-25');
+  assert.deepEqual(new LocalStore(() => '2026-11-25', mem).claimPrompt(), { snoozes: 1, until: '2026-11-28' });
+  assert.deepEqual(parseStored('{"claimPrompt":{"snoozes":-1,"until":"soon"}}').claimPrompt, { snoozes: 0, until: null });
+});
