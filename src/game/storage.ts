@@ -48,6 +48,8 @@ export interface StoredData {
   practice: SavedGame | null;
   /** The end-screen prompt to claim a username. */
   claimPrompt: ClaimPromptState;
+  /** Whether the globe shows its hand-sketched decorations (mountains, forests, ships…). */
+  decorations: boolean;
 }
 
 const empty = (): StoredData => ({
@@ -61,6 +63,7 @@ const empty = (): StoredData => ({
   submissions: {},
   practice: null,
   claimPrompt: { ...NEVER_SNOOZED },
+  decorations: true,
 });
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 /** Submission records older than this many days are dropped. */
@@ -158,6 +161,7 @@ export function parseStored(raw: string | null): StoredData {
     data.claimPrompt = parseClaimPrompt(v.claimPrompt);
     if (v.units === 'mi' || v.units === 'km') data.units = v.units;
     data.seenIntro = v.seenIntro === true;
+    data.decorations = v.decorations !== false;
     return migrate(data);
   } catch {
     return empty();
@@ -373,6 +377,16 @@ export class LocalStore implements Persistence {
 
   setUnits(units: Units): void {
     this.data.units = units;
+    this.write();
+  }
+
+  /** Map decorations are on unless the player turned them off. */
+  getDecorations(): boolean {
+    return this.data.decorations;
+  }
+
+  setDecorations(on: boolean): void {
+    this.data.decorations = on;
     this.write();
   }
 

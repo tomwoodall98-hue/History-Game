@@ -338,6 +338,20 @@ button {
   height: 18px;
 }
 
+/* Map decorations on/off: struck through when off. */
+.decor-toggle .off {
+  display: none;
+}
+
+.decor-toggle[aria-pressed='false'] {
+  color: var(--ink-faint);
+}
+
+.decor-toggle[aria-pressed='false'] .off {
+  display: inline;
+  color: var(--ink);
+}
+
 .loading {
   position: absolute;
   inset: 0;

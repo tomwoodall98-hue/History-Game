@@ -5,7 +5,8 @@
  * this module holds the rules both sides share and decodes the file.
  *
  * Level of detail: every glyph belongs to a level. Level 0 is the sparsest
- * set, and each further level adds glyphs in the gaps at half the spacing.
+ * set, and each further level adds glyphs in the gaps, its spacing a factor
+ * of √2 closer.
  * Any two glyphs visible together are at least
  *
  *     LEVEL_DEG[max level of the two] × (SPACING[a] + SPACING[b]) / 2
@@ -21,17 +22,17 @@ export const DECORATION_KINDS: readonly GlyphKind[] = ['mountain', 'desert', 'co
 /** Kinds drawn on land; every other kind is drawn at sea. */
 export const LAND_KINDS: ReadonlySet<GlyphKind> = new Set<GlyphKind>(['mountain', 'desert', 'conifer', 'broadleaf', 'palm']);
 
-/** Spacing of each level, in degrees of arc: 8° is about 890 km. */
-export const LEVEL_DEG: readonly number[] = [8, 4, 2, 1];
+/** Spacing of each level, in degrees of arc (8° is about 890 km): each is √2 closer than the last, twice as dense. */
+export const LEVEL_DEG: readonly number[] = [8, 5.66, 4, 2.83, 2, 1.41, 1];
 
-/** How much room each kind keeps around itself, as a multiple of its level's spacing. */
+/** How much room each kind keeps around itself, as a multiple of its level's spacing (roughly its width). */
 export const SPACING: Readonly<Record<GlyphKind, number>> = {
-  mountain: 1,
-  desert: 1,
+  mountain: 1.25,
+  desert: 1.1,
   conifer: 0.85,
-  broadleaf: 0.85,
-  palm: 0.85,
-  ripple: 1.8,
+  broadleaf: 0.9,
+  palm: 1,
+  ripple: 1.6,
   ship: 4,
   serpent: 3,
   whale: 3,

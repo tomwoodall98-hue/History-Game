@@ -7,6 +7,7 @@ import type { Topology } from 'topojson-specification';
 import type { FeatureCollection, Geometry, MultiLineString, MultiPolygon, Polygon } from 'geojson';
 import { GLYPHS } from '../src/map/glyphs.ts';
 import { DECORATION_KINDS, LAND_KINDS, LEVEL_DEG, SHIP_COAST_KM, decodeDecorations, minSeparationDeg, type DecorationFile } from '../src/map/decorations.ts';
+import { DECOR_SPACING_PX, levelOfDetail } from '../src/map/decorLayer.ts';
 
 const file = JSON.parse(readFileSync(new URL('../src/data/decorations.json', import.meta.url), 'utf8')) as DecorationFile;
 const glyphs = decodeDecorations(file);
@@ -121,4 +122,23 @@ test('no two glyphs shown together are closer than their spacing', () => {
     }
   }
   assert.deepEqual(tooClose, []);
+});
+
+test('levels of detail open up only once glyphs have room, more of them the closer you zoom', () => {
+  let shown = 0;
+  for (let R = 60; R <= 60000; R *= 1.07) {
+    const { size, alpha } = levelOfDetail(R);
+    assert.ok(size > 0 && size <= 1.2, `size ${size} at R ${R.toFixed(0)}`);
+    assert.equal(alpha[0], 1, 'the sparsest level is always drawn');
+    for (let level = 0; level < LEVEL_DEG.length; level++) {
+      if (level > 0) assert.ok(alpha[level] <= alpha[level - 1], 'finer levels never show before coarser ones');
+      // Any level drawn keeps one spacing apart at least DECOR_SPACING_PX × size on screen.
+      if (alpha[level] > 0) assert.ok(LEVEL_DEG[level] * (Math.PI / 180) * R >= DECOR_SPACING_PX * size - 1e-9, `level ${level} too tight at R ${R.toFixed(0)}`);
+    }
+    const n = alpha.filter((a) => a > 0).length;
+    assert.ok(n >= shown, 'zooming in never takes levels away');
+    shown = n;
+  }
+  assert.equal(shown, LEVEL_DEG.length, 'every level shows when zoomed in far enough');
+  assert.equal(levelOfDetail(160).alpha.filter((a) => a > 0).length, 1, 'a phone-sized whole globe shows only the sparsest level');
 });

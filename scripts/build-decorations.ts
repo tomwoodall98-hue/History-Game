@@ -24,7 +24,7 @@
  * Level 0 throws darts at a jittered equal-area grid in a seeded random
  * order and keeps each one that lands in the right medium and region and
  * is far enough from every glyph already kept (minSeparationDeg). Each
- * further level halves the spacing and fills the gaps. A glyph also keeps
+ * further level brings the spacing √2 closer and fills the gaps. A glyph also keeps
  * its own footprint clear of the coast at the zoom where its level first
  * appears, so coarse levels stay well inland or well offshore. Ships are
  * placed first along the routes, at least 200 km from any coast; the two
@@ -87,8 +87,8 @@ const RIPPLE_MAX_LAT = 66;
  * (a few waves a few thousand km long) is above this value, about half the sea.
  */
 const RIPPLE_FIELD_MIN = 0;
-/** Ships sail only at the two coarsest levels: they are occasional. */
-const SHIP_LEVELS = 2;
+/** Ships sail only at the coarsest levels: they are occasional. */
+const SHIP_LEVELS = 3;
 /** Fixed easter eggs: a serpent at the oceanic pole of inaccessibility, a whale in the far southern Indian Ocean. */
 const MONSTERS: { kind: GlyphKind; lng: number; lat: number; level: number }[] = [
   { kind: 'serpent', lng: -123.4, lat: -48.9, level: 1 },

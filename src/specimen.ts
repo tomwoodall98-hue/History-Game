@@ -18,8 +18,8 @@ const FAMILIES: { kinds: GlyphKind[]; title: string; note: string; medium: 'land
   { kinds: ['conifer'], title: 'Northern forests', medium: 'land', note: 'Conifers over a muted green wash, for the boreal forests of Canada, Scandinavia and Siberia.' },
   { kinds: ['broadleaf'], title: 'Broadleaf forests', medium: 'land', note: 'Rounded crowns for the temperate and tropical rainforests: Amazon, Congo, South-East Asia.' },
   { kinds: ['palm'], title: 'Palms', medium: 'land', note: 'For the tropical fringes, used sparingly among the broadleaf stands.' },
-  { kinds: ['ripple'], title: 'Sea ripples', medium: 'sea', note: 'Short strokes scattered over the open ocean, well clear of the existing water-lining at the coasts.' },
-  { kinds: ['ship'], title: 'Ships', medium: 'sea', note: 'Occasional, on the old sea routes and never within about 200 km of a coast.' },
+  { kinds: ['ripple'], title: 'Sea ripples', medium: 'sea', note: 'Short strokes gathered in patches of open ocean, with calm water between them, well clear of the water-lining at the coasts.' },
+  { kinds: ['ship'], title: 'Ships', medium: 'sea', note: 'Occasional, on the old sailing routes, facing the way the route runs, and never within 200 km of a coast.' },
   { kinds: ['serpent', 'whale'], title: 'Here be monsters', medium: 'sea', note: 'One or two only, in the remotest ocean, as an easter egg.' },
 ];
 

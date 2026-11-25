@@ -10,6 +10,9 @@
  *     repositioned every frame and hidden when they turn to the far side.
  *   - The brass meridian ring and the wooden horizon ring and stand are drawn
  *     around the globe; they scale with zoom but never rotate.
+ *   - Hand-sketched decorations (mountains, deserts, forests, ripples, ships;
+ *     decorLayer.ts) are printed on the land and sea, under the rivers,
+ *     coastlines and everything in the overlay.
  *
  * Gestures, screen-to-globe conversion and view fitting are in globeMath.ts.
  */
@@ -18,6 +21,8 @@ import { feature } from 'topojson-client';
 import type { Topology } from 'topojson-specification';
 import type { Feature, FeatureCollection, MultiLineString } from 'geojson';
 import { guessMarkerMarkup, sealMarkerMarkup } from './ornaments';
+import { DecorLayer } from './decorLayer';
+import type { Decoration } from './decorations';
 import { mulberry32 } from '../game/schedule';
 import { fastView, prepare, preparePolygons, traceLines, tracePolygons, type Prepared, type PreparedPolygon } from './fastOrtho';
 import { CELL_COLS, CELL_DEG, CELL_ROWS, cellBounds, cellId, type GlobeBase } from './globeData';
@@ -172,6 +177,8 @@ export class GlobeView {
   private readonly graticule = prepare(geoGraticule().step([15, 15]).precision(3).extentMinor([[-180, -75], [180, 75.001]])());
   private readonly seams = prepare(goreSeams());
   private readonly cracks = prepare(craquelure());
+  private decor: DecorLayer | null = null;
+  private decorOn = true;
 
   private width = 0;
   private height = 0;
@@ -247,6 +254,19 @@ export class GlobeView {
     this.coarse = decodeLayers(base, { land: 'coarseLand', coast: 'coarseCoast' });
     this.base = decodeLayers(base, { land: 'land', coast: 'coast', lakes: 'lakes', shores: 'shores', rivers: 'rivers' });
     this.resize();
+  }
+
+  /** The decorations to print on the globe (null for none yet). */
+  setDecorations(list: Decoration[] | null): void {
+    this.decor = list ? new DecorLayer(list) : null;
+    this.invalidate();
+  }
+
+  /** Shows or hides the decorations. */
+  setDecorationsVisible(on: boolean): void {
+    if (on === this.decorOn) return;
+    this.decorOn = on;
+    this.invalidate();
   }
 
   // ------------------------------------------------------------ layout ---
@@ -413,6 +433,9 @@ export class GlobeView {
     ctx.beginPath();
     traceLines(ctx, this.seams, v);
     ctx.stroke();
+
+    // Mountains, deserts, forests, ripples and ships, printed on the gores.
+    if (this.decor && this.decorOn) this.decor.draw(ctx, v, this.dpr, this.width, this.height, this.moving);
 
     if (full) {
       ctx.strokeStyle = PALETTE.river;

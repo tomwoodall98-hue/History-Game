@@ -18,6 +18,11 @@ from the first to the seventh.
   seams and craquelure, water-lined coasts, an unlabelled graticule, a brass
   meridian ring and a wooden horizon ring on a turned stand, with the parchment,
   compass rose, scrolled cartouche and IM Fell type around it.
+- Hand-sketched decorations in sepia ink and watercolour, as a cartographer
+  might have added them: mountain ranges, deserts, forests, sea ripples, ships
+  on the old sea lanes and a sea monster or two, each in its real place. More
+  appear as you zoom in. The mountain button beside the zoom buttons turns them
+  off (and on again); the choice is remembered.
 - Turn it by dragging (with a little inertia), zoom with wheel, pinch, buttons or
   keyboard, down to about 100 m per pixel. Finer coastline tiles stream in only
   when you zoom in.
@@ -55,6 +60,7 @@ npm run dev          # http://localhost:5173
 | `npm run simulate:scoring` | Expected scores for good, average and poor players (see below) |
 | `npm run build:geodata`    | Rebuild the globe's map data from Natural Earth (rarely needed) |
 | `npm run build:countries`  | Rebuild the scoring-only country outlines (rarely needed)      |
+| `npm run build:decorations` | Re-place the map decorations (after changing their data)      |
 | `npm run schedule:extend`  | Append days to the frozen puzzle schedule                      |
 
 ## How to play
@@ -578,7 +584,10 @@ src/map/fastOrtho.ts          the fast orthographic projector used for drawing
 src/map/globeMath.ts          tap vs drag, screen → lng/lat, rotation, view fitting
 src/map/ornaments.ts          compass rose, cartouche, guess mark, wax seal
 src/map/texture.ts            parchment grain, fibres, foxing and stains (SVG filters)
+scripts/build-decorations.ts  Natural Earth regions + data/decorations/ → src/data/decorations.json
 src/map/glyphs.ts             hand-sketched decoration glyphs and their sprite atlas
+src/map/decorations.ts        decoration placement rules and file format
+src/map/decorLayer.ts         draws the decorations on the globe
 ```
 
 - **Projection.** `d3.geoOrthographic`, showing only the near hemisphere. North
@@ -615,12 +624,32 @@ src/map/glyphs.ts             hand-sketched decoration glyphs and their sprite a
   yellowed varnish, tea-stained toning towards the rim and the light on a ball
   (highlight top-left, darkening to the edge). The brass meridian ring and the
   wooden horizon ring and stand scale with zoom but don't rotate.
-- **Decoration glyphs.** Mountains, deserts, forests, sea ripples, ships and a
+- **Decorations.** Mountains, deserts, forests, sea ripples, ships and a
   couple of sea monsters, sketched procedurally in sepia ink by `glyphs.ts`
-  with a seeded wobbling, tapering pen, then baked once into a sprite atlas.
+  with a seeded wobbling, tapering pen and laid over watercolour washes.
   `glyphs.html` (built, but never linked from the game) is a specimen sheet of
   every glyph: `npm run dev` and open `/glyphs.html`, or add `/glyphs.html` to
   a deploy preview's address.
+  - *Placement* is worked out once, at build time, by
+    `scripts/build-decorations.ts` and committed. Mountains and deserts come
+    from Natural Earth's 1:50m geography regions (the "Range/mtn" and "Desert"
+    classes). Natural Earth has no forests, so `data/decorations/forests.json`
+    holds rough hand-drawn outlines of the major present-day ones, and
+    `data/decorations/sea-routes.json` the old sailing routes the ships keep
+    to, never within 200 km of a coast. Ripples gather in patches of open
+    ocean. Glyphs are scattered by deterministic Poisson-disc sampling on the
+    sphere in seven levels of detail, each twice as dense as the last, so no
+    two glyphs shown together ever overlap. `npm test` checks every glyph is
+    on land or at sea as it should be.
+  - *Drawing.* Every glyph is baked once into a sprite atlas at load, then
+    drawn as one image through the projection's local east and north axes at
+    its point: it points north and foreshortens towards the rim, printed on
+    the sphere. A level of detail fades in once its spacing on screen leaves
+    room for its glyphs. They sit under the rivers, coastlines, markers and
+    route, and never take a tap. While the globe moves, fading levels are
+    left out; with the CPU slowed 4× on a phone they add about 1 ms to a
+    moving frame. Their placements (41 KB gzipped) are fetched after the
+    globe is up, and not at all while they are turned off.
 - **No text on the globe.** The only lettering is the title in the cartouche.
 
 ## Accessibility
