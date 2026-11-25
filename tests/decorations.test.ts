@@ -140,5 +140,7 @@ test('levels of detail open up only once glyphs have room, more of them the clos
     shown = n;
   }
   assert.equal(shown, LEVEL_DEG.length, 'every level shows when zoomed in far enough');
-  assert.equal(levelOfDetail(160).alpha.filter((a) => a > 0).length, 1, 'a phone-sized whole globe shows only the sparsest level');
+  // A whole globe: on a desktop (radius ~260 px) the two sparsest levels in full, on a phone (~160 px) less.
+  assert.deepEqual(levelOfDetail(262).alpha.slice(0, 3).map((a) => +a.toFixed(2)), [1, 1, 0], 'desktop whole globe');
+  assert.ok(levelOfDetail(160).alpha[1] < 1 && levelOfDetail(160).alpha[2] === 0, 'phone whole globe');
 });

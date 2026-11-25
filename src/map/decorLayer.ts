@@ -18,8 +18,13 @@ import type { FastView } from './fastOrtho';
 
 /** A level of detail is drawn once glyphs one spacing apart are at least this many px apart (at natural size). */
 export const DECOR_SPACING_PX = 24;
-/** Glyphs are drawn at their natural size on a globe of this radius (px), a little smaller or larger otherwise. */
-const NATURAL_RADIUS = 320;
+/**
+ * Glyphs are drawn at their natural size on a globe of this radius (px),
+ * smaller on a whole globe (about ¾ size on a desktop, so the second level of
+ * detail fits in full) and a little larger when zoomed in.
+ */
+const NATURAL_RADIUS = 420;
+const SIZE_EXPONENT = 0.6;
 const MIN_SIZE = 0.6;
 const MAX_SIZE = 1.15;
 /** A level fades in as its spacing grows from 1× to this many times what it needs. */
@@ -46,7 +51,7 @@ export interface Lod {
  */
 export function levelOfDetail(R: number): Lod {
   const spacing = (level: number) => LEVEL_DEG[level] * RAD * R;
-  let size = Math.max(MIN_SIZE, Math.min(MAX_SIZE, Math.pow(R / NATURAL_RADIUS, 0.35)));
+  let size = Math.max(MIN_SIZE, Math.min(MAX_SIZE, Math.pow(R / NATURAL_RADIUS, SIZE_EXPONENT)));
   // On a very small globe even the sparsest level is tight: shrink the glyphs to fit.
   size = Math.min(size, spacing(0) / DECOR_SPACING_PX);
   const alpha = LEVEL_DEG.map((_, level) => {
