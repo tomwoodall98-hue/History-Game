@@ -25,8 +25,10 @@ export interface GlyphSpec {
   /** The point (in the box) that sits on the glyph's latitude/longitude. */
   ax: number;
   ay: number;
-  /** Watercolour wash laid under the ink (forests and deserts). */
+  /** Watercolour wash laid under the ink (forests, deserts and mountains). */
   wash?: string;
+  /** Where the wash blob goes, as fractions of the box: centre x, centre y, radius x, radius y. */
+  washAt?: [number, number, number, number];
   draw(pen: Pen): void;
 }
 
@@ -38,6 +40,7 @@ export const SKETCH = {
   /** Sails. */
   canvas: '#f6eedb',
   forestWash: '#7d9463',
+  mountainWash: '#a8865c',
   desertWash: '#c79d4e',
   seaWash: '#8fa9a0',
 };
@@ -298,6 +301,26 @@ function drawMassif(p: Pen, m: Massif, base: number): void {
   const { outline, summits, valleys } = m;
   const closed: Pt[] = [...outline, [outline[outline.length - 1][0], base + 0.3], [outline[0][0], base + 0.3]];
   p.fill(closed, SKETCH.fill);
+  const snowY = m.snow ? Math.min(...m.snow.map((q) => q[1])) + 0.4 : -Infinity;
+
+  // Light umber watercolour over the body: a loose blob, heaviest towards the
+  // foot, its drying edge crossing the upper slopes; any snowfield left as paper.
+  const ctx = p.ctx;
+  const x0 = outline[0][0];
+  const x1 = outline[outline.length - 1][0];
+  const peak = Math.min(...outline.map((q) => q[1]));
+  ctx.save();
+  ctx.beginPath();
+  closed.forEach((q, i) => (i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1])));
+  ctx.closePath();
+  ctx.clip();
+  if (m.snow) {
+    ctx.beginPath();
+    ctx.rect(x0 - 2, snowY, x1 - x0 + 4, base - snowY + 2);
+    ctx.clip();
+  }
+  p.wash((x0 + x1) / 2 + p.r(-1, 1), base - (base - peak) * 0.22, (x1 - x0) * 0.56, (base - peak) * 0.66, SKETCH.mountainWash, 0.2);
+  ctx.restore();
 
   summits.forEach((si, k) => {
     const top = outline[si];
@@ -309,12 +332,13 @@ function drawMassif(p: Pen, m: Massif, base: number): void {
     const flank = outline.slice(si, end + 1);
     const valleyFoot: Pt = nextValley !== undefined ? [outline[end][0] + 0.6, base] : [outline[end][0], base];
     const shade: Pt[] = [...flank, valleyFoot, ...ridge.slice().reverse()];
-    let region = shade;
-    if (m.snow) {
-      // Keep the snowfield white: hatch only below the snow line.
-      const minY = Math.min(...m.snow.map((q) => q[1]));
-      region = shade.map(([x, y]) => [x, Math.max(y, minY + 0.4)] as Pt);
-    }
+    // Keep any snowfield white: shade only below the snow line.
+    const region = m.snow ? shade.map(([x, y]) => [x, Math.max(y, snowY)] as Pt) : shade;
+    // A second pass of umber on the shadow side, under the hatching.
+    ctx.save();
+    ctx.globalAlpha = 0.11;
+    p.fill(region, SKETCH.mountainWash);
+    ctx.restore();
     const steep = Math.atan2(base - top[1], outline[end][0] - top[0]);
     p.hatch(region, Math.min(1.3, steep + 0.3), 1.05, 0.4, { ragged: 0.16, skip: 0.06 });
     // Ridge drawn only part way, as a sketcher would.
@@ -339,16 +363,17 @@ function drawMassif(p: Pen, m: Massif, base: number): void {
   // The outline, heavier than everything inside it.
   p.stroke(outline, 0.95, { wobble: 0.3 });
   // A few ground strokes at the foot.
-  const x0 = outline[0][0];
-  const x1 = outline[outline.length - 1][0];
   p.stroke([[x0 - 1.2, base + 0.2], [x0 + (x1 - x0) * 0.3, base + 0.4]], 0.45);
   p.stroke([[x0 + (x1 - x0) * 0.55, base + 0.5], [x1 + 1, base + 0.2]], 0.45);
 }
 
+/** The umber blob under a mountain lies along its foot, like a wash of ground. */
+const FOOT_WASH: [number, number, number, number] = [0.5, 0.88, 0.46, 0.1];
+
 const MOUNTAINS: Omit<GlyphSpec, 'kind' | 'variant'>[] = [
   // 0: a single sharp peak.
   {
-    w: 24, h: 20, ax: 12, ay: 18,
+    w: 24, h: 20, ax: 12, ay: 18, wash: SKETCH.mountainWash, washAt: FOOT_WASH,
     draw: (p) =>
       drawMassif(p, {
         outline: [[1.5, 18], [4.5, 14.5], [7.5, 10.5], [9.5, 7.2], [11.2, 3.6], [12.3, 1.8], [13.4, 4.2], [15, 6.4], [17.2, 10.6], [19.6, 14], [22.5, 18]],
@@ -357,7 +382,7 @@ const MOUNTAINS: Omit<GlyphSpec, 'kind' | 'variant'>[] = [
   },
   // 1: twin peaks, the right one higher.
   {
-    w: 28, h: 20, ax: 14, ay: 18,
+    w: 28, h: 20, ax: 14, ay: 18, wash: SKETCH.mountainWash, washAt: FOOT_WASH,
     draw: (p) =>
       drawMassif(p, {
         outline: [[1, 18], [3.6, 13.6], [6.4, 8.4], [8.2, 5.2], [9.8, 7.8], [11.4, 9.6], [13.2, 6.4], [15.6, 3.2], [17, 1.6], [18.4, 4], [20.6, 8.2], [23.4, 13.4], [26.8, 18]],
@@ -366,7 +391,7 @@ const MOUNTAINS: Omit<GlyphSpec, 'kind' | 'variant'>[] = [
   },
   // 2: a little range of three.
   {
-    w: 32, h: 17, ax: 16, ay: 15.5,
+    w: 32, h: 17, ax: 16, ay: 15.5, wash: SKETCH.mountainWash, washAt: FOOT_WASH,
     draw: (p) =>
       drawMassif(p, {
         outline: [[1, 15.5], [3.8, 11], [6.2, 6.6], [7.4, 5.2], [8.8, 7.4], [10.4, 8.6], [12.6, 4.2], [14.4, 1.4], [16, 4.6], [18, 7.6], [19.6, 6.4], [21.8, 3.8], [23.4, 6.2], [26.4, 11.2], [30.8, 15.5]],
@@ -375,7 +400,7 @@ const MOUNTAINS: Omit<GlyphSpec, 'kind' | 'variant'>[] = [
   },
   // 3: a crag with a snowfield under the summit.
   {
-    w: 24, h: 22, ax: 12, ay: 20,
+    w: 24, h: 22, ax: 12, ay: 20, wash: SKETCH.mountainWash, washAt: FOOT_WASH,
     draw: (p) =>
       drawMassif(p, {
         outline: [[1.2, 20], [3.6, 16.6], [5.4, 12.4], [7.6, 10.2], [8.6, 6.6], [10.4, 3.6], [11.6, 1.4], [12.6, 2.8], [13.6, 2.2], [15, 5.4], [16.2, 7.2], [17.4, 10.6], [19.6, 14.4], [22.8, 20]],
@@ -385,7 +410,7 @@ const MOUNTAINS: Omit<GlyphSpec, 'kind' | 'variant'>[] = [
   },
   // 4: a broad massif with a foothill before it.
   {
-    w: 30, h: 19, ax: 15, ay: 17.5,
+    w: 30, h: 19, ax: 15, ay: 17.5, wash: SKETCH.mountainWash, washAt: FOOT_WASH,
     draw: (p) => {
       drawMassif(p, {
         outline: [[4, 17.5], [6.8, 12.2], [9.4, 7.8], [11.6, 4.8], [13.4, 3.2], [15.2, 2.2], [16.4, 3.4], [18.2, 5.2], [20.6, 8.4], [23.4, 12.6], [28.6, 17.5]],
@@ -815,7 +840,8 @@ export function drawGlyph(ctx: CanvasRenderingContext2D, g: GlyphSpec, scale: nu
   const pen = new Pen(ctx, seedOf(g));
   if (g.wash) {
     const washPen = new Pen(ctx, seedOf(g) ^ 0x5eed);
-    washPen.wash(g.w / 2, g.h * 0.6, g.w * 0.5, g.h * 0.42, g.wash);
+    const [cx, cy, rx, ry] = g.washAt ?? [0.5, 0.6, 0.5, 0.42];
+    washPen.wash(g.w * cx, g.h * cy, g.w * rx, g.h * ry, g.wash);
   }
   g.draw(pen);
   ctx.restore();

@@ -12,10 +12,10 @@ test('the glyph set has the variants the design calls for', () => {
   assert.equal(new Set(ids).size, ids.length, 'ids are unique');
 });
 
-test('anchors sit inside their glyph, and only land cover takes a wash', () => {
+test('anchors sit inside their glyph, and only land features take a wash', () => {
   for (const g of GLYPHS) {
     assert.ok(g.ax >= 0 && g.ax <= g.w && g.ay >= 0 && g.ay <= g.h, `${glyphId(g)} anchor`);
-    const washable = ['desert', 'conifer', 'broadleaf', 'palm'].includes(g.kind);
+    const washable = ['mountain', 'desert', 'conifer', 'broadleaf', 'palm'].includes(g.kind);
     assert.equal(Boolean(g.wash), washable, `${glyphId(g)} wash`);
   }
 });
@@ -42,6 +42,7 @@ function recorder() {
     scale: () => {},
     beginPath: () => {},
     closePath: () => {},
+    rect: () => {},
     stroke: () => {},
     fill: () => {},
     moveTo: note,

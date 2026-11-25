@@ -13,7 +13,7 @@ import { ATLAS_PAD, GLYPHS, buildGlyphAtlas, drawGlyph, glyphId, type GlyphAtlas
 import { mulberry32 } from './game/schedule';
 
 const FAMILIES: { kinds: GlyphKind[]; title: string; note: string; medium: 'land' | 'sea' }[] = [
-  { kinds: ['mountain'], title: 'Mountains', medium: 'land', note: 'Profile peaks lit from the upper left, the shadow flank hatched. Placed along Natural Earth mountain ranges.' },
+  { kinds: ['mountain'], title: 'Mountains', medium: 'land', note: 'Profile peaks lit from the upper left, washed in light umber, the shadow flank hatched. Placed along Natural Earth mountain ranges.' },
   { kinds: ['desert'], title: 'Deserts', medium: 'land', note: 'Stipple and dune mounds over an ochre wash. Placed in Natural Earth desert regions.' },
   { kinds: ['conifer'], title: 'Northern forests', medium: 'land', note: 'Conifers over a muted green wash, for the boreal forests of Canada, Scandinavia and Siberia.' },
   { kinds: ['broadleaf'], title: 'Broadleaf forests', medium: 'land', note: 'Rounded crowns for the temperate and tropical rainforests: Amazon, Congo, South-East Asia.' },
@@ -148,7 +148,7 @@ function build(): void {
   );
   const pair = h('div', 'vignettes');
   const fig = h('figure');
-  fig.append(vignette(atlas), h('figcaption', undefined, 'Sepia ink, with watercolour washes on forests and deserts'));
+  fig.append(vignette(atlas), h('figcaption', undefined, 'Sepia ink, with watercolour washes on mountains, forests and deserts'));
   pair.append(fig);
   intro.append(pair);
   root.append(intro);
