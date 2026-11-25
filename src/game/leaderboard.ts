@@ -198,3 +198,45 @@ export function shortDay(dateKey: string): string {
   const [y, m, d] = dateKey.split('-').map(Number);
   return `${d} ${MONTHS[m - 1]} ${y}`;
 }
+
+/** Rows each board lists (top_n in leaderboard() in the SQL). */
+export const BOARD_ROWS = 25;
+
+/** Where an unnamed player's score would stand on today's roll, if they claimed a name. */
+export type Projection =
+  /** Their rank among the names on today's board; `of` is null when the board is longer than it shows. */
+  | { kind: 'rank'; rank: number; tied: boolean; of: number | null }
+  /** Below the rows shown: fall back to the share of all of today's players they beat. */
+  | { kind: 'percent'; better: number };
+
+/**
+ * Where `score` would rank on today's board. The board lists only named
+ * players, and the player isn't one yet, so they are counted in by hand:
+ * rank is one more than the names above them (equal scores share a rank,
+ * as on the board). When the board is full and the score falls below its
+ * last row, the exact rank isn't known, so the day's stats give a
+ * percentage instead ("better than 62% of players"). Null with neither.
+ */
+export function projectedRank(score: number, board: Leaderboard | null, betterThanPercent: number | null): Projection | null {
+  if (board && board.board === 'today') {
+    const above = board.rows.filter((r) => r.value > score).length;
+    const tied = board.rows.some((r) => r.value === score);
+    const complete = board.rows.length < BOARD_ROWS;
+    if (complete) return { kind: 'rank', rank: above + 1, tied, of: board.rows.length + 1 };
+    // Someone shown scored no more than them, so everyone above them is shown.
+    if (above < board.rows.length) return { kind: 'rank', rank: above + 1, tied, of: null };
+  }
+  if (betterThanPercent != null) return { kind: 'percent', better: betterThanPercent };
+  return null;
+}
+
+/** "You’d be 4th of 37 today", "You’d be joint 2nd on today’s roll", … */
+export function projectionText(p: Projection): string {
+  if (p.kind === 'percent') return `You scored better than ${p.better}% of today’s players.`;
+  const place = `${p.tied ? 'joint ' : ''}${ordinal(p.rank)}`;
+  if (p.of == null) return `You’d be ${place} on today’s roll.`;
+  if (p.of === 1) return 'You’d be the first name on today’s roll.';
+  return `You’d be ${place} of ${formatCount(p.of)} today.`;
+}
+
+const formatCount = (n: number) => n.toLocaleString('en-GB');

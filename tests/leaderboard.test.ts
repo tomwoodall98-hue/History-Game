@@ -1,7 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  BOARD_ROWS,
   displayBoard,
+  projectedRank,
+  projectionText,
   orderRows,
   ordinal,
   parseLeaderboard,
@@ -196,4 +199,32 @@ test('the service calls the right functions and never throws', async () => {
   assert.equal(await down.leaderboard('total', null), null);
   const error = createStatsService({ url: 'https://x.supabase.co', key: 'k' }, (async () => new Response('{}', { status: 500 })) as unknown as typeof fetch);
   assert.deepEqual(await error.claim(id, 'Ada'), { ok: false, reason: 'unavailable' });
+});
+
+test('where an unnamed player would rank on today’s roll', () => {
+  const today = (...values: number[]) =>
+    board('today', values.map((v, i) => row(i + 1, `P${i}`, v)));
+  // Three names above, so fourth of five (the four on the board and them).
+  const p = projectedRank(5000, today(6900, 6100, 5300, 4200), 40);
+  assert.deepEqual(p, { kind: 'rank', rank: 4, tied: false, of: 5 });
+  assert.equal(projectionText(p!), 'You’d be 4th of 5 today.');
+  // An equal score shares the rank, as on the board.
+  assert.equal(projectionText(projectedRank(6100, today(6900, 6100, 5300), null)!), 'You’d be joint 2nd of 4 today.');
+  // Top of the board, and the very first name.
+  assert.equal(projectionText(projectedRank(7000, today(6900), null)!), 'You’d be 1st of 2 today.');
+  assert.equal(projectionText(projectedRank(3000, today(), null)!), 'You’d be the first name on today’s roll.');
+
+  // A full board: the total isn't known, but a rank among its rows is exact.
+  const full = today(...Array.from({ length: BOARD_ROWS }, (_, i) => 7000 - i * 100));
+  assert.deepEqual(projectedRank(6750, full, 90), { kind: 'rank', rank: 4, tied: false, of: null });
+  assert.equal(projectionText(projectedRank(6750, full, 90)!), 'You’d be 4th on today’s roll.');
+  // Below every row shown: the day's stats say how they did instead.
+  assert.deepEqual(projectedRank(100, full, 3), { kind: 'percent', better: 3 });
+  assert.equal(projectionText({ kind: 'percent', better: 3 }), 'You scored better than 3% of today’s players.');
+  assert.equal(projectedRank(100, full, null), null);
+  // No board (unreachable): stats alone, or nothing.
+  assert.deepEqual(projectedRank(4000, null, 62), { kind: 'percent', better: 62 });
+  assert.equal(projectedRank(4000, null, null), null);
+  // Another board is never used for today's rank.
+  assert.equal(projectedRank(4000, board('total', [row(1, 'A', 99999)]), null), null);
 });

@@ -18,14 +18,13 @@ import {
   type Display,
   type Leaderboard,
 } from '../game/leaderboard';
-import { USERNAME_MAX, USERNAME_MIN, problemMessage, usernameProblem } from '../game/username';
 import { playerIdFromCode, recoveryCode } from '../game/recovery';
 import { formatNumber } from '../game/scoring';
+import { claimForm, UNREACHABLE } from './claimForm';
 import { h, copyText } from './dom';
 
 /** Boards fetched within this long are shown again without asking. */
 const FRESH_MS = 60_000;
-const UNREACHABLE = 'The roll can’t be reached just now. Please try again later.';
 
 /** Children for replaceChildren, skipping the ones left out (null). */
 const nodes = (...xs: (Node | null)[]): Node[] => xs.filter((x): x is Node => x != null);
@@ -45,10 +44,14 @@ export class RollOfHonour {
   private profileToken = 0;
   /** The name form is open (always, until a name is claimed). */
   private editing = false;
+  /** Focus the name field once the profile has loaded (opened from "Claim a username"). */
+  private focusName = false;
 
   constructor(
     private readonly service: StatsService,
     private readonly store: Persistence,
+    /** Told the player's name (null for none) whenever the roll learns it. */
+    private readonly onName: (username: string | null) => void = () => {},
   ) {
     const tablist = h('div', { class: 'honours-tabs', role: 'tablist', 'aria-label': 'Leaderboards' });
     for (const b of BOARDS) {
@@ -83,10 +86,20 @@ export class RollOfHonour {
   }
 
   /** Call each time the roll is shown: refreshes whatever is stale. */
-  open(): void {
+  open(opts: { focusName?: boolean } = {}): void {
+    this.focusName = !!opts.focusName;
     void this.loadProfile();
     this.select(this.board, false);
     this.renderKeys();
+  }
+
+  /** A name claimed elsewhere (the end-screen prompt): show it here too. */
+  named(username: string): void {
+    const games = this.profile.kind === 'ready' ? this.profile.profile.games : 0;
+    this.profile = { kind: 'ready', profile: { username, games } };
+    this.editing = false;
+    this.cache.clear();
+    this.renderProfile();
   }
 
   /** The tab to focus when the roll opens. */
@@ -212,6 +225,11 @@ export class RollOfHonour {
     if (profile) this.profile = { kind: 'ready', profile };
     else if (this.profile.kind !== 'ready') this.profile = { kind: 'unavailable' };
     this.renderProfile();
+    if (profile) this.onName(profile.username);
+    if (this.focusName) {
+      this.focusName = false;
+      this.profileSlot.querySelector<HTMLInputElement>('#honours-name')?.focus();
+    }
   }
 
   private renderProfile(message?: string): void {
@@ -257,73 +275,23 @@ export class RollOfHonour {
   }
 
   private nameForm(current: string | null): HTMLFormElement {
-    const hintText = `${USERNAME_MIN}–${USERNAME_MAX} letters, numbers or underscores.`;
-    const input = h('input', {
-      type: 'text',
+    return claimForm({
+      service: this.service,
+      playerId: () => this.playerId,
+      current,
       id: 'honours-name',
-      class: 'ink-input',
-      name: 'username',
-      autocomplete: 'off',
-      autocapitalize: 'off',
-      spellcheck: 'false',
-      maxlength: String(USERNAME_MAX),
-      'aria-describedby': 'honours-name-hint',
-      value: current ?? '',
-    });
-    const hint = h('p', { class: 'honours-hint', id: 'honours-name-hint', 'aria-live': 'polite' }, hintText);
-    const submit = h('button', { type: 'submit', class: 'ink-button primary' }, current ? 'Save' : 'Sign');
-    let tried = false;
-    const check = (): boolean => {
-      const value = input.value.trim();
-      // While typing, say nothing about length until the name is long enough to judge.
-      const problem = usernameProblem(value);
-      const show = problem && (tried || (problem !== 'length' && value.length > 0) || value.length > USERNAME_MAX);
-      hint.textContent = show ? problemMessage(problem) : hintText;
-      hint.classList.toggle('bad', !!show);
-      input.setAttribute('aria-invalid', String(!!show));
-      return !problem;
-    };
-    input.addEventListener('input', check);
-    const form = h(
-      'form',
-      {
-        class: 'honours-form',
-        onsubmit: async (e: Event) => {
-          e.preventDefault();
-          tried = true;
-          if (!check()) return input.focus();
-          const id = this.playerId;
-          if (!id) return;
-          const name = input.value.trim();
-          if (current && name === current) return this.edit(false);
-          submit.disabled = true;
-          hint.textContent = 'Entering your name…';
-          const result = await this.service.claim(id, name);
-          submit.disabled = false;
-          if (!result.ok) {
-            hint.textContent = result.reason === 'unavailable' ? UNREACHABLE : problemMessage(result.reason);
-            hint.classList.add('bad');
-            input.setAttribute('aria-invalid', String(result.reason !== 'unavailable'));
-            input.focus();
-            return;
-          }
-          const games = this.profile.kind === 'ready' ? this.profile.profile.games : 0;
-          this.profile = { kind: 'ready', profile: { username: result.username, games } };
-          this.editing = false;
-          this.cache.clear();
-          this.renderProfile(current ? 'Your name is changed.' : 'Your name is on the roll.');
-          this.profileSlot.querySelector<HTMLElement>('button')?.focus();
-          void this.loadBoard(this.board);
-        },
+      onCancel: current ? () => this.edit(false) : undefined,
+      onClaimed: (username) => {
+        const games = this.profile.kind === 'ready' ? this.profile.profile.games : 0;
+        this.profile = { kind: 'ready', profile: { username, games } };
+        this.editing = false;
+        this.cache.clear();
+        this.renderProfile(current ? 'Your name is changed.' : 'Your name is on the roll.');
+        this.profileSlot.querySelector<HTMLElement>('button')?.focus();
+        void this.loadBoard(this.board);
+        this.onName(username);
       },
-      h('label', { for: 'honours-name', class: 'honours-label' }, 'Name'),
-      h('div', { class: 'honours-field' }, input, submit),
-      hint,
-    );
-    if (current) {
-      form.append(h('button', { type: 'button', class: 'ink-button subtle small', onclick: () => this.edit(false) }, 'Cancel'));
-    }
-    return form;
+    });
   }
 
   // -------------------------------------------------- recovery / restore ---
@@ -460,7 +428,8 @@ export class RollOfHonour {
     this.editing = false;
     this.profile = found ? { kind: 'ready', profile: found } : { kind: 'loading' };
     this.renderProfile(found?.username ? `Restored. Welcome back, ${found.username}.` : 'Restored.');
-    if (!found) void this.loadProfile();
+    if (found) this.onName(found.username);
+    else void this.loadProfile();
     this.renderKeys();
     void this.loadBoard(this.board);
     this.profileSlot.scrollIntoView?.({ block: 'nearest' });

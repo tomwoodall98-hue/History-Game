@@ -12,7 +12,8 @@ import type { GlobeBase } from './map/globeData';
 import { applyPaperTexture } from './map/texture';
 import { App } from './ui/App';
 import type { Question, Puzzle, Clock } from './game/types';
-import { isArchiveDay, londonDateKey, nextLondonMidnight } from './game/daily';
+import { londonDateKey, nextLondonMidnight } from './game/daily';
+import { canonicalQuery, resolveRoute } from './game/route';
 import { dailyPuzzle, type Schedule } from './game/schedule';
 import { LocalStore } from './game/storage';
 import { CountryIndex, type CountryLookup } from './game/countries';
@@ -60,22 +61,35 @@ zoomControls.addEventListener('click', (e) => {
 });
 
 // --- Today's puzzle, chosen from the date in Europe/London, or a past day
-// from the archive (?day=YYYY-MM-DD; never today or later).
+// from the archive (?day=YYYY-MM-DD; never today or later), played, reviewed
+// (&mode=review, today's too once it's done) or replayed as practice
+// (&mode=practice). See game/route.ts.
 const todayKey = londonDateKey();
 const store = new LocalStore(() => londonDateKey());
-const requested = new URLSearchParams(location.search).get('day');
-const archiveDay = requested && isArchiveDay(requested, todayKey) ? requested : null;
-if (requested && !archiveDay) history.replaceState(null, '', location.pathname + location.hash);
+const route = resolveRoute(location.search, todayKey, (day) => store.playedGame(day) != null);
+const query = canonicalQuery(route, todayKey);
+const asked = new URLSearchParams(location.search);
+if ((asked.has('day') || asked.has('mode')) && location.search !== query) history.replaceState(null, '', location.pathname + query + location.hash);
+
+/** The questions a day was actually played with, if they are known. */
+function playedQuestionIds(): string[] | null {
+  if (route.mode === 'play') {
+    return (route.archive ? store.loadArchiveGame(route.day) : store.loadGame(route.day))?.questionIds ?? null;
+  }
+  const practice = route.mode === 'practice' ? store.loadPracticeGame(route.day) : null;
+  if (practice && !practice.finished) return practice.questionIds;
+  return store.playedGame(route.day)?.rounds?.map((r) => r.questionId) ?? null;
+}
 
 function makePuzzle(allQuestions: Question[]): Puzzle {
-  const daily = dailyPuzzle(allQuestions, scheduleData as Schedule, archiveDay ?? todayKey);
-  const puzzle: Puzzle = { ...daily, archive: archiveDay != null };
+  const daily = dailyPuzzle(allQuestions, scheduleData as Schedule, route.day);
+  const puzzle: Puzzle = { ...daily, archive: route.archive, mode: route.mode };
   // If a game was started before the question bank changed (a new deploy
   // mid-day), keep the questions the player was actually given.
-  const saved = archiveDay ? store.loadArchiveGame(archiveDay) : store.loadGame(todayKey);
-  if (saved && saved.questionIds.join() !== daily.questions.map((q) => q.id).join()) {
+  const ids = playedQuestionIds();
+  if (ids && ids.join() !== daily.questions.map((q) => q.id).join()) {
     const byId = new Map(allQuestions.map((q) => [q.id, q]));
-    const kept = saved.questionIds.map((id) => byId.get(id));
+    const kept = ids.map((id) => byId.get(id));
     if (kept.length === daily.questions.length && kept.every(Boolean)) puzzle.questions = kept as Question[];
   }
   return puzzle;

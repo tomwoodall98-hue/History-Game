@@ -87,6 +87,24 @@ saved apart from daily results: they never count towards your streak, played
 days or average, and their share line reads `Chronomap #3 · Archive — …`. A
 daily game you left unfinished carries on in the archive.
 
+**Review and replay.** Every finished day in the Almanac shows its score with
+two links:
+- **Review** (`?day=…&mode=review`) steps through the seven questions one at a
+  time: the event and date, your mark, the answer and the arc between them,
+  the distance, the score, and Read more with Further reading. It is
+  read-only and saves nothing. Today's puzzle can be reviewed once it is
+  played: "Review today's puzzle" is on its results screen, and on the start
+  and results screens of any other day. Daily games saved before guesses were
+  stored kept only their scores; their review says "Your guesses weren't
+  recorded for this day" and still shows every answer and Read more.
+- **Replay** (`?day=…&mode=practice`) plays the day again, stamped *Practice*
+  and labelled "Practice: not scored". It is saved in a slot of its own, so it
+  never overwrites the original result and never touches the streak,
+  averages, daily stats or leaderboards (nothing is submitted, and there is
+  no share line). The results show both: "Original: 5,210 · Practice: 6,040".
+
+Unplayed past days open as before.
+
 **Touch and mouse:** drag to turn the globe; a press that moves more than a few
 pixels (or uses two fingers, or stops a spinning globe) never places a mark,
 so only a deliberate tap or click does. On the reveal, the globe turns (and
@@ -274,7 +292,12 @@ now, an average player at ~4,300 and random clicking at ~190.
 - Everything is computed in the browser. Progress, history, streaks, archive
   games and the km/miles choice live in `localStorage` (every access is
   wrapped in `try/catch`, so private browsing still plays, it just doesn't
-  remember).
+  remember). The data under `chronomap:v1` carries its own `version`: version
+  2 keeps every finished daily game's rounds in full (question, guess to about
+  a metre, distance) for review, where version 1 kept only scores. Version 1
+  data is read as version 2 without losing anything; the one game version 1
+  did keep in full (the latest) fills in its own day's guesses
+  (`migrate()` in [`src/game/storage.ts`](src/game/storage.ts)).
 
 **After adding questions,** run `npm run schedule:extend -- --refresh` and
 commit `schedule.json`. It redraws only the scheduled days after tomorrow,
@@ -371,6 +394,17 @@ no email and no password: the name is linked to the random player ID their
 browser already sends with its results, so every past daily game counts
 straight away. Players without a name play and count in the daily stats
 exactly as before.
+
+**Asking for a name.** After today's daily, a player without a name sees
+"Claim your place on the leaderboard" on the results screen, above the
+breakdown and stats, with where they would stand ("You'd be 4th of 37
+today": their rank among today's names, or, below the 25 rows the board
+lists, the share of today's players they beat). "Choose a username" opens
+the claim form right there; "Not now" puts the prompt off for 3 days, and
+after three of those it stops appearing on its own. A "Claim a username"
+link stays under the masthead and among the links on the start and results
+screens for as long as the player has no name. Nothing ever blocks play or
+the results.
 - 3–20 letters, numbers or underscores, with at least one letter; unique
   ignoring case.
 - Reserved names (admin, moderator, chronomap, support, you, …) and a short

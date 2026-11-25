@@ -1,6 +1,6 @@
 import type { GlobeView } from '../map/GlobeView';
 import { cartoucheSVG, compassRoseSVG } from '../map/ornaments';
-import type { LngLat, Question, Puzzle, SavedGame, Persistence, Clock, PastDay } from '../game/types';
+import type { LngLat, Question, Puzzle, SavedGame, Persistence, Clock, PastDay, PlayedGame, PuzzleMode, RoundResult } from '../game/types';
 import { archiveDays, formatDateLabel, puzzleNumber, LAUNCH_DATE } from '../game/daily';
 import {
   ROUNDS,
@@ -22,6 +22,10 @@ import type { SummaryCache } from '../game/wikipedia';
 import type { ReadingList } from '../game/reading';
 import { Gazetteer, type EntryOptions } from './gazetteer';
 import { RollOfHonour } from './honours';
+import { claimForm } from './claimForm';
+import { projectedRank, projectionText, type Leaderboard } from '../game/leaderboard';
+import { claimPromptDue, MAX_SNOOZES, SNOOZE_DAYS } from '../game/claimPrompt';
+import { routeQuery } from '../game/route';
 import { h, roman, countUp, copyText } from './dom';
 
 type Phase = 'start' | 'guess' | 'reveal' | 'results' | 'review' | 'ledger' | 'honours';
@@ -32,8 +36,8 @@ const COUNTRIES_WAIT_MS = 8000;
 
 const floorNote = (floor: number) => `Right country, so at least ${formatNumber(floor)} points.`;
 
-/** Link to a past day in the archive, or (with no day) back to today's puzzle. */
-const dayHref = (dateKey?: string) => (dateKey ? `${location.pathname}?day=${dateKey}` : location.pathname);
+/** Link to a day (played, reviewed or practised), or (with no day) back to today's puzzle. */
+const dayHref = (dateKey?: string, mode?: PuzzleMode) => `${location.pathname}${routeQuery(dateKey, mode)}`;
 
 const monthLabel = (dateKey: string) => formatDateLabel(dateKey).split(' ').slice(2).join(' '); // "November 2026"
 const shortDate = (dateKey: string) => formatDateLabel(dateKey).split(' ').slice(0, 3).join(' '); // "Monday 9 November"
@@ -41,8 +45,19 @@ const shortDate = (dateKey: string) => formatDateLabel(dateKey).split(' ').slice
 /** Children for replaceChildren, skipping the ones left out (null). */
 const nodes = (...xs: (Node | null | (Node | null)[])[]): Node[] => xs.flat().filter((x): x is Node => x != null);
 
-/** The red rubber stamp that marks an archive game. */
-const archiveStamp = () => h('span', { class: 'archive-stamp' }, 'Archive');
+/** The red rubber stamp that marks an archive, practice or review game. */
+const archiveStamp = (label = 'Archive') => h('span', { class: 'archive-stamp' }, label);
+
+const sum = (xs: number[]) => xs.reduce((a, b) => a + b, 0);
+const knownDistance = (r: RoundResult) => r.guess != null && Number.isFinite(r.distanceKm);
+
+/**
+ * The rounds to review: the original in full, or (for a daily game saved
+ * before guesses were kept) its scores alone, with no marks.
+ */
+function reviewRounds(played: PlayedGame, ids: string[]): RoundResult[] {
+  return played.rounds ?? played.scores.map((score, i) => ({ questionId: ids[i] ?? '', guess: null, distanceKm: NaN, score }));
+}
 
 export class App {
   private phase: Phase = 'start';
@@ -75,6 +90,25 @@ export class App {
   private readonly gazetteer: Gazetteer;
   /** The leaderboards, made the first time they are opened. */
   private honours: RollOfHonour | null = null;
+  /** Played (the default), practice (never scored) or review (read-only). */
+  private readonly mode: PuzzleMode;
+  /** The day's original result, in practice and review. */
+  private readonly original: PlayedGame | null;
+  /** Reviewing a day whose guesses weren't kept, only its scores. */
+  private readonly guessesMissing: boolean;
+  /** The question shown in the step-by-step review, while it is open. */
+  private stepAt: number | null = null;
+  /** The player's name on the roll: undefined until known (or without stats), null for none. */
+  private username: string | null | undefined = undefined;
+  /** "Claim a username" under the masthead, for players without one. */
+  private readonly claimLink: HTMLButtonElement;
+  /** Where the results screen asks for a username, while it is open. */
+  private claimSlot: HTMLElement | null = null;
+  private claimRank: HTMLElement | null = null;
+  private claimView: 'ask' | 'form' | 'done' | 'off' = 'ask';
+  /** Today's board, for where the player would rank. */
+  private todayBoard: Leaderboard | null = null;
+  private boardRequested = false;
 
   constructor(
     private readonly root: HTMLElement,
@@ -92,23 +126,37 @@ export class App {
     reading: ReadingList | null = null,
   ) {
     this.units = store.getUnits();
-    const saved = puzzle.archive ? store.loadArchiveGame(puzzle.dateKey) : store.loadGame(puzzle.dateKey);
     const ids = puzzle.questions.map((q) => q.id);
-    this.game =
-      saved && saved.puzzle === puzzle.number && saved.questionIds.join() === ids.join()
-        ? saved
-        : { dateKey: puzzle.dateKey, puzzle: puzzle.number, questionIds: ids, rounds: [], pendingGuess: null, finished: false };
+    const fresh = (): SavedGame => ({ dateKey: puzzle.dateKey, puzzle: puzzle.number, questionIds: ids, rounds: [], pendingGuess: null, finished: false });
+    const fits = (g: SavedGame | null) => (g && g.puzzle === puzzle.number && g.questionIds.join() === ids.join() ? g : null);
+    const original = puzzle.mode === 'practice' || puzzle.mode === 'review' ? store.playedGame(puzzle.dateKey) : null;
+    // There is nothing to review without an original result.
+    this.mode = puzzle.mode === 'review' && !original ? 'play' : (puzzle.mode ?? 'play');
+    this.original = original;
+    this.guessesMissing = this.mode === 'review' && !original?.rounds;
+    if (this.mode === 'review') {
+      this.game = { ...fresh(), rounds: reviewRounds(original!, ids), finished: true };
+    } else if (this.mode === 'practice') {
+      // Each Replay is a fresh attempt; only one left unfinished carries on.
+      const saved = fits(store.loadPracticeGame(puzzle.dateKey));
+      this.game = saved && !saved.finished ? saved : fresh();
+    } else {
+      this.game = fits(puzzle.archive ? store.loadArchiveGame(puzzle.dateKey) : store.loadGame(puzzle.dateKey)) ?? fresh();
+    }
 
+    const label = this.mode === 'practice' ? 'Practice' : this.mode === 'review' ? 'Review' : puzzle.archive ? 'Archive' : null;
     this.header = h('header', { class: 'masthead' });
     this.header.innerHTML = cartoucheSVG({
       title: 'Chronomap',
-      subtitle: puzzle.archive ? `Archive · No. ${puzzle.number}` : `No. ${puzzle.number}`,
+      subtitle: label ? `${label} · No. ${puzzle.number}` : `No. ${puzzle.number}`,
       idPrefix: 'mh',
     });
-    if (puzzle.archive) {
-      this.header.append(archiveStamp());
-      root.dataset.mode = 'archive';
+    if (label) {
+      this.header.append(archiveStamp(label));
+      root.dataset.mode = label.toLowerCase();
     }
+    this.claimLink = h('button', { class: 'claim-link', type: 'button', hidden: true, onclick: () => this.openClaim() }, 'Claim a username');
+    this.header.append(this.claimLink);
     this.compass = h('div', { class: 'compass', 'aria-hidden': 'true', html: compassRoseSVG() });
     this.slip = h('section', { class: 'slip', 'aria-label': 'Question', hidden: true });
     this.panel = h('section', { class: 'panel', role: 'dialog', 'aria-modal': 'false' });
@@ -125,11 +173,13 @@ export class App {
     document.addEventListener('keydown', (e) => this.onKey(e));
     document.addEventListener('keydown', () => (this.keyboardMode = true), true);
     document.addEventListener('pointerdown', () => (this.keyboardMode = false), true);
+    if (statsService) void this.loadProfile();
   }
 
-  /** Decide where to begin: intro, mid-game, or today's results. */
+  /** Decide where to begin: intro, mid-game, today's results, or the first question to review. */
   start(): void {
-    if (this.game.finished) this.showResults(false);
+    if (this.mode === 'review') this.showStep(0);
+    else if (this.game.finished) this.showResults(false);
     else if (this.game.rounds.length > 0 || this.game.pendingGuess) this.beginRound();
     else this.showStart();
   }
@@ -178,9 +228,16 @@ export class App {
     window.setTimeout(() => (this.live.textContent = text), 50);
   }
 
+  /** Saves progress where this mode keeps it. A review saves nothing; practice never touches a result. */
   private save(): void {
-    if (this.puzzle.archive) this.store.saveArchiveGame(this.game);
+    if (this.mode === 'review') return;
+    if (this.mode === 'practice') this.store.savePracticeGame(this.game);
+    else if (this.puzzle.archive) this.store.saveArchiveGame(this.game);
     else this.store.saveGame(this.game);
+  }
+
+  private get originalTotal(): number | null {
+    return this.original ? sum(this.original.scores) : null;
   }
 
   private get roundIndex(): number {
@@ -203,13 +260,18 @@ export class App {
     this.map.setPickEnabled(false);
     this.map.clearMarkers();
     this.panel.className = 'panel panel-start';
-    this.panel.setAttribute('aria-label', this.puzzle.archive ? `Chronomap archive, puzzle number ${this.puzzle.number}` : 'Chronomap');
-    const begin = h('button', { class: 'ink-button big', type: 'button', onclick: () => this.begin() }, 'Begin');
+    const practice = this.mode === 'practice';
+    this.panel.setAttribute(
+      'aria-label',
+      practice ? `Chronomap practice, puzzle number ${this.puzzle.number}` : this.puzzle.archive ? `Chronomap archive, puzzle number ${this.puzzle.number}` : 'Chronomap',
+    );
+    const begin = h('button', { class: 'ink-button big', type: 'button', onclick: () => this.begin() }, practice ? 'Begin practice' : 'Begin');
+    const original = this.originalTotal;
     this.primary = begin;
     this.panel.replaceChildren(
       ...nodes(
         h('div', { class: 'start-cartouche', html: cartoucheSVG({ title: 'Chronomap', subtitle: 'A Daily Atlas of History', idPrefix: 'st' }) }),
-        this.puzzle.archive ? h('p', { class: 'start-stamp' }, archiveStamp()) : null,
+        practice ? h('p', { class: 'start-stamp' }, archiveStamp('Practice')) : this.puzzle.archive ? h('p', { class: 'start-stamp' }, archiveStamp()) : null,
         h('p', { class: 'start-date' }, this.puzzle.dateLabel),
         h('p', { class: 'start-number' }, `Puzzle No. ${this.puzzle.number}`),
         h('div', { class: 'rule', 'aria-hidden': 'true' }),
@@ -218,9 +280,16 @@ export class App {
           { class: 'start-blurb' },
           'Seven events from history, each with its date. Mark on the globe where each one took place: the nearer your mark, the more points you score, up to 1,000 a round. The questions grow harder as you go.',
         ),
-        this.puzzle.archive
-          ? h('p', { class: 'archive-note' }, `From the archive: this game is kept apart from your daily results and doesn't count towards your streak.`)
-          : null,
+        practice
+          ? h(
+              'p',
+              { class: 'archive-note practice-note' },
+              h('strong', null, 'Practice: not scored. '),
+              `Your original result${original != null ? ` of ${formatNumber(original)}` : ''} stays as it is. This replay never counts towards your streak, averages or the leaderboards.`,
+            )
+          : this.puzzle.archive
+            ? h('p', { class: 'archive-note' }, `From the archive: this game is kept apart from your daily results and doesn't count towards your streak.`)
+            : null,
         this.helpList(),
         begin,
         this.archiveLinks(() => this.showStart()),
@@ -232,8 +301,16 @@ export class App {
     requestAnimationFrame(() => begin.focus());
   }
 
-  /** "Past puzzles", the Roll of Honour (with stats on), and in an archive game "Today's puzzle". */
+  /**
+   * "Past puzzles", the Roll of Honour and "Claim a username" (with stats
+   * on), and away from today's daily, "Today's puzzle" (and its review, once
+   * it is played).
+   */
   private archiveLinks(back: () => void): HTMLElement {
+    const awayFromToday = this.puzzle.archive || this.mode !== 'play';
+    const today = this.clock.todayKey();
+    const reviewingToday = this.mode === 'review' && this.puzzle.dateKey === today;
+    const todayPlayed = awayFromToday && !reviewingToday && this.store.playedGame(today) != null;
     return h(
       'p',
       { class: 'archive-links' },
@@ -241,7 +318,15 @@ export class App {
       this.statsService
         ? h('button', { class: 'ink-button subtle', type: 'button', onclick: () => this.showHonours(back) }, 'Roll of Honour')
         : null,
-      this.puzzle.archive ? h('a', { class: 'ink-button subtle', href: dayHref() }, 'Today’s puzzle') : null,
+      this.statsService
+        ? h(
+            'button',
+            { class: 'ink-button subtle claim-open', type: 'button', hidden: this.username !== null, onclick: () => this.showHonours(back, true) },
+            'Claim a username',
+          )
+        : null,
+      awayFromToday ? h('a', { class: 'ink-button subtle', href: dayHref() }, 'Today’s puzzle') : null,
+      todayPlayed ? h('a', { class: 'ink-button subtle', href: dayHref(today, 'review') }, 'Review today’s puzzle') : null,
     );
   }
 
@@ -304,17 +389,20 @@ export class App {
     if (this.keyboardMode) requestAnimationFrame(() => this.map.element.focus({ preventScroll: true }));
   }
 
-  private slipHeader(i: number): HTMLElement {
-    const pips = h(
+  private pips(i: number): HTMLElement {
+    return h(
       'span',
       { class: 'pips', role: 'img', 'aria-label': `Difficulty ${i + 1} of ${PIPS}` },
       ...Array.from({ length: PIPS }, (_, p) => h('span', { class: p <= i ? 'pip on' : 'pip' })),
     );
+  }
+
+  private slipHeader(i: number): HTMLElement {
     return h(
       'div',
       { class: 'slip-header' },
-      h('span', { class: 'round-label' }, `Round ${roman(i + 1)} of ${roman(ROUNDS)}`),
-      pips,
+      h('span', { class: 'round-label' }, `${this.mode === 'practice' ? 'Practice · ' : ''}Round ${roman(i + 1)} of ${roman(ROUNDS)}`),
+      this.pips(i),
       h(
         'span',
         { class: 'running-total', 'aria-label': `Score so far ${formatNumber(this.total)}` },
@@ -455,26 +543,45 @@ export class App {
 
   private showResults(animate: boolean): void {
     this.setPhase('results');
+    this.stepAt = null;
     this.slip.hidden = true;
     this.map.setPickEnabled(false);
     this.map.clearMarkers();
     const rounds = this.game.rounds;
     const scores = rounds.map((r) => r.score);
-    this.map.showReview(rounds.map((r, i) => ({ guess: r.guess, answer: [this.question(i).lng, this.question(i).lat] as LngLat })));
+    this.map.showReview(this.reviewItems());
+
+    const mode = this.mode;
+    const archive = this.puzzle.archive;
+    const playing = mode === 'play';
+    const todayDaily = playing && !archive;
+    const practice = mode === 'practice';
 
     const totalEl = h('span', { class: 'total-value' }, animate ? '0' : formatNumber(this.total));
-    const shareBtn = h('button', { class: 'ink-button primary', type: 'button' }, 'Share result');
-    const shareStatus = h('span', { class: 'share-status', role: 'status' });
-    shareBtn.addEventListener('click', async () => {
-      const url = location.href.split('#')[0].split('?')[0];
-      const top = this.dayStats ? topPercent(this.dayStats) : null;
-      const text = shareText(this.puzzle.number, scores, url, this.puzzle.archive, top);
-      const ok = await copyText(text);
-      shareStatus.textContent = ok ? 'Copied to clipboard' : 'Could not copy. Please copy it by hand.';
-      if (!ok) shareStatus.append(h('pre', { class: 'share-fallback' }, text));
-      window.setTimeout(() => (shareStatus.textContent = ''), 4000);
-    });
-    this.primary = shareBtn;
+    const step = h(
+      'button',
+      { class: playing ? 'ink-button subtle' : 'ink-button primary', type: 'button', onclick: () => this.showStep(0) },
+      todayDaily ? 'Review today’s puzzle' : mode === 'review' ? 'Step through again' : 'Review question by question',
+    );
+    let shareRow: HTMLElement | null = null;
+    if (playing) {
+      // Practice and reviews are never shared: they aren't results.
+      const shareBtn = h('button', { class: 'ink-button primary', type: 'button' }, 'Share result');
+      const shareStatus = h('span', { class: 'share-status', role: 'status' });
+      shareBtn.addEventListener('click', async () => {
+        const url = location.href.split('#')[0].split('?')[0];
+        const top = this.dayStats ? topPercent(this.dayStats) : null;
+        const text = shareText(this.puzzle.number, scores, url, archive, top);
+        const ok = await copyText(text);
+        shareStatus.textContent = ok ? 'Copied to clipboard' : 'Could not copy. Please copy it by hand.';
+        if (!ok) shareStatus.append(h('pre', { class: 'share-fallback' }, text));
+        window.setTimeout(() => (shareStatus.textContent = ''), 4000);
+      });
+      shareRow = h('div', { class: 'share-row' }, shareBtn, shareStatus);
+      this.primary = shareBtn;
+    } else {
+      this.primary = step;
+    }
 
     this.averageCells = [];
     const table = h(
@@ -482,14 +589,15 @@ export class App {
       { class: 'breakdown' },
       ...rounds.map((r, i) => {
         const q = this.question(i);
-        const label = `Round ${i + 1}: ${q.event}, ${formatNumber(r.score)} points, ${formatDistance(r.distanceKm, this.units)} away`;
+        const dist = knownDistance(r) ? formatDistance(r.distanceKm, this.units) : null;
+        const label = `Round ${i + 1}: ${q.event}, ${formatNumber(r.score)} points${dist ? `, ${dist} away` : ''}`;
         const average = h('span', { class: 'b-avg', 'aria-hidden': 'true' });
         const row = h(
           'button',
-          { type: 'button', class: 'breakdown-row', 'aria-label': `${label}. Show on map.`, onclick: () => this.showReview(i) },
+          { type: 'button', class: 'breakdown-row', 'aria-label': `${label}. Review it on the map.`, onclick: () => this.showStep(i) },
           h('span', { class: 'b-num' }, roman(i + 1)),
           h('span', { class: 'b-title' }, q.event),
-          h('span', { class: 'b-dist' }, formatDistance(r.distanceKm, this.units)),
+          h('span', { class: 'b-dist' }, dist ?? '—'),
           h('span', { class: 'b-score' }, formatNumber(r.score)),
           h('span', { class: 'b-emoji', 'aria-hidden': 'true' }, emojiFor(r.score)),
         );
@@ -500,31 +608,35 @@ export class App {
         return h('li', { class: 'breakdown-item' }, row, h('span', { class: 'b-sub' }, h('span', { class: 'b-date' }, q.dateDisplay), more), average);
       }),
     );
-    this.statsSlot = this.statsService ? h('section', { class: 'day-stats', 'aria-label': 'How everyone else did', 'aria-live': 'polite' }) : null;
+    this.statsSlot = this.statsService && playing ? h('section', { class: 'day-stats', 'aria-label': 'How everyone else did', 'aria-live': 'polite' }) : null;
+    this.claimSlot = this.statsService && todayDaily ? h('section', { class: 'claim-prompt', 'aria-labelledby': 'claim-title', hidden: true }) : null;
+    this.claimRank = this.claimSlot ? h('p', { class: 'claim-rank', hidden: true }) : null;
 
     const stats = this.store.stats();
     const countdown = h('span', { class: 'countdown-value' }, '');
-    const archive = this.puzzle.archive;
-    this.panel.className = 'panel panel-results';
-    this.panel.setAttribute('aria-label', `Results for ${archive ? 'archive ' : ''}puzzle number ${this.puzzle.number}`);
+    const original = this.originalTotal;
+    const stampLabel = practice ? 'Practice' : mode === 'review' ? 'Review' : archive ? 'Archive' : null;
+    this.panel.className = `panel panel-results${practice ? ' panel-practice' : ''}`;
+    this.panel.setAttribute(
+      'aria-label',
+      `${practice ? 'Practice results' : mode === 'review' ? 'Review of' : 'Results for'} ${archive && playing ? 'archive ' : ''}puzzle number ${this.puzzle.number}`,
+    );
     this.panel.replaceChildren(
       ...nodes(
-        archive ? h('p', { class: 'start-stamp' }, archiveStamp()) : null,
+        stampLabel ? h('p', { class: 'start-stamp' }, archiveStamp(stampLabel)) : null,
         h('p', { class: 'results-kicker' }, `Puzzle No. ${this.puzzle.number} · ${this.puzzle.dateLabel}`),
-        h('h2', { class: 'results-title' }, 'Your Atlas'),
-        h(
-          'p',
-          { class: 'total' },
-          totalEl,
-          h('span', { class: 'total-max' }, ` / ${formatNumber(MAX_SCORE)}`),
-        ),
+        h('h2', { class: 'results-title' }, practice ? 'Practice: not scored' : 'Your Atlas'),
+        h('p', { class: 'total' }, totalEl, h('span', { class: 'total-max' }, ` / ${formatNumber(MAX_SCORE)}`)),
+        practice && original != null
+          ? h('p', { class: 'practice-compare' }, `Original: ${formatNumber(original)} · Practice: ${formatNumber(this.total)}`)
+          : null,
         h('p', { class: 'emoji-row', 'aria-hidden': 'true' }, scores.map(emojiFor).join('')),
+        this.claimSlot,
         table,
         this.statsSlot,
-        h('div', { class: 'share-row' }, shareBtn, shareStatus),
-        archive
-          ? h('p', { class: 'archive-note' }, 'Archive games are kept apart from your daily results and don’t count towards your streak.')
-          : [
+        shareRow,
+        todayDaily
+          ? [
               h(
                 'dl',
                 { class: 'stats' },
@@ -534,8 +646,18 @@ export class App {
                 h('div', null, h('dt', null, 'Average'), h('dd', null, formatNumber(stats.averageScore))),
               ),
               h('p', { class: 'countdown' }, 'Next puzzle in ', countdown),
-            ],
-        h('button', { class: 'ink-button subtle', type: 'button', onclick: () => this.showReview(null) }, 'Explore the globe'),
+            ]
+          : null,
+        practice
+          ? h('p', { class: 'archive-note' }, 'Practice games are never scored: your original result, streak, averages and the leaderboards are untouched.')
+          : null,
+        mode === 'review' && this.guessesMissing
+          ? h('p', { class: 'archive-note' }, 'Your guesses weren’t recorded for this day, only your scores. The answers are all on the globe.')
+          : null,
+        playing && archive
+          ? h('p', { class: 'archive-note' }, 'Archive games are kept apart from your daily results and don’t count towards your streak.')
+          : null,
+        h('p', { class: 'archive-links' }, step, h('button', { class: 'ink-button subtle', type: 'button', onclick: () => this.showExplore() }, 'Explore the globe')),
         this.archiveLinks(() => this.showResults(false)),
       ),
     );
@@ -543,19 +665,190 @@ export class App {
     this.updateInsets();
     this.map.resetView(animate ? 700 : 0);
     if (animate) countUp(totalEl, this.total, formatNumber, 1100);
-    if (!archive) this.startCountdown(countdown);
+    if (todayDaily) this.startCountdown(countdown);
+    this.renderClaimPrompt();
     // Fresh stats each time the results are opened (they fill up through the day).
     if (Date.now() - this.statsFetchedAt > 30_000) void this.refreshStats();
     else this.renderStats();
-    this.announce(`Finished. ${formatNumber(this.total)} out of ${formatNumber(MAX_SCORE)}.`);
-    requestAnimationFrame(() => shareBtn.focus({ preventScroll: true }));
+    this.announce(
+      practice
+        ? `Practice finished, not scored. ${formatNumber(this.total)} out of ${formatNumber(MAX_SCORE)}${original != null ? `; your original score was ${formatNumber(original)}` : ''}.`
+        : mode === 'review'
+          ? `Review of puzzle ${this.puzzle.number}: ${formatNumber(this.total)} out of ${formatNumber(MAX_SCORE)}.`
+          : `Finished. ${formatNumber(this.total)} out of ${formatNumber(MAX_SCORE)}.`,
+    );
+    const focus = this.primary;
+    requestAnimationFrame(() => focus?.focus({ preventScroll: true }));
+  }
+
+  /** Every round's mark and answer, for the review map. */
+  private reviewItems(): { guess: LngLat | null; answer: LngLat }[] {
+    return this.game.rounds.map((r, i) => ({ guess: r.guess, answer: [this.question(i).lng, this.question(i).lat] as LngLat }));
+  }
+
+  // -------------------------------------------------------- claim prompt ---
+
+  /** Fetches the player's name, to know whether to offer one. Never throws. */
+  private async loadProfile(): Promise<void> {
+    const id = this.store.playerId();
+    if (!id || !this.statsService) return; // a name couldn't be kept in this browser
+    const profile = await this.statsService.profile(id);
+    if (profile) this.setUsername(profile.username);
+  }
+
+  private setUsername(name: string | null): void {
+    this.username = name;
+    this.claimLink.hidden = name !== null;
+    for (const el of this.root.querySelectorAll<HTMLElement>('.claim-open')) el.hidden = name !== null;
+    this.renderClaimPrompt();
+  }
+
+  /** "Claim a username" from the masthead: the roll, then back to whatever was on screen. */
+  private openClaim(): void {
+    this.showHonours(this.resumeScreen(), true);
+  }
+
+  /** How to get back to the screen showing now. */
+  private resumeScreen(): () => void {
+    switch (this.phase) {
+      case 'start':
+        return () => this.showStart();
+      case 'guess':
+        return () => this.beginRound();
+      case 'reveal': {
+        const i = this.roundIndex - 1;
+        return () => this.showReveal(i, false);
+      }
+      case 'review': {
+        const i = this.stepAt;
+        return i != null ? () => this.showStep(i) : () => this.showResults(false);
+      }
+      case 'ledger':
+      case 'honours':
+        return this.closeLedger ?? (() => this.start());
+      default:
+        return () => this.showResults(false);
+    }
+  }
+
+  /**
+   * Whether the end screen asks for a username: a finished daily, today,
+   * from a player known to have no name, unless they put it off recently.
+   */
+  private claimEligible(): boolean {
+    if (!this.statsService || this.mode !== 'play' || this.puzzle.archive || !this.game.finished) return false;
+    if (this.claimView === 'done') return true;
+    if (this.claimView === 'off' || this.username !== null) return false; // undefined: not known yet
+    const today = this.clock.todayKey();
+    if (this.game.dateKey !== today) return false;
+    return this.claimView === 'form' || claimPromptDue(this.store.claimPrompt(), today);
+  }
+
+  private renderClaimPrompt(): void {
+    const slot = this.claimSlot;
+    if (!slot?.isConnected) return;
+    if (!this.claimEligible()) {
+      slot.hidden = true;
+      slot.replaceChildren();
+      return;
+    }
+    slot.hidden = false;
+    const title = h('h3', { class: 'claim-title', id: 'claim-title', tabindex: '-1' }, 'Claim your place on the leaderboard');
+    if (this.claimView === 'done') {
+      const roll = h('button', { class: 'ink-button subtle', type: 'button', onclick: () => this.showHonours(() => this.showResults(false)) }, 'See the Roll of Honour');
+      slot.replaceChildren(
+        h('h3', { class: 'claim-title', id: 'claim-title' }, 'Your name is on the roll'),
+        h('p', { class: 'claim-blurb' }, 'Today’s score, and every daily game you’ve played in this browser, now count under ', h('strong', null, this.username ?? ''), '.'),
+        h('p', { class: 'claim-actions' }, roll),
+      );
+      return;
+    }
+    if (!this.boardRequested) void this.loadTodayBoard();
+    this.updateClaimRank();
+    const rank = this.claimRank!;
+    if (this.claimView === 'form') {
+      if (slot.querySelector('form')) return; // already open: leave what is being typed alone
+      const form = claimForm({
+        service: this.statsService!,
+        playerId: () => this.store.playerId(),
+        current: null,
+        id: 'claim-name',
+        onCancel: () => {
+          this.claimView = 'ask';
+          this.renderClaimPrompt();
+          slot.querySelector<HTMLElement>('.claim-choose')?.focus();
+        },
+        onClaimed: (name) => {
+          this.claimView = 'done';
+          this.honours?.named(name);
+          this.setUsername(name);
+          this.announce(`Your name, ${name}, is on the roll.`);
+          slot.querySelector<HTMLElement>('button')?.focus();
+        },
+      });
+      slot.replaceChildren(title, rank, form);
+      form.querySelector('input')?.focus();
+      return;
+    }
+    const choose = h(
+      'button',
+      {
+        class: 'ink-button primary claim-choose',
+        type: 'button',
+        onclick: () => {
+          this.claimView = 'form';
+          this.renderClaimPrompt();
+        },
+      },
+      'Choose a username',
+    );
+    const later = h('button', { class: 'ink-button subtle', type: 'button', onclick: () => this.snoozeClaim() }, 'Not now');
+    slot.replaceChildren(
+      title,
+      rank,
+      h('p', { class: 'claim-blurb' }, 'Choose a name for the Roll of Honour. No email, no password.'),
+      h('p', { class: 'claim-actions' }, choose, later),
+    );
+  }
+
+  /** "Not now": hidden for a few days; after a few of those, for good. */
+  private snoozeClaim(): void {
+    const today = this.clock.todayKey();
+    this.store.snoozeClaimPrompt(today);
+    this.claimView = 'off';
+    this.renderClaimPrompt();
+    const final = this.store.claimPrompt().snoozes >= MAX_SNOOZES;
+    this.announce(
+      final
+        ? 'We won’t ask again. You can claim a username any time from the links below.'
+        : `We’ll ask again in ${SNOOZE_DAYS} days. You can claim a username any time from the links below.`,
+    );
+    this.primary?.focus({ preventScroll: true });
+  }
+
+  private async loadTodayBoard(): Promise<void> {
+    if (!this.statsService) return;
+    this.boardRequested = true;
+    const lb = await this.statsService.leaderboard('today', null);
+    if (lb && lb.date === this.game.dateKey) this.todayBoard = lb;
+    this.updateClaimRank();
+  }
+
+  /** "You'd be 4th of 37 today", once the board (or the day's stats) are in. */
+  private updateClaimRank(): void {
+    const el = this.claimRank;
+    if (!el) return;
+    const better = this.statsState === 'ready' && this.dayStats ? betterThan(this.dayStats) : null;
+    const p = projectedRank(this.total, this.todayBoard, better);
+    el.textContent = p ? projectionText(p) : '';
+    el.hidden = !p;
   }
 
   // -------------------------------------------------------------- stats ---
 
   /** Submits today's result if it is due, then fetches the day's stats. Never throws. */
   private async refreshStats(): Promise<void> {
-    if (!this.statsService || !this.game.finished) return;
+    if (!this.statsService || !this.game.finished || this.mode !== 'play') return;
     const token = ++this.statsToken;
     if (!this.dayStats) this.statsState = 'loading';
     this.renderStats();
@@ -569,6 +862,7 @@ export class App {
     }
     this.statsFetchedAt = Date.now();
     this.renderStats();
+    this.updateClaimRank();
   }
 
   /**
@@ -577,7 +871,7 @@ export class App {
    */
   private async submitIfDue(): Promise<void> {
     const service = this.statsService;
-    if (!service || this.submitTried || this.puzzle.archive || !this.game.finished || this.game.rounds.length !== ROUNDS) return;
+    if (!service || this.submitTried || this.mode !== 'play' || this.puzzle.archive || !this.game.finished || this.game.rounds.length !== ROUNDS) return;
     const date = this.game.dateKey;
     if (date !== this.clock.todayKey()) return; // the database takes only today's results
     const state = this.store.submission(date);
@@ -668,38 +962,115 @@ export class App {
   }
 
   /** Results map view: every guess and answer, with a slip to go back. */
-  private showReview(index: number | null): void {
+  private showExplore(): void {
     this.setPhase('review');
+    this.stepAt = null;
     this.panelVeil.hidden = true;
     const back = h('button', { class: 'ink-button primary', type: 'button', onclick: () => this.closeReview() }, 'Back to results');
     this.primary = back;
-    const q = index != null ? this.question(index) : null;
-    const r = index != null ? this.game.rounds[index] : null;
     this.slip.className = 'slip slip-review';
     this.slip.replaceChildren(
       h(
         'div',
         { class: 'slip-body' },
-        q && r
-          ? [
-              h('h2', { class: 'event small' }, `${roman(index! + 1)}. ${q.event}`, h('span', { class: 'event-date-inline' }, ` — ${q.dateDisplay}`)),
-              h(
-                'p',
-                { class: 'result-line' },
-                h('span', { class: 'grade-chip', 'aria-hidden': 'true' }, emojiFor(r.score)),
-                ` ${formatNumber(r.score)} points · ${formatDistance(r.distanceKm, this.units)} away`,
-              ),
-              r.countryFloor ? h('p', { class: 'floor-note' }, floorNote(r.countryFloor)) : null,
-              h('p', { class: 'note' }, q.note),
-            ]
-          : h('p', { class: 'slip-hint' }, 'Every mark you made, and where history happened. Turn and zoom the globe to explore.'),
+        h(
+          'p',
+          { class: 'slip-hint' },
+          this.guessesMissing
+            ? 'Where history happened. Your guesses weren’t recorded for this day.'
+            : 'Every mark you made, and where history happened. Turn and zoom the globe to explore.',
+        ),
       ),
-      h('div', { class: 'slip-actions' }, (index != null ? this.readMoreButton(index) : null) ?? h('span'), back),
+      h('div', { class: 'slip-actions' }, h('span'), back),
     );
     this.slip.hidden = false;
     this.updateInsets();
-    this.map.highlightReview(index);
+    this.map.highlightReview(null);
     requestAnimationFrame(() => back.focus({ preventScroll: true }));
+  }
+
+  /**
+   * The review, one question at a time: the event and its date, the mark
+   * and the answer with the arc between them, distance, score and Read more.
+   */
+  private showStep(i: number): void {
+    const rounds = this.game.rounds;
+    if (!rounds[i]) return;
+    const entering = this.phase !== 'review';
+    this.setPhase('review');
+    this.stepAt = i;
+    window.clearInterval(this.countdownTimer);
+    this.panelVeil.hidden = true;
+    this.map.setPickEnabled(false);
+    // The marks and arcs are drawn once, on the way in; each step then turns to its own.
+    if (entering) this.map.showReview(this.reviewItems());
+
+    const n = rounds.length;
+    const q = this.question(i);
+    const r = rounds[i];
+    const last = i === n - 1;
+    const prev = h(
+      'button',
+      { class: 'ink-button subtle step-prev', type: 'button', disabled: i === 0, 'aria-label': 'Previous question', title: 'Previous question', onclick: () => this.showStep(i - 1) },
+      '‹',
+    );
+    const next = h(
+      'button',
+      { class: 'ink-button primary', type: 'button', onclick: () => (last ? this.closeReview() : this.showStep(i + 1)) },
+      last ? 'Done' : 'Next',
+    );
+    this.primary = next;
+    const close = h('button', { class: 'step-close', type: 'button', 'aria-label': 'Close the review', onclick: () => this.closeReview() }, 'Close');
+    const known = knownDistance(r);
+    const distance = h('span', { class: 'distance-value' }, known ? formatDistance(r.distanceKm, this.units) : '');
+    const grade = gradeFor(r.score);
+    const missing = this.guessesMissing ? 'Your guesses weren’t recorded for this day.' : 'No mark was recorded for this question.';
+
+    this.slip.className = `slip slip-reveal slip-step grade-${grade}`;
+    this.slip.replaceChildren(
+      h(
+        'div',
+        { class: 'slip-header' },
+        h('span', { class: 'round-label' }, `${this.mode === 'practice' ? 'Practice' : 'Review'} · ${roman(i + 1)} of ${roman(n)}`),
+        this.pips(i),
+        close,
+      ),
+      h(
+        'div',
+        { class: 'slip-body' },
+        h('h2', { class: 'event small', id: 'event-title' }, q.event, h('span', { class: 'event-date-inline' }, ` — ${q.dateDisplay}`)),
+        h(
+          'div',
+          { class: 'result-line' },
+          h('span', { class: `grade-chip grade-${grade}`, 'aria-hidden': 'true' }, emojiFor(r.score)),
+          h('span', { class: 'points' }, formatNumber(r.score), ' points'),
+          known
+            ? [
+                h('span', { class: 'sep', 'aria-hidden': 'true' }, '·'),
+                h('span', { class: 'distance' }, distance, ' away'),
+                this.unitToggle(() => (distance.textContent = formatDistance(r.distanceKm, this.units))),
+              ]
+            : null,
+        ),
+        known ? null : h('p', { class: 'missing-note' }, missing),
+        r.countryFloor ? h('p', { class: 'floor-note' }, floorNote(r.countryFloor)) : null,
+        h('p', { class: 'note' }, q.note),
+      ),
+      h(
+        'div',
+        { class: 'slip-actions' },
+        this.readMoreButton(i, { label: last ? 'Done' : 'Next question', go: () => next.click() }) ?? h('span'),
+        h('span', { class: 'step-nav' }, prev, next),
+      ),
+    );
+    this.slip.setAttribute('aria-labelledby', 'event-title');
+    this.slip.hidden = false;
+    this.updateInsets();
+    this.map.highlightReview(i);
+    this.announce(
+      `Question ${i + 1} of ${n}. ${q.event}, ${q.dateDisplay}. ${formatNumber(r.score)} points${known ? `, ${formatDistance(r.distanceKm, this.units)} away` : `. ${missing}`}. ${q.note}`,
+    );
+    requestAnimationFrame(() => next.focus({ preventScroll: true }));
   }
 
   // ------------------------------------------------------------- ledger ---
@@ -751,13 +1122,13 @@ export class App {
   // ------------------------------------------------------ roll of honour ---
 
   /** The leaderboards and the player's name, on a ledger page. */
-  private showHonours(back: () => void): void {
+  private showHonours(back: () => void, focusName = false): void {
     if (!this.statsService) return;
     this.setPhase('honours');
     window.clearInterval(this.countdownTimer);
     this.slip.hidden = true;
     this.map.setPickEnabled(false);
-    const honours = (this.honours ??= new RollOfHonour(this.statsService, this.store));
+    const honours = (this.honours ??= new RollOfHonour(this.statsService, this.store, (name) => this.setUsername(name)));
     const close = h('button', { class: 'ink-button primary', type: 'button', onclick: () => back() }, 'Close');
     this.primary = close;
     this.closeLedger = back;
@@ -770,10 +1141,11 @@ export class App {
       honours.element,
       close,
     );
-    honours.open();
+    honours.open({ focusName });
     this.panelVeil.hidden = false;
     this.panelVeil.scrollTop = 0;
-    requestAnimationFrame(() => honours.focusTarget.focus({ preventScroll: true }));
+    // From "Claim a username", the name field takes focus once the profile is in.
+    if (!focusName) requestAnimationFrame(() => honours.focusTarget.focus({ preventScroll: true }));
   }
 
   private ledgerRow(dateKey: string, day: PastDay | undefined): HTMLElement {
@@ -803,9 +1175,15 @@ export class App {
       h('span', { class: 'ledger-leader', 'aria-hidden': 'true' }),
       entry,
     ];
-    // A day finished on the day is in the books; everything else opens in the archive.
-    if (day?.via === 'daily' && day.finished) {
-      return h('div', { class: 'ledger-row done', 'aria-label': `${label}, ${date}: ${spoken}` }, cells);
+    // A finished day is in the books: review it, or replay it as practice. Everything else opens in the archive.
+    if (day?.finished) {
+      const actions = h(
+        'span',
+        { class: 'ledger-actions' },
+        h('a', { class: 'ledger-action', href: dayHref(dateKey, 'review'), 'aria-label': `Review ${label}, ${date}` }, 'Review'),
+        h('a', { class: 'ledger-action', href: dayHref(dateKey, 'practice'), 'aria-label': `Replay ${label}, ${date}, as practice (not scored)` }, 'Replay'),
+      );
+      return h('div', { class: 'ledger-row done', role: 'group', 'aria-label': `${label}, ${date}: ${spoken}` }, cells, actions);
     }
     return h('a', { class: 'ledger-row', href: dayHref(dateKey), 'aria-label': `${label}, ${date}: ${spoken}. Open in the archive.` }, cells);
   }

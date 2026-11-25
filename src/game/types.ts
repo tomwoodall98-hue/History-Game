@@ -61,8 +61,16 @@ export interface Puzzle {
   dateLabel: string;
   /** A past day replayed from the archive, not today's daily. */
   archive: boolean;
+  /**
+   * How the day is opened: played (the default), replayed as practice (never
+   * scored or saved over the original), or reviewed (the original result,
+   * read-only).
+   */
+  mode?: PuzzleMode;
   questions: Question[];
 }
+
+export type PuzzleMode = 'play' | 'practice' | 'review';
 
 /** What gets saved between visits for one day's puzzle. */
 export interface SavedGame {
@@ -97,6 +105,29 @@ export interface PastDay {
   scores: number[];
 }
 
+/** A day's original, finished result, for reviewing it and comparing practice with it. */
+export interface PlayedGame {
+  dateKey: string;
+  puzzle: number;
+  /** Played on the day itself, or later from the archive. */
+  via: 'daily' | 'archive';
+  /** Round scores, Q1 … Q7. */
+  scores: number[];
+  /**
+   * The rounds in full (question, guess, distance). Null when only the scores
+   * were kept: daily games saved before guesses were stored.
+   */
+  rounds: RoundResult[] | null;
+}
+
+/** The end-screen prompt to claim a username: how often it was put off, and until when. */
+export interface ClaimPromptState {
+  /** Times the player chose "Not now". */
+  snoozes: number;
+  /** Date key from which it may show again; null if never snoozed. */
+  until: string | null;
+}
+
 export interface Persistence {
   /** Today's daily game. */
   loadGame(dateKey: string): SavedGame | null;
@@ -106,6 +137,12 @@ export interface Persistence {
   loadArchiveGame(dateKey: string): SavedGame | null;
   /** Saves an archive game apart from daily results; it never touches streaks or stats. */
   saveArchiveGame(game: SavedGame): void;
+  /** The original finished result for a day (daily or archive); null if the day wasn't finished. */
+  playedGame(dateKey: string): PlayedGame | null;
+  /** A practice replay of a day, if one was started. */
+  loadPracticeGame(dateKey: string): SavedGame | null;
+  /** Saves a practice replay in a slot of its own: never the day's result, streaks or stats. */
+  savePracticeGame(game: SavedGame): void;
   /** Every past day the player has played, by date key. */
   pastDays(todayKey: string): Record<string, PastDay>;
   /** The anonymous player id for daily stats, made on first use; null when storage can't keep it. */
@@ -118,6 +155,10 @@ export interface Persistence {
   recordSubmission(dateKey: string, done: boolean): void;
   /** Stats including today's finished game, if any. */
   stats(): Stats;
+  /** How the claim-a-username prompt stands. */
+  claimPrompt(): ClaimPromptState;
+  /** The player chose "Not now" on the claim prompt. */
+  snoozeClaimPrompt(todayKey: string): void;
   getUnits(): Units;
   setUnits(units: Units): void;
   hasSeenIntro(): boolean;
